@@ -1,14 +1,22 @@
 {
- "permissions": {
-  "allow": [
-   "mcp__playwright__browser_navigate",
-   "Bash(ls:*)",
-   "Bash(grep:*)",
-   "mcp__playwright__browser_take_screenshot",
-   "mcp__playwright__browser_evaluate",
-   "mcp__playwright__browser_snapshot"
+  "permissions": {
+    "allow": [
+      "mcp__playwright__browser_navigate",
+      "Bash(ls:*)",
+      "Bash(grep:*)",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_snapshot",
+      "mcp__archcore__list_documents",
+      "mcp__archcore__create_document",
+      "mcp__archcore__update_document",
+      "Bash(tree:*)",
+      "mcp__archcore__list_relations",
+      "mcp__archcore__add_relation"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "archcore"
   ]
- },
- "enabledMcpjsonServers": ["archcore"],
- "enableAllProjectMcpServers": true
 }

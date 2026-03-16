@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "files": {},
+  "relations": [
+    {
+      "source": "update-docs-from-cli.task-type.md",
+      "target": "docs-from-cli-context.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "docs-stack.doc.md",
+      "target": "docs-from-cli-context.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "docs-stack.doc.md",
+      "target": "update-docs-from-cli.task-type.md",
+      "type": "related"
+    },
+    {
+      "source": "content-structure.rule.md",
+      "target": "docs-from-cli-context.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "content-structure.rule.md",
+      "target": "docs-stack.doc.md",
+      "type": "related"
+    },
+    {
+      "source": "content-structure.rule.md",
+      "target": "update-docs-from-cli.task-type.md",
+      "type": "related"
+    },
+    {
+      "source": "adding-docs-page.guide.md",
+      "target": "content-structure.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "adding-docs-page.guide.md",
+      "target": "docs-from-cli-context.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "adding-docs-page.guide.md",
+      "target": "docs-stack.doc.md",
+      "type": "related"
+    },
+    {
+      "source": "adding-docs-page.guide.md",
+      "target": "update-docs-from-cli.task-type.md",
+      "type": "related"
+    },
+    {
+      "source": "archcore-docs-site.doc.md",
+      "target": "adding-docs-page.guide.md",
+      "type": "related"
+    },
+    {
+      "source": "archcore-docs-site.doc.md",
+      "target": "content-structure.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "archcore-docs-site.doc.md",
+      "target": "docs-from-cli-context.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "archcore-docs-site.doc.md",
+      "target": "docs-stack.doc.md",
+      "type": "related"
+    },
+    {
+      "source": "archcore-docs-site.doc.md",
+      "target": "update-docs-from-cli.task-type.md",
+      "type": "related"
+    },
+    {
+      "source": "archcore-docs-site.doc.md",
+      "target": "docs-from-cli-context.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "adding-docs-page.guide.md",
+      "target": "content-structure.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "adding-docs-page.guide.md",
+      "target": "docs-from-cli-context.rule.md",
+      "type": "depends_on"
+    }
+  ]
+}
