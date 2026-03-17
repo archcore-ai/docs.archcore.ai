@@ -1,6 +1,6 @@
 ---
-title: Hooks
-description: Automatic session hooks for coding agents
+title: Agent Session Hooks
+description: Automatic session hooks that inject project context when AI coding agents start a conversation. Supported for Claude Code, Cursor, and more.
 ---
 
 Hooks let Archcore run commands automatically when an agent starts a session. This provides the agent with context about your `.archcore/` directory before the conversation begins.

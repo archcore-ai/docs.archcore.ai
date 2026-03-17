@@ -1,6 +1,6 @@
 ---
-title: Configuration
-description: Settings file reference and sync configuration
+title: Configuration Reference
+description: Complete reference for .archcore/settings.json — project settings, sync types (local, cloud, on-prem), language options, and validation rules.
 ---
 
 ## Settings File

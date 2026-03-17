@@ -1,6 +1,6 @@
 ---
 title: Document Types
-description: All 10 document types — when to use each one and what they contain
+description: All 10 document types — ADRs, RFCs, rules, guides, PRDs, plans, and more. When to use each, required sections, and templates.
 ---
 
 Archcore has 10 document types organized into 3 categories. Each type has a template with required sections that the CLI generates automatically.

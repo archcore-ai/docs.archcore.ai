@@ -1,6 +1,6 @@
 ---
-title: Relations
-description: Linking documents with directed relations
+title: Document Relations
+description: Link architecture decisions, rules, and plans with directed relations — implements, extends, depends_on, and related.
 ---
 
 Documents can be linked with directed relations that express how they connect. Relations are stored in `.archcore/.sync-state.json` and managed through the CLI or MCP tools.

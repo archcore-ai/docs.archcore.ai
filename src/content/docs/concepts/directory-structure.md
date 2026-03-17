@@ -1,6 +1,6 @@
 ---
 title: Directory Structure
-description: How to organize documents inside .archcore/
+description: How to organize documents inside .archcore/ — free-form layout by domain, feature, or team with virtual categories derived from file type.
 ---
 
 ## Free-Form Organization

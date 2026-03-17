@@ -1,6 +1,6 @@
 ---
 title: How It Works
-description: The Archcore workflow — from init to agent interaction
+description: The Archcore workflow from project init to AI agent interaction — how documents are created, validated, and served through MCP.
 ---
 
 ## Overview

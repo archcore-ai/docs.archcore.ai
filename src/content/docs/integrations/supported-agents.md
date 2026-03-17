@@ -1,6 +1,6 @@
 ---
-title: Supported Agents
-description: AI coding agents that work with Archcore
+title: Supported AI Coding Agents
+description: AI coding agents that work with Archcore — Claude Code, Cursor, GitHub Copilot, Gemini CLI, and more. Auto-detection, MCP config, and setup for each.
 ---
 
 Archcore supports 8 coding agents out of the box. Each agent gets MCP server configuration and (where supported) session hooks installed automatically during `archcore init`.

@@ -12,7 +12,8 @@
       "mcp__archcore__update_document",
       "Bash(tree:*)",
       "mcp__archcore__list_relations",
-      "mcp__archcore__add_relation"
+      "mcp__archcore__add_relation",
+      "Bash(npm run:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

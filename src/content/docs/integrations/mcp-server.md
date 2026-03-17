@@ -1,6 +1,6 @@
 ---
-title: MCP Server
-description: Built-in Model Context Protocol server for AI agent integration
+title: MCP Server Integration
+description: Built-in Model Context Protocol (MCP) server that lets AI coding agents read, query, and create project documents during a conversation.
 ---
 
 Archcore includes a built-in MCP server that exposes your `.archcore/` documents to AI agents via the Model Context Protocol (stdio transport).

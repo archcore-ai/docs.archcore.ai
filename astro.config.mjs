@@ -4,6 +4,10 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://docs.archcore.ai',
+	redirects: {
+		'/getting-started/installation/': '/getting-started/quick-start/',
+	},
 	integrations: [
 		starlight({
 			title: 'archcore',
@@ -11,8 +15,31 @@ export default defineConfig({
 			logo: {
 				light: './src/assets/logo-light.png',
 				dark: './src/assets/logo-dark.png',
+				alt: 'archcore logo',
 			},
 			description: 'System Context Platform — keeps humans and AI in sync with your system',
+			head: [
+				{
+					tag: 'meta',
+					attrs: { property: 'og:image', content: 'https://docs.archcore.ai/og-image.png' },
+				},
+				{
+					tag: 'script',
+					attrs: { type: 'application/ld+json' },
+					content: JSON.stringify({
+						'@context': 'https://schema.org',
+						'@type': 'WebSite',
+						name: 'Archcore',
+						url: 'https://docs.archcore.ai',
+						description: 'System Context Platform — keeps humans and AI in sync with your system',
+						publisher: {
+							'@type': 'Organization',
+							name: 'Archcore',
+							url: 'https://archcore.ai',
+						},
+					}),
+				},
+			],
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/archcore-ai/cli' },
 				{ icon: 'discord', label: 'Discord', href: 'https://discord.gg/5YC8pdjD' },

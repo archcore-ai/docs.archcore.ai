@@ -1,6 +1,6 @@
 ---
 title: Document Format
-description: File naming, frontmatter, and content structure
+description: File naming conventions, YAML frontmatter fields, content structure, and template generation for Archcore documents.
 ---
 
 ## File Naming

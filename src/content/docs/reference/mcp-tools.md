@@ -1,6 +1,6 @@
 ---
-title: MCP Tools
-description: Complete reference for all 8 MCP tools exposed by the Archcore server
+title: MCP Tools Reference
+description: Complete reference for all 8 Model Context Protocol tools — list_documents, get_document, create_document, update_document, and more.
 ---
 
 The Archcore MCP server exposes 8 tools that AI agents use to interact with your `.archcore/` documents.
