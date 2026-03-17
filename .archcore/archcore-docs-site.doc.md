@@ -23,9 +23,9 @@ The site is organized into 4 sidebar sections that map to the user journey:
 | Section | Purpose | Examples |
 |---------|---------|----------|
 | Getting Started | Onboarding flow | Introduction, Quick Start |
-| Core Concepts | Mental model | How It Works, Document Types, Relations |
+| Core Concepts | Mental model | Philosophy, Context Layers, Document Types, Directory Structure, Relations |
 | Integrations | Agent connectivity | MCP Server, Supported Agents, Hooks |
-| Reference | Lookup material | CLI Commands, Document Format, Configuration |
+| Reference | Lookup material | CLI Commands, Document Format, Configuration, MCP Tools |
 
 ### Changelog
 

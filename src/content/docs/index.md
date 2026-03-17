@@ -48,6 +48,6 @@ When an agent starts a session, Archcore's MCP server makes all documents availa
 ## Next Steps
 
 - [Quick Start](/getting-started/quick-start/) — install and set up your first project in 2 minutes
-- [How It Works](/concepts/how-it-works/) — understand the full workflow from init to agent interaction
+- [Philosophy](/concepts/philosophy/) — the design principles behind archcore
 - [Document Types](/concepts/document-types/) — learn all 10 types and when to use each
 - [MCP Server](/integrations/mcp-server/) — how agents connect to your project context

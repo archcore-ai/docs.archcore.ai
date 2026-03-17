@@ -17,7 +17,7 @@ status: accepted
    ```
    src/content/docs/<section>/your-page.md
    ```
-   Section directories: `getting-started/`, `core-concepts/`, `integrations/`, `reference/`.
+   Section directories: `getting-started/`, `concepts/`, `integrations/`, `reference/`.
 
 3. **Add Starlight frontmatter** — Every page requires at minimum:
    ```yaml

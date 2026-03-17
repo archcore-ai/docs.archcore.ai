@@ -16,7 +16,7 @@ Tech stack for the Archcore documentation site.
 | Language | TypeScript | strict |
 | Images | sharp | 0.34.x |
 
-Content is stored as `.mdx` files in `src/content/docs/`.
+Content is stored as `.md` / `.mdx` files in `src/content/docs/`.
 
 ## Examples
 

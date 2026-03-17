@@ -8,7 +8,7 @@ status: accepted
 Every documentation page **must** belong to exactly one of 4 sidebar sections:
 
 1. **Getting Started** — Onboarding flow (introduction, quick start)
-2. **Core Concepts** — Mental model (how it works, document types, directory structure, relations)
+2. **Core Concepts** — Mental model (philosophy, context layers, document types, directory structure, relations)
 3. **Integrations** — Agent connectivity (MCP server, supported agents, hooks)
 4. **Reference** — Lookup material (CLI commands, document format, configuration, MCP tools)
 

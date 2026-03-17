@@ -7,6 +7,7 @@ export default defineConfig({
 	site: 'https://docs.archcore.ai',
 	redirects: {
 		'/getting-started/installation/': '/getting-started/quick-start/',
+		'/concepts/how-it-works/': '/concepts/philosophy/',
 	},
 	integrations: [
 		starlight({
@@ -61,7 +62,8 @@ export default defineConfig({
 				{
 					label: 'Core Concepts',
 					items: [
-						{ label: 'How It Works', slug: 'concepts/how-it-works' },
+						{ label: 'Philosophy', slug: 'concepts/philosophy' },
+						{ label: 'Context Layers', slug: 'concepts/context-layers' },
 						{ label: 'Document Types', slug: 'concepts/document-types' },
 						{ label: 'Directory Structure', slug: 'concepts/directory-structure' },
 						{ label: 'Relations', slug: 'concepts/relations' },
