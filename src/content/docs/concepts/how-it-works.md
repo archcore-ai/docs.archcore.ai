@@ -48,7 +48,7 @@ The filename determines the type: `jwt-strategy` is the slug, `adr` is the type.
 
 When your agent starts a session, it connects to Archcore's MCP server. The agent can:
 
-- **List documents** — filter by type, category, or status
+- **List documents** — filter by type, layer, or status
 - **Read documents** — get full content with relations
 - **Create documents** — generate from templates
 - **Update documents** — modify content or status
@@ -79,7 +79,7 @@ When an agent calls `list_documents`, it gets:
   - api-endpoint-creation.task-type.md — "Creating New API Endpoints"
 ```
 
-Categories are **virtual** — derived from the document type, not the directory. The agent sees a clean, categorized view regardless of how you organize files on disk.
+Layers are **virtual** — derived from the document type, not the directory. The agent sees a clean, layered view regardless of how you organize files on disk.
 
 ## Document Lifecycle
 

@@ -14,10 +14,10 @@ List documents with optional filters.
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `types` | string[] | No | Filter by document types (e.g., `["adr", "rule"]`) |
-| `category` | string | No | Filter by category: `vision`, `knowledge`, or `experience` |
+| `category` | string | No | Filter by layer: `vision`, `knowledge`, or `experience` |
 | `status` | string | No | Filter by status: `draft`, `accepted`, or `rejected` |
 
-**Returns:** Array of documents with path, title, type, category, and status.
+**Returns:** Array of documents with path, title, type, layer, and status.
 
 **Example response:**
 ```
@@ -61,7 +61,7 @@ Create a new document. Generates from template if no content is provided.
 | `content` | string | No | Markdown body. If omitted, generates template |
 | `directory` | string | No | Subdirectory within `.archcore/` |
 
-**Returns:** Path, type, category, title, status, and `nearby_documents` hint (for adding relations).
+**Returns:** Path, type, layer, title, status, and `nearby_documents` hint (for adding relations).
 
 **Example:**
 ```

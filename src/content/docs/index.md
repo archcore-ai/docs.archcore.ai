@@ -10,31 +10,22 @@ Archcore is an open-source **System Context Platform**. It structures your proje
 AI coding agents (Claude Code, Cursor, Copilot, etc.) produce better results when they have context about your project — decisions, rules, conventions, patterns. Today, you probably store this context in:
 
 - `CLAUDE.md` / `.cursorrules` — flat files that grow unwieldy
-- Confluence / Notion — not accessible to agents
+- Any markdown files with free-form structure - mental model?
 - People's heads — not accessible to anyone else
 
 None of these scale. As context grows, flat files become hard to maintain. As teams grow, knowledge gets fragmented.
 
 ## The Solution
 
-Archcore solves this with a structured approach to project context:
+Archcore gives your project context a clear structure that both humans and AI agents can work with.
 
-1. **10 document types** — each with a specific purpose, required sections, and a template
-2. **Free-form directory structure** — organize by domain, feature, team, or however makes sense; documents are classified by their type (in the filename), not by where they live
-3. **Relations** — explicit links between documents (implements, extends, depends_on, related)
-4. **MCP server** — agents read and write documents through [8 MCP tools](/reference/mcp-tools/)
-5. **Validation** — CLI checks structure, naming, frontmatter, and relations
-6. **Multi-agent support** — one setup works with Claude Code, Cursor, Copilot, Gemini CLI, and more
+- **Three layers of context** — every document belongs to Vision (`prd`, `idea`, `plan`), Knowledge (`adr`, `rfc`, `rule`, `guide`, `doc`), or Experience (`task-type`, `cpat`). See [all 10 document types](/concepts/document-types/).
+- **Free-form directory structure** — organize by domain, feature, team, or however makes sense. Documents are classified by their type in the filename, not by where they live.
+- **Relations** — explicit links between documents (`implements`, `extends`, `depends_on`, `related`).
+- **MCP server** — agents read and write documents through [8 MCP tools](/reference/mcp-tools/).
+- **Validation** — the CLI checks structure, naming, frontmatter, and relations.
+- **Multi-agent support** — one setup works with Claude Code, Cursor, Copilot, Gemini CLI, and more.
 
-## Three Categories
-
-Every document type belongs to one of three categories:
-
-- **Knowledge** (adr, rfc, rule, guide, doc) — decisions, standards, and reference material
-- **Vision** (prd, idea, plan) — where the product and project are heading
-- **Experience** (task-type, cpat) — patterns learned from doing the work
-
-See [Document Types](/concepts/document-types/) for descriptions, required sections, and templates for all 10 types.
 
 ## Project Layout
 

@@ -56,7 +56,7 @@ Once MCP is configured, agents can:
 
 | Action | Tool | Description |
 |--------|------|-------------|
-| Browse | `list_documents` | List documents filtered by type, category, or status |
+| Browse | `list_documents` | List documents filtered by type, layer, or status |
 | Read | `get_document` | Get full document content with relations |
 | Create | `create_document` | Create new documents from templates |
 | Update | `update_document` | Modify title, status, or content |

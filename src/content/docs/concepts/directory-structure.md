@@ -1,13 +1,13 @@
 ---
 title: Directory Structure
-description: How to organize documents inside .archcore/ — free-form layout by domain, feature, or team with virtual categories derived from file type.
+description: How to organize documents inside .archcore/ — free-form layout by domain, feature, or team with virtual layers derived from file type.
 ---
 
 ## Free-Form Organization
 
 The directory structure inside `.archcore/` is completely free-form. You can organize documents by domain, feature, team, or any other way that makes sense for your project.
 
-Categories (**knowledge**, **vision**, **experience**) are **virtual** — derived automatically from the document type in the filename (`slug.type.md`), not from the physical directory.
+Layers (**knowledge**, **vision**, **experience**) are **virtual** — derived automatically from the document type in the filename (`slug.type.md`), not from the physical directory.
 
 ## File Naming
 
@@ -107,4 +107,4 @@ Both are managed by the CLI and skipped during document scanning.
 2. Subdirectory nesting depth is unlimited
 3. Two documents can have the same slug if they're in different directories
 4. Directory names have no naming restrictions (but lowercase with hyphens is recommended)
-5. Moving a document to a different directory doesn't change its category
+5. Moving a document to a different directory doesn't change its layer
