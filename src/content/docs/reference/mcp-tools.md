@@ -21,13 +21,13 @@ List documents with optional filters.
 
 **Example response:**
 ```
+[vision]
+  - roadmap/auth-v2.prd.md — "Auth System Redesign" (draft)
+
 [knowledge]
   - auth/jwt-strategy.adr.md — "Use JWT for Authentication" (accepted)
   - auth/auth-rules.rule.md — "Authentication Rules" (accepted)
   - api/rest-guide.guide.md — "REST API Setup Guide" (draft)
-
-[vision]
-  - roadmap/auth-v2.prd.md — "Auth System Redesign" (draft)
 ```
 
 ---

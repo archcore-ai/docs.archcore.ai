@@ -21,7 +21,7 @@ export default defineConfig({
 				dark: './src/assets/logo-dark.png',
 				alt: 'archcore logo',
 			},
-			description: 'System Context Platform — keeps humans and AI in sync with your system',
+			description: 'Shared architectural memory for AI coding agents',
 			head: [
 				{
 					tag: 'meta',
@@ -35,7 +35,7 @@ export default defineConfig({
 						'@type': 'WebSite',
 						name: 'Archcore',
 						url: 'https://docs.archcore.ai',
-						description: 'System Context Platform — keeps humans and AI in sync with your system',
+						description: 'Shared architectural memory for AI coding agents',
 						publisher: {
 							'@type': 'Organization',
 							name: 'Archcore',
@@ -53,20 +53,31 @@ export default defineConfig({
 			customCss: ['./src/styles/custom.css'],
 			sidebar: [
 				{
-					label: 'Getting Started',
+					label: 'Start Here',
 					items: [
-						{ label: 'Introduction', slug: '' },
+						{ label: 'What is Archcore?', slug: '' },
 						{ label: 'Quick Start', slug: 'getting-started/quick-start' },
+						{ label: 'First 10 Minutes', slug: 'getting-started/first-10-minutes' },
+						{ label: 'Why Not Flat Files?', slug: 'getting-started/why-not-flat-files' },
 					],
 				},
 				{
-					label: 'Core Concepts',
+					label: 'Concepts',
 					items: [
 						{ label: 'Philosophy', slug: 'concepts/philosophy' },
 						{ label: 'Context Layers', slug: 'concepts/context-layers' },
 						{ label: 'Document Types', slug: 'concepts/document-types' },
 						{ label: 'Directory Structure', slug: 'concepts/directory-structure' },
 						{ label: 'Relations', slug: 'concepts/relations' },
+					],
+				},
+				{
+					label: 'Use Cases',
+					items: [
+						{ label: 'Capture Architecture Decisions', slug: 'use-cases/architecture-decisions' },
+						{ label: 'Keep Coding Rules Reusable', slug: 'use-cases/coding-rules' },
+						{ label: 'Build Shared Project Memory', slug: 'use-cases/shared-project-memory' },
+						{ label: 'Plan Implementation Work', slug: 'use-cases/implementation-plans' },
 					],
 				},
 				{
@@ -84,6 +95,14 @@ export default defineConfig({
 						{ label: 'Document Format', slug: 'reference/document-format' },
 						{ label: 'Configuration', slug: 'reference/configuration' },
 						{ label: 'MCP Tools', slug: 'reference/mcp-tools' },
+					],
+				},
+				{
+					label: 'Troubleshooting',
+					items: [
+						{ label: 'Agent Cannot See Documents', slug: 'troubleshooting/agent-not-seeing-documents' },
+						{ label: 'MCP Server Not Starting', slug: 'troubleshooting/mcp-not-starting' },
+						{ label: 'Validation Errors', slug: 'troubleshooting/validation-errors' },
 					],
 				},
 			],

@@ -1,25 +1,31 @@
 ---
 title: Philosophy
-description: The design principles behind archcore — why it exists, what it fundamentally is, and the ideas that shape every decision.
+description: The design principles behind Archcore — why it exists, what trade-offs it makes, and what this means for your workflow.
 ---
 
 ## Why Archcore Exists
 
-AI coding agents start every session without memory. They have no recollection of yesterday's decisions, last week's architecture review, or the rule your team agreed on three months ago. The context that makes them effective — decisions, standards, patterns, plans — is scattered across `CLAUDE.md` files, `.cursorrules`, wikis, Slack threads, and people's heads.
+AI coding agents start every session without memory. They have no recollection of yesterday's decisions, last week's architecture review, or the rule your team agreed on three months ago. The context that makes them effective is scattered across flat files, wikis, Slack threads, and people's heads.
 
-Archcore's answer: a structured, local-first knowledge base that lives in your repository and is served to agents through MCP. Instead of a growing flat file that becomes unmaintainable, you get typed documents organized into layers, linked by explicit relations, and accessible through a standard protocol.
+Archcore's answer: a structured knowledge base that lives in your repository and is served to agents through MCP. Instead of a growing flat file that becomes unmaintainable, you get typed documents organized into layers, linked by relations, and accessible through a standard protocol.
 
 ## Core Principles
 
 ### Local-First, Git-Versioned
 
-The `.archcore/` directory in your repository **is** the system context. There is no external server required to use it. Everything is a file — versioned by git, reviewed through pull requests, shared through commits. Your project's knowledge travels with the code it describes.
+The `.archcore/` directory in your repository **is** your project's architectural memory. There is no external server required. Everything is a file — versioned by git, reviewed through pull requests, shared through commits. Your project's knowledge travels with the code it describes.
 
-When sync exists, local always wins. The server is a read-only consumer of your repository state, never the source of truth.
+**What this means for you:** No sign-ups, no SaaS dependency, no data leaving your machine. You can start using Archcore in 2 minutes with `archcore init` and everything stays in your repo.
+
+### One Setup, Every Agent
+
+Archcore uses [MCP (Model Context Protocol)](/integrations/mcp-server/) — an open standard for connecting AI agents to tools and data. This means one `.archcore/` directory works with Claude Code, Cursor, Copilot, Gemini CLI, and more. You don't maintain separate instruction files for each tool.
+
+**What this means for you:** When a teammate uses a different agent, they still get the same project context. No copy-pasting rules between `.cursorrules` and `CLAUDE.md`.
 
 ### Documentation as Code
 
-Documents use YAML frontmatter and markdown body — the same format, same tools, and same review process as code. The `slug.type.md` naming convention encodes semantics directly into the filename:
+Documents use YAML frontmatter and markdown — the same format, tools, and review process as code. The `slug.type.md` naming convention encodes the document type directly in the filename:
 
 ```
 jwt-strategy.adr.md
@@ -28,62 +34,36 @@ jwt-strategy.adr.md
 └─ slug: human-readable identifier
 ```
 
-No configuration file maps filenames to types. No database tracks metadata. The filename is the schema.
+**What this means for you:** No database, no special tooling. `ls .archcore/` tells you what's there. PRs show exactly what changed.
 
-### Virtual Layers from Filenames
+### Virtual Layers, Free-Form Directories
 
-Three layers — **Vision**, **Knowledge**, and **Experience** — organize every document by its role in the lifecycle of understanding. But these layers are **not directories**. The document type in the filename determines the layer:
+Three layers — **Vision**, **Knowledge**, and **Experience** — organize documents by their role. But layers are **not directories**. The document type determines the layer, and you organize directories however you want:
 
 - `prd`, `idea`, `plan` → Vision
 - `adr`, `rfc`, `rule`, `guide`, `doc` → Knowledge
 - `task-type`, `cpat` → Experience
 
-This is a deliberate design choice. Directories are free-form — organize by domain, feature, team, or however makes sense for your project. The semantic categorization comes from the type, not the path. See [Context Layers](/concepts/context-layers/) for the full breakdown.
+**What this means for you:** Group files by domain (`auth/`, `payments/`) or team — the semantic layer comes from the type, not the path. No rigid folder structure to maintain. See [Context Layers](/concepts/context-layers/) for the full breakdown.
 
-### Agents Are First-Class Citizens
+### Agents Read, Write, and Connect
 
-Archcore is designed around [MCP (Model Context Protocol)](/integrations/mcp-server/). Agents don't just read documents — they create, update, and link them. The MCP server embeds detailed instructions into every session: when to use each document type, naming conventions, workflow rules, valid statuses, and relation semantics.
+Agents don't just passively read documents — they create, update, and link them. [Session hooks](/integrations/hooks/) inject the full document list at session start, so agents know what context exists from the first message.
 
-[Session hooks](/integrations/hooks/) inject the full document list at session start, so agents know what context exists before they ask. The agent sees a layered, structured view of your project's knowledge from the first message.
+**What this means for you:** You can say "create an ADR for the decision we just discussed" or "link this rule to the ADR it came from" and the agent handles it through MCP.
 
-### An Explicit Knowledge Graph
-
-Documents form a directed graph through relations: `implements`, `extends`, `depends_on`, and `related`. When an agent reads a document, it sees both incoming and outgoing relations — the full context of how that document connects to everything else.
-
-Relations are stored centrally in `.sync-state.json`, not scattered across document frontmatter. This keeps documents clean and makes relation management a single-point operation: add, remove, or validate all links from one place.
-
-### Simplicity
+### Simplicity by Constraint
 
 Archcore has a small surface area by design:
 
 - **3 statuses** — `draft`, `accepted`, `rejected`
-- **10 document types** — each with a clear purpose and layer
-- **4 relation types** — enough to express meaningful connections without overcomplicating the graph
+- **10 document types** — each with a clear purpose
+- **4 relation types** — `implements`, `extends`, `depends_on`, `related`
 - **1 naming convention** — `slug.type.md`, always
-- **Minimal config** — `settings.json` with a handful of fields
 
-Constraints create clarity. When an agent encounters an archcore project, there are few rules to learn and fewer ways to get it wrong.
+**What this means for you:** When an agent encounters an Archcore project, there are few rules to learn and fewer ways to get it wrong. You can [start with just 3 types](/concepts/document-types/) and add more as needed.
 
-## What Agents See
-
-When an agent calls `list_documents`, it gets a layered view of the entire knowledge base:
-
-```
-[knowledge]
-  - jwt-strategy.adr.md — "Use JWT for API Authentication"
-  - api-rate-limiting.rule.md — "API Rate Limiting Standards"
-  - auth-setup.guide.md — "Setting Up Authentication"
-
-[vision]
-  - auth-redesign.prd.md — "Authentication System Redesign"
-
-[experience]
-  - api-endpoint-creation.task-type.md — "Creating New API Endpoints"
-```
-
-Layers are **virtual** — derived from the document type, not the directory. The agent sees a clean, layered view regardless of how you organize files on disk.
-
-## Document Lifecycle
+## How Knowledge Flows
 
 ```
 idea → prd → plan → implementation
@@ -97,4 +77,15 @@ idea → prd → plan → implementation
                     task-type / cpat (patterns learned)
 ```
 
-Documents link to each other through **relations**: `implements`, `extends`, `depends_on`, and `related`. This gives agents a graph of your project's knowledge — not just isolated documents, but the connections and dependencies between them.
+Documents link to each other through [relations](/concepts/relations/): `implements`, `extends`, `depends_on`, and `related`. This gives agents a graph of your project's knowledge — not just isolated documents, but the connections and dependencies between them.
+
+## Why Not Just One Big Instruction File?
+
+A `CLAUDE.md` or `.cursorrules` works when your project has a handful of rules. But as your project grows:
+
+- The file becomes a wall of text — agents can't prioritize what matters
+- Decisions mix with rules mix with how-tos — no structure to query
+- Outdated content lingers — there's no status lifecycle
+- Multiple agents need the same context — you maintain duplicate files
+
+Archcore solves this by giving each piece of knowledge its own document, type, status, and connections. Agents query what they need instead of reading everything. See [Why Not Flat Files?](/getting-started/why-not-flat-files/) for a detailed comparison.

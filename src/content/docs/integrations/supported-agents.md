@@ -1,22 +1,25 @@
 ---
 title: Supported AI Coding Agents
-description: AI coding agents that work with Archcore — Claude Code, Cursor, GitHub Copilot, Gemini CLI, and more. Auto-detection, MCP config, and setup for each.
+description: AI coding agents that work with Archcore — Claude Code, Cursor, GitHub Copilot, Gemini CLI, and more. Support status, features, and setup guides.
 ---
 
 Archcore supports 8 coding agents out of the box. Each agent gets MCP server configuration and (where supported) session hooks installed automatically during `archcore init`.
 
-## Agent Registry
+## Support Matrix
 
-| Agent | ID | MCP Config | Hooks |
-|-------|-----|-----------|-------|
-| Claude Code | `claude-code` | `.mcp.json` | `.claude/settings.json` |
-| Cursor | `cursor` | `.cursor/rules/mcp.json` | Cursor hooks config |
-| GitHub Copilot | `copilot` | `.vscode/settings.json` | VS Code config |
-| Gemini CLI | `gemini-cli` | `~/.gemini-cli/mcp.json` | Gemini CLI config |
-| OpenCode | `opencode` | `opencode.json` | — |
-| Codex CLI | `codex-cli` | `~/.codex-cli/mcp.json` | — |
-| Roo Code | `roo-code` | `.roo/mcp.json` | — |
-| Cline | `cline` | `.cline/mcp.json` | — |
+| Agent | MCP | Hooks |
+|-------|-----|-------|
+| Claude Code | Yes | Yes |
+| Cursor | Yes | Yes |
+| GitHub Copilot | Yes | Yes |
+| Gemini CLI | Yes | Yes |
+| OpenCode | Yes | — |
+| Codex CLI | Yes | — |
+| Roo Code | Yes | — |
+| Cline | Yes | — |
+
+**MCP** = agent can list, read, create, update documents through Archcore tools.
+**Hooks** = agent receives document context automatically at session start.
 
 ## Auto-Detection
 
@@ -26,7 +29,7 @@ Archcore supports 8 coding agents out of the box. Each agent gets MCP server con
 |-------|------------|
 | Claude Code | `.claude/` directory |
 | Cursor | `.cursor/` directory |
-| Copilot | `.vscode/extensions/` with GitHub Copilot |
+| GitHub Copilot | `.vscode/extensions/` with GitHub Copilot |
 | Gemini CLI | `.codex/` directory |
 | OpenCode | `opencode.json` file |
 | Codex CLI | `.codex-cli/` directory |
@@ -35,34 +38,18 @@ Archcore supports 8 coding agents out of the box. Each agent gets MCP server con
 
 If no agents are detected, Archcore falls back to configuring Claude Code.
 
-## MCP Config Format
+## MCP Config Locations
 
-Most agents use the standard `mcpServers` format:
-
-```json
-{
-  "mcpServers": {
-    "archcore": {
-      "command": "archcore",
-      "args": ["mcp"]
-    }
-  }
-}
-```
-
-GitHub Copilot uses VS Code's server format:
-
-```json
-{
-  "servers": {
-    "archcore": {
-      "type": "stdio",
-      "command": "archcore",
-      "args": ["mcp"]
-    }
-  }
-}
-```
+| Agent | ID | Config File |
+|-------|-----|------------|
+| Claude Code | `claude-code` | `.mcp.json` |
+| Cursor | `cursor` | `.cursor/rules/mcp.json` |
+| GitHub Copilot | `copilot` | `.vscode/settings.json` |
+| Gemini CLI | `gemini-cli` | `~/.gemini-cli/mcp.json` |
+| OpenCode | `opencode` | `opencode.json` |
+| Codex CLI | `codex-cli` | `~/.codex-cli/mcp.json` |
+| Roo Code | `roo-code` | `.roo/mcp.json` |
+| Cline | `cline` | `.cline/mcp.json` |
 
 ## Manual Installation
 
@@ -78,10 +65,8 @@ Install hooks for a specific agent:
 archcore hooks install --agent claude-code
 ```
 
-## Hooks
+## Best Experience
 
-Hooks run automatically when an agent starts a session. Currently supported for Claude Code, Cursor, Gemini CLI, and Copilot.
+For the best experience, use an agent that supports both MCP and hooks. Claude Code, Cursor, and GitHub Copilot currently offer the most complete integration — agents receive context at session start and have full document management tools available.
 
-The hook triggers `archcore hooks <agent-id> session-start`, which provides the agent with initial context about the `.archcore/` directory.
-
-See [Hooks](/integrations/hooks/) for details.
+Agents without hook support (OpenCode, Codex CLI, Roo Code, Cline) still work well through MCP tools. The main difference is that you'll need to explicitly ask the agent to check for documents rather than having context injected automatically.

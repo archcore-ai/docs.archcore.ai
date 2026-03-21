@@ -3,32 +3,31 @@ title: Document Relations
 description: Link architecture decisions, rules, and plans with directed relations — implements, extends, depends_on, and related.
 ---
 
-Documents can be linked with directed relations that express how they connect. Relations are stored in `.archcore/.sync-state.json` and managed through the CLI or MCP tools.
+Relations are explicit links between documents. They tell agents how your project's knowledge connects — which plan implements which PRD, which rule came from which decision, which guide depends on which standard.
+
+You can ignore relations at first. They become valuable as your `.archcore/` grows and documents start referencing each other.
 
 ## Relation Types
 
-| Type | Meaning | Example |
-|------|---------|---------|
+| Type | Use it when | Example |
+|------|-------------|---------|
+| `implements` | One document fulfills what another specifies | A plan implements a PRD |
+| `extends` | One document builds on another | An RFC extends an existing ADR |
+| `depends_on` | One document requires another to make sense | A plan depends on an ADR |
 | `related` | General association | Two ADRs on the same topic |
-| `implements` | Source implements what target specifies | A plan implements a PRD |
-| `extends` | Source builds upon target | An RFC extends an existing ADR |
-| `depends_on` | Source requires target to proceed | A plan depends on an ADR |
 
-Relations are **directed** — they have a source and a target. The direction matters for semantic meaning.
+Relations are **directed** — they have a source and a target. The direction carries meaning: "plan implements PRD" is different from "PRD implements plan".
 
 ## Creating Relations
 
-### Via MCP (AI agent)
+### Via your agent (recommended)
 
 ```
-User: "Link the auth plan to the auth PRD — the plan implements the PRD"
+You: "Link the auth plan to the auth PRD — the plan implements the PRD"
 Agent: [calls add_relation tool]
 ```
 
-The agent uses the `add_relation` MCP tool with:
-- `source`: the plan's path
-- `target`: the PRD's path
-- `type`: `implements`
+The agent uses the `add_relation` MCP tool with source, target, and relation type.
 
 ### Via CLI
 
@@ -36,15 +35,15 @@ Relations are validated with `archcore validate`. Orphaned relations (pointing t
 
 ## Viewing Relations
 
-When an agent reads a document via `get_document`, the response includes both:
-- **Outgoing relations** — relations where this document is the source
-- **Incoming relations** — relations where this document is the target
+When an agent reads a document via `get_document`, the response includes:
+- **Outgoing relations** — where this document is the source
+- **Incoming relations** — where this document is the target
 
-This gives agents a complete picture of how documents connect.
+This gives agents the full context of how a document connects to everything else.
 
 ## Common Patterns
 
-### Decision Flow
+### Decision flow
 
 ```
 idea ──implements──→ prd
@@ -54,6 +53,8 @@ adr  ──related─────→ rule
 rule ──related─────→ guide
 ```
 
+*"We had an idea, wrote requirements, planned the work, made decisions during implementation, derived rules from those decisions, and wrote guides to follow the rules."*
+
 ### RFC to ADR
 
 ```
@@ -61,7 +62,7 @@ rfc ──extends──→ adr   (RFC proposes changes to an existing decision)
 adr ──related──→ rule  (ADR produces rules)
 ```
 
-### Experience Links
+### Experience links
 
 ```
 task-type ──depends_on──→ rule   (task follows these rules)

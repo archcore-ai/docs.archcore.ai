@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Install Archcore and set up your first project in 2 minutes
+description: Install Archcore and set up your first project in 2 minutes.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -41,6 +41,8 @@ This does three things:
 1. Creates `.archcore/` directory with `settings.json`
 2. Auto-detects your coding agents (Claude Code, Cursor, Copilot, etc.)
 3. Installs MCP server config and session hooks for detected agents
+
+**Expected result:** After this, your agent can list documents, read them, and create structured architectural docs. If no agents are detected, Archcore falls back to configuring Claude Code.
 
 ## Create Your First Document
 
@@ -106,6 +108,21 @@ Try asking:
 - *"Create a rule for database migrations based on the PostgreSQL ADR"*
 - *"List all documents and their relations"*
 
+The agent should respond with information from your `.archcore/` documents. If it doesn't see them, check the [troubleshooting guide](/troubleshooting/agent-not-seeing-documents/).
+
+## Starting From an Existing Repo
+
+Already have project documentation? Archcore is additive — it works alongside your existing files.
+
+**You have a `CLAUDE.md` or `.cursorrules`:**
+Keep it. Over time, extract structured knowledge (decisions, rules, standards) into typed `.archcore/` documents. Your flat file can reference them or shrink as Archcore takes over.
+
+**You have `docs/` or existing ADRs:**
+Ask your agent to help migrate: *"Migrate our existing documentation into Archcore format."* The agent will read your files, pick the right document types, and create properly structured `.archcore/` documents through MCP.
+
+**You have a wiki or Notion:**
+Start by capturing the most frequently referenced decisions and rules as `.archcore/` documents. You don't need to migrate everything at once — start with what agents need most.
+
 ## Update
 
 To update to the latest version:
@@ -116,6 +133,7 @@ archcore update
 
 ## What's Next
 
-- [Philosophy](/concepts/philosophy/) — the design principles behind archcore
+- [First 10 Minutes](/getting-started/first-10-minutes/) — what to do next, with expected results at each step
+- [Why Not Flat Files?](/getting-started/why-not-flat-files/) — how Archcore compares to CLAUDE.md and .cursorrules
+- [Use Cases](/use-cases/architecture-decisions/) — see how teams use Archcore in practice
 - [Document Types](/concepts/document-types/) — learn all 10 types and when to use each
-- [CLI Commands](/reference/cli-commands/) — full reference for the CLI

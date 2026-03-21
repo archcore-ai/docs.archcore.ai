@@ -1,53 +1,68 @@
 ---
 title: What Is Archcore?
-description: Archcore structures your project's architectural knowledge into typed documents that AI coding agents discover and follow through MCP.
+description: Archcore gives AI coding agents a shared architectural memory — structured decisions, rules, and patterns that persist across sessions and tools.
 ---
 
-Archcore is an open-source **System Context Platform**. It structures your project's architectural knowledge into documents that AI coding agents can discover, read, and follow through [MCP (Model Context Protocol)](/integrations/mcp-server/).
+Archcore is a **shared architectural memory for AI coding agents**. It turns scattered project knowledge — decisions, rules, patterns, plans — into structured documents that agents discover, read, and follow automatically.
 
 ## The Problem
 
-AI coding agents (Claude Code, Cursor, Copilot, etc.) produce better results when they have context about your project — decisions, rules, conventions, patterns. Today, you probably store this context in:
+AI coding agents start every session from scratch. They don't remember yesterday's decisions, last week's architecture review, or the coding standards your team agreed on months ago.
 
-- `CLAUDE.md` / `.cursorrules` — flat files that grow unwieldy
-- Any markdown files with free-form structure - mental model?
-- People's heads — not accessible to anyone else
+Teams work around this with flat instruction files:
 
-None of these scale. As context grows, flat files become hard to maintain. As teams grow, knowledge gets fragmented.
+- **`CLAUDE.md`** — grows into a wall of text that's hard to maintain
+- **`.cursorrules`** — locked to one tool, not reusable across agents
+- **`docs/` folder** — unstructured markdown, agents don't know what's relevant
+- **Team knowledge** — lives in people's heads, Slack threads, and wikis
 
-## The Solution
+These approaches work at first. But as projects grow, flat files become unwieldy, knowledge gets fragmented across tools, and agents can't distinguish a current decision from an outdated one.
 
-Archcore gives your project context a clear structure that both humans and AI agents can work with.
+## How Archcore Solves This
 
-- **Three layers of context** — every document belongs to Vision (`prd`, `idea`, `plan`), Knowledge (`adr`, `rfc`, `rule`, `guide`, `doc`), or Experience (`task-type`, `cpat`). See [all 10 document types](/concepts/document-types/).
-- **Free-form directory structure** — organize by domain, feature, team, or however makes sense. Documents are classified by their type in the filename, not by where they live.
-- **Relations** — explicit links between documents (`implements`, `extends`, `depends_on`, `related`).
-- **MCP server** — agents read and write documents through [8 MCP tools](/reference/mcp-tools/).
-- **Validation** — the CLI checks structure, naming, frontmatter, and relations.
-- **Multi-agent support** — one setup works with Claude Code, Cursor, Copilot, Gemini CLI, and more.
-
-
-## Project Layout
+Archcore adds a `.archcore/` directory to your repository. Inside it, every piece of project knowledge becomes a **typed document** — an architecture decision, a coding rule, a how-to guide, an implementation plan.
 
 ```text
-Your project
+your-project/
 ├── .archcore/
-│   ├── settings.json
 │   ├── auth/
-│   │   ├── jwt-strategy.adr.md        ← knowledge
-│   │   └── auth-redesign.prd.md       ← vision
+│   │   ├── jwt-strategy.adr.md        ← decision
+│   │   └── auth-redesign.prd.md       ← requirements
 │   ├── payments/
-│   │   └── stripe-integration.guide.md ← knowledge
-│   └── onboarding-flow.task-type.md   ← experience
+│   │   └── stripe-integration.guide.md ← how-to
+│   └── onboarding-flow.task-type.md   ← proven pattern
 └── src/
     └── ...
 ```
 
-When an agent starts a session, Archcore's MCP server makes all documents available through tools like `list_documents`, `get_document`, and `create_document`. The agent can query, read, and create new documents without leaving the conversation.
+When an agent starts a session, Archcore's [MCP server](/integrations/mcp-server/) makes all documents available. The agent can query, read, create, and link documents without leaving the conversation.
+
+## Why Not Just Flat Instruction Files?
+
+| | Flat files | Archcore |
+|---|---|---|
+| **Structure** | Free-form text | Typed documents with templates |
+| **Scale** | Gets unwieldy past ~50 lines | Separate documents, free-form directory structure |
+| **Reusability** | Copy-paste between tools | One setup works with all agents |
+| **Findability** | Agent reads the whole file | Agent queries by type, status, or topic |
+| **Lifecycle** | No versioning beyond git diff | Draft → accepted → rejected status |
+| **Connections** | No links between concepts | Explicit relations between documents |
+
+[Read the full comparison →](/getting-started/why-not-flat-files/)
+
+## What You Get After Setup
+
+After running `archcore init`, your agents can:
+
+- **Find relevant context** — query decisions, rules, and patterns by type or topic
+- **Follow team standards** — read coding rules and how-to guides automatically
+- **Create new knowledge** — record decisions and patterns as structured documents
+- **Link related concepts** — connect a plan to the PRD it implements, or a rule to the decision that produced it
+- **Work consistently** — the same knowledge base works across Claude Code, Cursor, Copilot, Gemini CLI, and more
 
 ## Next Steps
 
-- [Quick Start](/getting-started/quick-start/) — install and set up your first project in 2 minutes
-- [Philosophy](/concepts/philosophy/) — the design principles behind archcore
-- [Document Types](/concepts/document-types/) — learn all 10 types and when to use each
-- [MCP Server](/integrations/mcp-server/) — how agents connect to your project context
+- **[Quick Start](/getting-started/quick-start/)** — install and set up in 2 minutes
+- **[First 10 Minutes](/getting-started/first-10-minutes/)** — what to do after setup, with expected results
+- **[Why Not Flat Files?](/getting-started/why-not-flat-files/)** — detailed comparison with CLAUDE.md, .cursorrules, and other approaches
+- **[Use Cases](/use-cases/architecture-decisions/)** — see how teams use Archcore in practice

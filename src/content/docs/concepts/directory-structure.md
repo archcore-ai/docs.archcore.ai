@@ -7,7 +7,7 @@ description: How to organize documents inside .archcore/ — free-form layout by
 
 The directory structure inside `.archcore/` is completely free-form. You can organize documents by domain, feature, team, or any other way that makes sense for your project.
 
-Layers (**knowledge**, **vision**, **experience**) are **virtual** — derived automatically from the document type in the filename (`slug.type.md`), not from the physical directory.
+Layers (**vision**, **knowledge**, **experience**) are **virtual** — derived automatically from the document type in the filename (`slug.type.md`), not from the physical directory.
 
 ## File Naming
 
@@ -31,7 +31,66 @@ jwt_strategy.adr.md           ❌ (underscores)
 decision.txt                  ❌ (wrong extension, no type)
 ```
 
-## Examples
+:::tip[Don't overthink the structure]
+You don't need to design the perfect directory tree upfront. Start flat — put documents in the root of `.archcore/`. Organize into subdirectories when you have 10+ documents and want to group them. You can always move files later without affecting their type or layer.
+:::
+
+## Recommended Layouts
+
+### Small Project (1-5 documents)
+
+Keep it flat. No subdirectories needed.
+
+```
+.archcore/
+├── settings.json
+├── use-typescript.adr.md
+├── coding-standards.rule.md
+└── setup.guide.md
+```
+
+### Growing Product Team (5-20 documents)
+
+Organize by domain or feature area.
+
+```
+.archcore/
+├── settings.json
+├── coding-standards.rule.md
+├── auth/
+│   ├── jwt-strategy.adr.md
+│   └── auth-setup.guide.md
+├── payments/
+│   └── stripe.adr.md
+└── roadmap/
+    ├── q1-goals.prd.md
+    └── auth-v2.plan.md
+```
+
+### Platform / Infrastructure Repo (20+ documents)
+
+Organize by domain with deeper nesting as needed.
+
+```
+.archcore/
+├── settings.json
+├── api/
+│   ├── versioning.adr.md
+│   ├── error-format.rule.md
+│   └── rate-limiting.rule.md
+├── auth/
+│   ├── jwt-strategy.adr.md
+│   ├── auth-rules.rule.md
+│   └── auth-redesign.prd.md
+├── infrastructure/
+│   ├── k8s-migration.adr.md
+│   └── deployment-checklist.guide.md
+└── patterns/
+    ├── api-endpoint-creation.task-type.md
+    └── error-handling-v2.cpat.md
+```
+
+## More Examples
 
 ### By Domain
 

@@ -3,7 +3,11 @@ title: Context Layers
 description: Vision, Knowledge, and Experience — the three layers that organize project understanding from future plans to proven patterns.
 ---
 
-Every document in archcore belongs to exactly one of three **layers**. The layer represents where the document sits in the lifecycle of understanding — from aspirational plans to proven patterns.
+Every document in Archcore belongs to exactly one of three **layers**. The layer represents where the document sits in the lifecycle of understanding — from aspirational plans to proven patterns.
+
+:::note[You can ignore layers at first]
+Layers are automatic — they come from the document type, not from anything you configure. If you create an `adr`, it's in the Knowledge layer. If you create a `plan`, it's in Vision. You don't need to think about layers when starting out. They become useful when you want to browse documents by category or understand the lifecycle of your project knowledge.
+:::
 
 ## Vision
 

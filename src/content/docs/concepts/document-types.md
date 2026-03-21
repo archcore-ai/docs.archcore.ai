@@ -5,6 +5,63 @@ description: All 10 document types — ADRs, RFCs, rules, guides, PRDs, plans, a
 
 Archcore has 10 document types organized into 3 layers. Each type has a template with required sections that the CLI generates automatically.
 
+## Choosing the Right Type
+
+```
+Need to record a final decision?           → adr
+Need to propose a change for review?       → rfc
+Need to enforce a team standard?           → rule
+Need step-by-step instructions?            → guide
+Need reference/lookup material?            → doc
+Need to define product requirements?       → prd
+Need to capture an early idea?             → idea
+Need to plan implementation tasks?         → plan
+Need to document a repeatable workflow?    → task-type
+Need to record a coding pattern change?    → cpat
+```
+
+:::tip[Let agents choose]
+When working with an AI agent, just describe what you want to document. The agent will pick the right type based on these rules — they're embedded in the MCP server instructions.
+:::
+
+---
+
+## Vision
+
+Where the product and project are heading.
+
+### PRD — Product Requirements Document
+
+Product requirements with goals, scope, and acceptance criteria.
+
+| | |
+|---|---|
+| **File extension** | `.prd.md` |
+| **When to use** | Product requirements with goals and acceptance criteria are defined |
+| **Required sections** | Vision, Problem Statement, Goals & Success Metrics, Requirements |
+
+### Idea — Concept to Explore
+
+A product or technical concept that needs capturing before it's fully formed.
+
+| | |
+|---|---|
+| **File extension** | `.idea.md` |
+| **When to use** | A concept needs capturing for future evaluation |
+| **Required sections** | Idea, Value, Possible Implementation, Risks & Constraints |
+
+### Plan — Implementation Plan
+
+An actionable plan with phased tasks and acceptance criteria.
+
+| | |
+|---|---|
+| **File extension** | `.plan.md` |
+| **When to use** | An implementation plan with tasks is formed |
+| **Required sections** | Goal, Tasks (phased), Acceptance Criteria, Dependencies |
+
+---
+
 ## Knowledge
 
 Decisions, standards, and reference material.
@@ -112,45 +169,9 @@ A **rule** contains imperative statements ("Always do X", "Never do Y") with enf
 
 ---
 
-## Vision
-
-Where the product and project are heading.
-
-### PRD — Product Requirements Document
-
-Product requirements with goals, scope, and acceptance criteria.
-
-| | |
-|---|---|
-| **File extension** | `.prd.md` |
-| **When to use** | Product requirements with goals and acceptance criteria are defined |
-| **Required sections** | Vision, Problem Statement, Goals & Success Metrics, Requirements |
-
-### Idea — Concept to Explore
-
-A product or technical concept that needs capturing before it's fully formed.
-
-| | |
-|---|---|
-| **File extension** | `.idea.md` |
-| **When to use** | A concept needs capturing for future evaluation |
-| **Required sections** | Idea, Value, Possible Implementation, Risks & Constraints |
-
-### Plan — Implementation Plan
-
-An actionable plan with phased tasks and acceptance criteria.
-
-| | |
-|---|---|
-| **File extension** | `.plan.md` |
-| **When to use** | An implementation plan with tasks is formed |
-| **Required sections** | Goal, Tasks (phased), Acceptance Criteria, Dependencies |
-
----
-
 ## Experience
 
-Patterns learned from doing the work.
+Patterns learned from doing the work. You can ignore these types at first — they become useful once your team has accumulated enough practice to recognize repeatable patterns.
 
 ### Task Type — Recurring Task Pattern
 
@@ -201,24 +222,3 @@ const orders = await getOrders(user.id);
 ## Scope
 All files in `src/services/` and `src/handlers/`.
 ```
-
----
-
-## Choosing the Right Type
-
-| Question | Use |
-|----------|-----|
-| We made a technical decision | **adr** |
-| We're proposing a change for review | **rfc** |
-| We need to establish a standard | **rule** |
-| We need how-to instructions | **guide** |
-| We need reference/lookup info | **doc** |
-| We're defining product requirements | **prd** |
-| We have a concept to capture | **idea** |
-| We need to plan implementation tasks | **plan** |
-| We have a repeatable workflow | **task-type** |
-| A coding convention changed | **cpat** |
-
-:::tip[Let agents choose]
-When working with an AI agent, just describe what you want to document. The agent will pick the right type based on these rules — they're embedded in the MCP server instructions.
-:::
