@@ -57,7 +57,7 @@ Agents don't just passively read documents — they create, update, and link the
 Archcore has a small surface area by design:
 
 - **3 statuses** — `draft`, `accepted`, `rejected`
-- **10 document types** — each with a clear purpose
+- **11 document types** — each with a clear purpose
 - **4 relation types** — `implements`, `extends`, `depends_on`, `related`
 - **1 naming convention** — `slug.type.md`, always
 

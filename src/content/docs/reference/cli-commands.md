@@ -33,7 +33,7 @@ archcore validate [--fix]
 - Directory structure exists
 - File naming follows `<slug>.<type>.md` pattern
 - Slugs are lowercase alphanumeric with hyphens only
-- Document types are valid (one of the 10 types)
+- Document types are valid (one of the 11 types)
 - YAML frontmatter has required `title` and `status` fields
 - Frontmatter is valid YAML
 - Sync manifest JSON structure

@@ -31,7 +31,8 @@ Decisions, standards, and reference material — **what we know**.
 | `rfc` | Proposals open for review before a decision is finalized | `graphql-migration.rfc.md` |
 | `rule` | Team standards and required behaviors with enforcement guidance | `api-versioning.rule.md` |
 | `guide` | Step-by-step instructions for completing a specific task | `deploy-staging.guide.md` |
-| `doc` | Reference material, registries, lookup tables, and general documentation | `env-variables.doc.md` |
+| `spec` | Canonical normative contract — behavior, constraints, invariants, conformance for a specific technical boundary | `webhook-delivery.spec.md` |
+| `doc` | Non-behavioral reference — registries, glossaries, lookup tables, component lists | `env-variables.doc.md` |
 
 Knowledge is the backbone of system context. This is where most documents live — the accumulated understanding of how your system works and why it works that way. Decisions emerge from implementation, standards emerge from decisions, and guides make standards actionable.
 
@@ -57,6 +58,7 @@ Vision                Knowledge              Experience
 │   prd    │───→     │   adr    │───→       │task-type │
 │   plan   │───→     │   rule   │───→       │   cpat   │
 │          │         │  guide   │           │          │
+│          │         │   spec   │           │          │
 │          │         │   doc    │           │          │
 └──────────┘         └──────────┘           └──────────┘
 ```

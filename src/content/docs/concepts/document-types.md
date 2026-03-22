@@ -1,9 +1,9 @@
 ---
 title: Document Types
-description: All 10 document types — ADRs, RFCs, rules, guides, PRDs, plans, and more. When to use each, required sections, and templates.
+description: All 11 document types — ADRs, RFCs, rules, guides, PRDs, plans, and more. When to use each, required sections, and templates.
 ---
 
-Archcore has 10 document types organized into 3 layers. Each type has a template with required sections that the CLI generates automatically.
+Archcore has 11 document types organized into 3 layers. Each type has a template with required sections that the CLI generates automatically.
 
 ## Choosing the Right Type
 
@@ -12,6 +12,7 @@ Need to record a final decision?           → adr
 Need to propose a change for review?       → rfc
 Need to enforce a team standard?           → rule
 Need step-by-step instructions?            → guide
+Need a normative contract for a boundary?  → spec
 Need reference/lookup material?            → doc
 Need to define product requirements?       → prd
 Need to capture an early idea?             → idea
@@ -153,18 +154,61 @@ How-to instructions for completing a specific task.
 | **When to use** | Step-by-step instructions need to be documented |
 | **Required sections** | Prerequisites, Steps (numbered), Verification, Common Issues |
 
+### Spec — Normative Contract
+
+The canonical normative contract for a concrete system, component, interface, schema, or protocol.
+
+| | |
+|---|---|
+| **File extension** | `.spec.md` |
+| **When to use** | A normative contract with behavior, constraints, and conformance criteria is being formalized |
+| **Required sections** | Purpose, Scope, Authority, Subject, Contract Surface, Normative Behavior, Constraints & Invariants, Error Handling, Conformance |
+
+```markdown
+---
+title: Webhook Delivery Contract
+status: accepted
+---
+
+## Purpose
+This specification defines the canonical webhook delivery contract.
+
+## Scope
+### Covers
+- Payload format, delivery guarantees, retry policy, signature verification
+
+### Does Not Cover
+- Webhook management API (registration, listing, deletion)
+
+## Authority
+This document is the normative specification for webhook delivery.
+
+## Normative Behavior
+1. The system MUST deliver payloads as JSON with Content-Type `application/json`
+2. The system MUST retry failed deliveries up to 5 times with exponential backoff
+3. The system SHOULD include an HMAC-SHA256 signature in the `X-Signature` header
+
+## Conformance
+An implementation conforms to this spec if it satisfies all MUST requirements
+and all stated invariants.
+```
+
+:::note[Spec vs Doc vs Rule]
+A **spec** defines a normative contract for a specific technical boundary — how a component *must* behave. A **doc** is non-behavioral reference material (registries, glossaries, lookup tables). A **rule** sets a cross-cutting team standard ("Always do X"). If you're documenting how one system works → `spec`. If you're describing what exists → `doc`. If you're prescribing how engineers must act → `rule`.
+:::
+
 ### Doc — Reference Documentation
 
-Descriptive reference material — tables, registries, explanations.
+Non-behavioral reference material — registries, glossaries, lookup tables, component lists.
 
 | | |
 |---|---|
 | **File extension** | `.doc.md` |
-| **When to use** | Reference information, registries, or lookup tables need documenting |
+| **When to use** | Non-behavioral reference material like registries, glossaries, or lookup tables needs documenting |
 | **Required sections** | Overview, Content sections, Examples |
 
 :::note[Rule vs Doc]
-A **rule** contains imperative statements ("Always do X", "Never do Y") with enforcement info. A **doc** is descriptive reference material. If it prescribes behavior, use `rule`. If it describes what exists, use `doc`.
+A **rule** contains imperative statements ("Always do X", "Never do Y") with enforcement info. A **doc** is non-behavioral reference material. If it prescribes behavior, use `rule`. If it describes what exists, use `doc`.
 :::
 
 ---

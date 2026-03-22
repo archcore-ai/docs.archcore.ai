@@ -6,7 +6,7 @@ This reference maps CLI `.archcore/` document types and topics to their correspo
 
 | CLI `.archcore/` Topic | Docs Page | Section |
 |---|---|---|
-| Document types (all 10 types: adr, rfc, rule, guide, doc, prd, idea, plan, task-type, cpat) | `concepts/document-types.md` | Core Concepts |
+| Document types (all 11 types: adr, rfc, rule, guide, spec, doc, prd, idea, plan, task-type, cpat) | `concepts/document-types.md` | Core Concepts |
 | Context layers / categories (vision, knowledge, experience) | `concepts/context-layers.md` | Core Concepts |
 | Relations (implements, extends, depends_on, related) | `concepts/relations.md` | Core Concepts |
 | Directory structure / file organization | `concepts/directory-structure.md` | Core Concepts |

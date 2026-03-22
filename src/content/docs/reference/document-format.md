@@ -24,7 +24,7 @@ Every document follows the pattern:
 ### Valid Types
 
 ```
-adr, rfc, rule, guide, doc, prd, idea, plan, task-type, cpat
+adr, rfc, rule, guide, spec, doc, prd, idea, plan, task-type, cpat
 ```
 
 ### Examples
@@ -34,6 +34,7 @@ use-postgres.adr.md
 api-versioning.rfc.md
 error-handling.rule.md
 ci-cd-setup.guide.md
+webhook-delivery.spec.md
 api-endpoints.doc.md
 auth-redesign.prd.md
 caching-layer.idea.md

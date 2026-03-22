@@ -17,7 +17,7 @@ Most teams start with flat instruction files — `CLAUDE.md`, `.cursorrules`, a 
 
 ### Typed documents instead of undifferentiated text
 
-In a flat file, a decision and a coding standard are just paragraphs. Archcore gives each piece of knowledge an explicit type: `adr` for decisions, `rule` for standards, `guide` for how-tos, `plan` for implementation tasks — [10 types](/concepts/document-types/) total. Each type has a template. Agents query by type instead of parsing everything.
+In a flat file, a decision and a coding standard are just paragraphs. Archcore gives each piece of knowledge an explicit type: `adr` for decisions, `rule` for standards, `guide` for how-tos, `plan` for implementation tasks — [11 types](/concepts/document-types/) total. Each type has a template. Agents query by type instead of parsing everything.
 
 A flat file is a bag of text. Typed documents are a queryable knowledge base.
 
@@ -79,5 +79,5 @@ One `.archcore/` directory works with [Claude Code, Cursor, Copilot, Gemini CLI,
 ## Next steps
 
 - [Quick Start](/getting-started/quick-start/) — install and set up your first project
-- [Document Types](/concepts/document-types/) — learn all 10 types and when to use each
+- [Document Types](/concepts/document-types/) — learn all 11 types and when to use each
 - [Philosophy](/concepts/philosophy/) — the design principles behind Archcore
