@@ -28,6 +28,10 @@ export default defineConfig({
 					attrs: { property: 'og:image', content: 'https://docs.archcore.ai/og-image.png' },
 				},
 				{
+					tag: 'meta',
+					attrs: { property: 'og:type', content: 'website' },
+				},
+				{
 					tag: 'script',
 					attrs: { type: 'application/ld+json' },
 					content: JSON.stringify({
@@ -55,7 +59,7 @@ export default defineConfig({
 				{
 					label: 'Start Here',
 					items: [
-						{ label: 'What is Archcore?', slug: '' },
+						{ label: 'What Is Archcore?', slug: '' },
 						{ label: 'Quick Start', slug: 'getting-started/quick-start' },
 						{ label: 'First 10 Minutes', slug: 'getting-started/first-10-minutes' },
 						{ label: 'Why Not Flat Files?', slug: 'getting-started/why-not-flat-files' },

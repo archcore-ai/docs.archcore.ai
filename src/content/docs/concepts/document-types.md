@@ -108,7 +108,7 @@ User needs captured through personas, journeys, usability requirements, and acce
 
 ### ISO Track (Decomposition)
 
-Decomposes requirements through progressively detailed levels, following ISO/IEC/IEEE 29148. BRS (why the business needs it) -> StRS (what stakeholders need) -> SyRS (how the system behaves) -> SRS (how the software works).
+Decomposes requirements through progressively detailed levels, following [ISO/IEC/IEEE 29148:2018 — Systems and software engineering — Life cycle processes — Requirements engineering](https://www.iso.org/standard/72089.html). BRS (why the business needs it) -> StRS (what stakeholders need) -> SyRS (how the system behaves) -> SRS (how the software works).
 
 #### BRS — Business Requirements Specification
 
@@ -117,7 +117,7 @@ Mission, goals, operational concept, and success criteria.
 | | |
 |---|---|
 | **File extension** | `.brs.md` |
-| **ISO reference** | ISO 29148 section 9.3 |
+| **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.3 |
 | **When to use** | Business requirements need formalizing into ISO-structured specification |
 | **Required sections** | Mission, Business Goals, Operational Concept, Success Criteria |
 
@@ -128,7 +128,7 @@ Per-stakeholder-class requirements with concept of operations and compliance.
 | | |
 |---|---|
 | **File extension** | `.strs.md` |
-| **ISO reference** | ISO 29148 section 9.4 |
+| **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.4 |
 | **When to use** | Stakeholder requirements need structuring per class with ConOps |
 | **Required sections** | Stakeholder Classes, Per-Class Requirements, ConOps, Compliance |
 
@@ -139,7 +139,7 @@ System boundary, interfaces, modes, and verification approach.
 | | |
 |---|---|
 | **File extension** | `.syrs.md` |
-| **ISO reference** | ISO 29148 section 9.5 |
+| **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.5 |
 | **When to use** | The whole system boundary, interfaces, and verification need specifying |
 | **Required sections** | System Boundary, Interfaces, Modes of Operation, Verification Approach |
 
@@ -150,7 +150,7 @@ Per-function and per-endpoint specifications with a verification matrix.
 | | |
 |---|---|
 | **File extension** | `.srs.md` |
-| **ISO reference** | ISO 29148 section 9.6 |
+| **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.6 |
 | **When to use** | Detailed software requirements need per-function/per-endpoint specification |
 | **Required sections** | Functional Requirements, Interface Requirements, Verification Matrix |
 

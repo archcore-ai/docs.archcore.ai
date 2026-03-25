@@ -16,7 +16,7 @@ Teams work around this with flat instruction files:
 - **`docs/` folder** — unstructured markdown, agents don't know what's relevant
 - **Team knowledge** — lives in people's heads, Slack threads, and wikis
 
-These approaches work at first. But as projects grow, flat files become unwieldy, knowledge gets fragmented across tools, and agents can't distinguish a current decision from an outdated one.
+These workarounds stop scaling as projects grow.
 
 ## How Archcore Solves This
 
@@ -35,11 +35,13 @@ your-project/
     └── ...
 ```
 
+Each file suffix (`.adr.md`, `.guide.md`, `.task-type.md`) indicates its [document type](/concepts/document-types/).
+
 When an agent starts a session, Archcore's [MCP server](/integrations/mcp-server/) makes all documents available. The agent can query, read, create, and link documents without leaving the conversation.
 
 ## Why Not Just Flat Instruction Files?
 
-| | Flat files | Archcore |
+| Feature | Flat files | Archcore |
 |---|---|---|
 | **Structure** | Free-form text | Typed documents with templates |
 | **Scale** | Gets unwieldy past ~50 lines | Separate documents, free-form directory structure |
@@ -52,7 +54,7 @@ When an agent starts a session, Archcore's [MCP server](/integrations/mcp-server
 
 ## What You Get After Setup
 
-After running `archcore init`, your agents can:
+After running [`archcore init`](/getting-started/quick-start/), your agents can:
 
 - **Find relevant context** — query decisions, rules, and patterns by type or topic
 - **Follow team standards** — read coding rules and how-to guides automatically
@@ -65,4 +67,4 @@ After running `archcore init`, your agents can:
 - **[Quick Start](/getting-started/quick-start/)** — install and set up in 2 minutes
 - **[First 10 Minutes](/getting-started/first-10-minutes/)** — what to do after setup, with expected results
 - **[Why Not Flat Files?](/getting-started/why-not-flat-files/)** — detailed comparison with CLAUDE.md, .cursorrules, and other approaches
-- **[Use Cases](/use-cases/architecture-decisions/)** — see how teams use Archcore in practice
+- **[Capture Architecture Decisions](/use-cases/architecture-decisions/)** — the most common starting point for teams

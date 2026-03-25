@@ -39,14 +39,14 @@ Flow: `mrd` (market landscape) → `brd` (business justification) → `urd` (use
 
 ### ISO Track (Decomposition)
 
-Formal requirements decomposition following ISO/IEC/IEEE 29148 structure. Use this track for regulated systems or multi-team projects that need rigorous traceability.
+Formal requirements decomposition following [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) structure. Use this track for regulated systems or multi-team projects that need rigorous traceability.
 
 | Type | Purpose | Example |
 |------|---------|---------|
-| `brs` | Business requirements specification (ISO 29148 §9.3) — mission, goals, success criteria | `platform-business-reqs.brs.md` |
-| `strs` | Stakeholder requirements specification (ISO 29148 §9.4) — per-class requirements with ConOps | `stakeholder-reqs.strs.md` |
-| `syrs` | System requirements specification (ISO 29148 §9.5) — system boundary, interfaces, modes | `system-reqs.syrs.md` |
-| `srs` | Software requirements specification (ISO 29148 §9.6) — per-function/endpoint specs | `auth-module-reqs.srs.md` |
+| `brs` | Business requirements specification ([ISO 29148:2018](https://www.iso.org/standard/72089.html) §9.3) — mission, goals, success criteria | `platform-business-reqs.brs.md` |
+| `strs` | Stakeholder requirements specification ([ISO 29148:2018](https://www.iso.org/standard/72089.html) §9.4) — per-class requirements with ConOps | `stakeholder-reqs.strs.md` |
+| `syrs` | System requirements specification ([ISO 29148:2018](https://www.iso.org/standard/72089.html) §9.5) — system boundary, interfaces, modes | `system-reqs.syrs.md` |
+| `srs` | Software requirements specification ([ISO 29148:2018](https://www.iso.org/standard/72089.html) §9.6) — per-function/endpoint specs | `auth-module-reqs.srs.md` |
 
 Flow: `brs` → `strs` → `syrs` → `srs`.
 
