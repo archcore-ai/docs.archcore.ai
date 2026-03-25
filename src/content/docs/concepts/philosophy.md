@@ -40,8 +40,8 @@ jwt-strategy.adr.md
 
 Three layers — **Vision**, **Knowledge**, and **Experience** — organize documents by their role. But layers are **not directories**. The document type determines the layer, and you organize directories however you want:
 
-- `prd`, `idea`, `plan` → Vision
-- `adr`, `rfc`, `rule`, `guide`, `doc` → Knowledge
+- `prd`, `idea`, `plan`, `mrd`, `brd`, `urd`, `brs`, `strs`, `syrs`, `srs` → Vision
+- `adr`, `rfc`, `rule`, `guide`, `spec`, `doc` → Knowledge
 - `task-type`, `cpat` → Experience
 
 **What this means for you:** Group files by domain (`auth/`, `payments/`) or team — the semantic layer comes from the type, not the path. No rigid folder structure to maintain. See [Context Layers](/concepts/context-layers/) for the full breakdown.
@@ -57,7 +57,7 @@ Agents don't just passively read documents — they create, update, and link the
 Archcore has a small surface area by design:
 
 - **3 statuses** — `draft`, `accepted`, `rejected`
-- **11 document types** — each with a clear purpose
+- **18 document types** — each with a clear purpose
 - **4 relation types** — `implements`, `extends`, `depends_on`, `related`
 - **1 naming convention** — `slug.type.md`, always
 

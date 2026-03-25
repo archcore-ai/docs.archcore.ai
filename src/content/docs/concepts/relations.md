@@ -69,6 +69,17 @@ task-type ──depends_on──→ rule   (task follows these rules)
 cpat      ──extends────→ rule    (pattern change updates a rule)
 ```
 
+### Requirements track
+
+```
+mrd ──implements──→ brs   (market analysis formalized into business requirements)
+urd ──implements──→ strs  (user needs formalized into stakeholder requirements)
+strs ──implements──→ syrs (stakeholder requirements refined into system requirements)
+syrs ──implements──→ srs  (system requirements refined into software requirements)
+```
+
+*"Requirements flow from informal sources to formal specifications. Each specification formalizes what the source captures informally."*
+
 ## Storage
 
 Relations are stored in `.archcore/.sync-state.json` alongside sync metadata. This file is auto-managed — don't edit it manually. Use MCP tools (`add_relation`, `remove_relation`, `list_relations`) or the CLI to manage relations.

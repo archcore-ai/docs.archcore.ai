@@ -1,9 +1,9 @@
 ---
 title: Document Types
-description: All 11 document types — ADRs, RFCs, rules, guides, PRDs, plans, and more. When to use each, required sections, and templates.
+description: All 18 document types — ADRs, RFCs, rules, guides, PRDs, market/business/user requirement docs, ISO specifications, and more. When to use each, required sections, and templates.
 ---
 
-Archcore has 11 document types organized into 3 layers. Each type has a template with required sections that the CLI generates automatically.
+Archcore has 18 document types organized into 3 layers. Each type has a template with required sections that the CLI generates automatically.
 
 ## Choosing the Right Type
 
@@ -17,6 +17,13 @@ Need reference/lookup material?            → doc
 Need to define product requirements?       → prd
 Need to capture an early idea?             → idea
 Need to plan implementation tasks?         → plan
+Need market analysis (TAM, competitors)?   → mrd
+Need business justification (ROI, budget)? → brd
+Need user personas and journeys?           → urd
+Need ISO business requirements?            → brs
+Need ISO stakeholder requirements?         → strs
+Need ISO system requirements?              → syrs
+Need ISO software requirements?            → srs
 Need to document a repeatable workflow?    → task-type
 Need to record a coding pattern change?    → cpat
 ```
@@ -29,9 +36,13 @@ When working with an AI agent, just describe what you want to document. The agen
 
 ## Vision
 
-Where the product and project are heading.
+Where the product and project are heading. Vision documents are organized into three **requirement tracks** — pick the one that matches your team's complexity and process.
 
-### PRD — Product Requirements Document
+### Product Track (Simple)
+
+The starting point for most teams. Three types that cover the full lifecycle from idea to implementation.
+
+#### PRD — Product Requirements Document
 
 Product requirements with goals, scope, and acceptance criteria.
 
@@ -41,7 +52,7 @@ Product requirements with goals, scope, and acceptance criteria.
 | **When to use** | Product requirements with goals and acceptance criteria are defined |
 | **Required sections** | Vision, Problem Statement, Goals & Success Metrics, Requirements |
 
-### Idea — Concept to Explore
+#### Idea — Concept to Explore
 
 A product or technical concept that needs capturing before it's fully formed.
 
@@ -51,7 +62,7 @@ A product or technical concept that needs capturing before it's fully formed.
 | **When to use** | A concept needs capturing for future evaluation |
 | **Required sections** | Idea, Value, Possible Implementation, Risks & Constraints |
 
-### Plan — Implementation Plan
+#### Plan — Implementation Plan
 
 An actionable plan with phased tasks and acceptance criteria.
 
@@ -60,6 +71,117 @@ An actionable plan with phased tasks and acceptance criteria.
 | **File extension** | `.plan.md` |
 | **When to use** | An implementation plan with tasks is formed |
 | **Required sections** | Goal, Tasks (phased), Acceptance Criteria, Dependencies |
+
+### Sources Track (Discovery)
+
+Captures **where** requirements come from — market, business, and users. Documents flow naturally: MRD (market landscape) -> BRD (business justification) -> URD (user needs).
+
+#### MRD — Market Requirements Document
+
+Market analysis covering TAM/SAM/SOM, competitive landscape, market needs, and timing.
+
+| | |
+|---|---|
+| **File extension** | `.mrd.md` |
+| **When to use** | Market analysis is needed before proposing a solution |
+| **Required sections** | Market Overview, TAM/SAM/SOM, Competitive Landscape, Market Needs, Timing |
+
+#### BRD — Business Requirements Document
+
+Business justification with objectives, ROI, stakeholders, budget, and constraints.
+
+| | |
+|---|---|
+| **File extension** | `.brd.md` |
+| **When to use** | Business justification and organizational impact need documenting |
+| **Required sections** | Objectives, ROI, Stakeholders, Budget, Constraints |
+
+#### URD — User Requirements Document
+
+User needs captured through personas, journeys, usability requirements, and acceptance criteria.
+
+| | |
+|---|---|
+| **File extension** | `.urd.md` |
+| **When to use** | User needs, personas, and journeys need capturing during discovery |
+| **Required sections** | Personas, User Journeys, Usability Requirements, Acceptance Criteria |
+
+### ISO Track (Decomposition)
+
+Decomposes requirements through progressively detailed levels, following ISO/IEC/IEEE 29148. BRS (why the business needs it) -> StRS (what stakeholders need) -> SyRS (how the system behaves) -> SRS (how the software works).
+
+#### BRS — Business Requirements Specification
+
+Mission, goals, operational concept, and success criteria.
+
+| | |
+|---|---|
+| **File extension** | `.brs.md` |
+| **ISO reference** | ISO 29148 section 9.3 |
+| **When to use** | Business requirements need formalizing into ISO-structured specification |
+| **Required sections** | Mission, Business Goals, Operational Concept, Success Criteria |
+
+#### StRS — Stakeholder Requirements Specification
+
+Per-stakeholder-class requirements with concept of operations and compliance.
+
+| | |
+|---|---|
+| **File extension** | `.strs.md` |
+| **ISO reference** | ISO 29148 section 9.4 |
+| **When to use** | Stakeholder requirements need structuring per class with ConOps |
+| **Required sections** | Stakeholder Classes, Per-Class Requirements, ConOps, Compliance |
+
+#### SyRS — System Requirements Specification
+
+System boundary, interfaces, modes, and verification approach.
+
+| | |
+|---|---|
+| **File extension** | `.syrs.md` |
+| **ISO reference** | ISO 29148 section 9.5 |
+| **When to use** | The whole system boundary, interfaces, and verification need specifying |
+| **Required sections** | System Boundary, Interfaces, Modes of Operation, Verification Approach |
+
+#### SRS — Software Requirements Specification
+
+Per-function and per-endpoint specifications with a verification matrix.
+
+| | |
+|---|---|
+| **File extension** | `.srs.md` |
+| **ISO reference** | ISO 29148 section 9.6 |
+| **When to use** | Detailed software requirements need per-function/per-endpoint specification |
+| **Required sections** | Functional Requirements, Interface Requirements, Verification Matrix |
+
+### Choosing the Right Requirements Track
+
+| Track | Documents | Best For |
+|---|---|---|
+| Product (simple) | `prd` | Individual features, small teams, rapid prototyping, internal tools |
+| Sources (discovery) | `mrd` -> `brd` -> `urd` | Product teams doing discovery, stakeholder alignment, business analysis |
+| ISO (decomposition) | `brs` -> `strs` -> `syrs` -> `srs` | Regulated systems, multi-team projects, complex distributed systems |
+
+All three tracks can coexist in the same project. A team might use `prd` for a small feature while running the full ISO track for a safety-critical subsystem.
+
+### Requirements Layers — Sources vs Specifications
+
+Sources and Specifications serve **separate purposes**:
+
+- **Layer A (Sources):** `mrd`, `brd`, `urd`, `prd` -- capture raw requirements from market, business, and user perspectives
+- **Layer B (Specifications):** `brs`, `strs`, `syrs`, `srs` -- formalize requirements into ISO-structured specifications
+
+Specifications formalize what sources capture informally, connected via the `implements` [relation](/concepts/relations/).
+
+:::tip[When types look similar]
+The Sources and ISO tracks overlap in subject matter but differ in formality:
+- **MRD vs PRD** -- MRD analyzes the market (TAM/SAM/SOM, competitors, timing) without proposing a solution. PRD proposes a product with requirements and solution overview.
+- **BRD vs PRD** -- BRD focuses on business justification (ROI, budget, organizational impact). PRD focuses on product definition (features, user stories, solution).
+- **URD vs PRD** -- URD captures user needs via personas and journeys (discovery-oriented). PRD defines product requirements with acceptance criteria (specification-oriented).
+- **BRS vs BRD** -- BRS is an ISO specification (formalized structure). BRD is an informal source (business justification, ROI). BRS formalizes what BRD captures.
+- **StRS vs URD** -- StRS is an ISO specification (per-class requirements with ConOps). URD is an informal source (personas, journeys). StRS formalizes what URD captures.
+- **SyRS vs SRS** -- SyRS defines the whole system boundary. SRS specifies a single component's detailed behavior.
+:::
 
 ---
 

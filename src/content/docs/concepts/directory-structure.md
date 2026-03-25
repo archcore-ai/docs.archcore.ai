@@ -18,7 +18,7 @@ Every document follows the pattern:
 ```
 
 - **Slug**: lowercase alphanumeric with hyphens (`^[a-z0-9]+(-[a-z0-9]+)*$`)
-- **Type**: one of the 11 valid types (`adr`, `rfc`, `rule`, `guide`, `spec`, `doc`, `prd`, `idea`, `plan`, `task-type`, `cpat`)
+- **Type**: one of the 18 valid types (`adr`, `rfc`, `rule`, `guide`, `spec`, `doc`, `prd`, `idea`, `plan`, `mrd`, `brd`, `urd`, `brs`, `strs`, `syrs`, `srs`, `task-type`, `cpat`)
 - **Extension**: always `.md`
 
 Examples:

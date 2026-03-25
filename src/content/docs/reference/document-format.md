@@ -24,7 +24,7 @@ Every document follows the pattern:
 ### Valid Types
 
 ```
-adr, rfc, rule, guide, spec, doc, prd, idea, plan, task-type, cpat
+adr, rfc, rule, guide, spec, doc, prd, idea, plan, mrd, brd, urd, brs, strs, syrs, srs, task-type, cpat
 ```
 
 ### Examples
@@ -39,6 +39,13 @@ api-endpoints.doc.md
 auth-redesign.prd.md
 caching-layer.idea.md
 q1-migration.plan.md
+market-analysis.mrd.md
+revenue-model.brd.md
+onboarding-flow.urd.md
+business-reqs.brs.md
+stakeholder-reqs.strs.md
+system-reqs.syrs.md
+software-reqs.srs.md
 api-endpoint-creation.task-type.md
 callbacks-to-async.cpat.md
 ```

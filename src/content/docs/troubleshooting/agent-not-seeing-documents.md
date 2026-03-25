@@ -14,13 +14,13 @@ The agent needs an MCP server configuration to connect to Archcore. Without it, 
 | Agent | Config file |
 |-------|------------|
 | Claude Code | `.mcp.json` |
-| Cursor | `.cursor/rules/mcp.json` |
-| GitHub Copilot | `.vscode/settings.json` |
-| Gemini CLI | `~/.gemini-cli/mcp.json` |
+| Cursor | `.cursor/mcp.json` |
+| GitHub Copilot | `.vscode/mcp.json` |
+| Gemini CLI | `.gemini/settings.json` |
 | OpenCode | `opencode.json` |
-| Codex CLI | `~/.codex-cli/mcp.json` |
+| Codex CLI | `.codex/config.toml` |
 | Roo Code | `.roo/mcp.json` |
-| Cline | `.cline/mcp.json` |
+| Cline | VS Code globalStorage (manual setup) |
 
 **Fix:** Run the setup command:
 

@@ -145,7 +145,7 @@ Same approach — keep it for now. Identify which rules are project-specific sta
 
 ## What's next
 
-- [Document Types](/concepts/document-types/) — learn all 11 types and when to use each
+- [Document Types](/concepts/document-types/) — learn all 18 types and when to use each
 - [Philosophy](/concepts/philosophy/) — understand the design principles behind Archcore
 - [Context Layers](/concepts/context-layers/) — how Vision, Knowledge, and Experience organize your documents
 - [Relations](/concepts/relations/) — the full set of relation types and common linking patterns

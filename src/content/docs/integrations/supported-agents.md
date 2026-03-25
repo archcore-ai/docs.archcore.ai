@@ -16,7 +16,7 @@ Archcore supports 8 coding agents out of the box. Each agent gets MCP server con
 | OpenCode | Yes | — |
 | Codex CLI | Yes | — |
 | Roo Code | Yes | — |
-| Cline | Yes | — |
+| Cline | Manual | — |
 
 **MCP** = agent can list, read, create, update documents through Archcore tools.
 **Hooks** = agent receives document context automatically at session start.
@@ -29,12 +29,12 @@ Archcore supports 8 coding agents out of the box. Each agent gets MCP server con
 |-------|------------|
 | Claude Code | `.claude/` directory |
 | Cursor | `.cursor/` directory |
-| GitHub Copilot | `.vscode/extensions/` with GitHub Copilot |
-| Gemini CLI | `.codex/` directory |
-| OpenCode | `opencode.json` file |
-| Codex CLI | `.codex-cli/` directory |
+| GitHub Copilot | `.github/copilot-instructions.md` file |
+| Gemini CLI | `.gemini/` directory |
+| OpenCode | `opencode.json` file or `.opencode/` directory |
+| Codex CLI | `.codex/` directory |
 | Roo Code | `.roo/` directory |
-| Cline | `.cline/` directory |
+| Cline | `.clinerules/` directory |
 
 If no agents are detected, Archcore falls back to configuring Claude Code.
 
@@ -43,13 +43,13 @@ If no agents are detected, Archcore falls back to configuring Claude Code.
 | Agent | ID | Config File |
 |-------|-----|------------|
 | Claude Code | `claude-code` | `.mcp.json` |
-| Cursor | `cursor` | `.cursor/rules/mcp.json` |
-| GitHub Copilot | `copilot` | `.vscode/settings.json` |
-| Gemini CLI | `gemini-cli` | `~/.gemini-cli/mcp.json` |
+| Cursor | `cursor` | `.cursor/mcp.json` |
+| GitHub Copilot | `copilot` | `.vscode/mcp.json` |
+| Gemini CLI | `gemini-cli` | `.gemini/settings.json` |
 | OpenCode | `opencode` | `opencode.json` |
-| Codex CLI | `codex-cli` | `~/.codex-cli/mcp.json` |
+| Codex CLI | `codex-cli` | `.codex/config.toml` |
 | Roo Code | `roo-code` | `.roo/mcp.json` |
-| Cline | `cline` | `.cline/mcp.json` |
+| Cline | `cline` | VS Code globalStorage (manual) |
 
 ## Manual Installation
 

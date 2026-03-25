@@ -36,12 +36,13 @@ Slugs must match the pattern `^[a-z0-9]+(-[a-z0-9]+)*$`. See [Document Format](/
 
 **What you see:** The type portion of the filename isn't recognized.
 
-**Why it happens:** The type (the middle part of `slug.type.md`) must be one of the 11 valid types. Anything else is rejected.
+**Why it happens:** The type (the middle part of `slug.type.md`) must be one of the 18 valid types. Anything else is rejected.
 
 **Valid types:**
 
 ```
-adr, rfc, rule, guide, spec, doc, prd, idea, plan, task-type, cpat
+adr, rfc, rule, guide, spec, doc, prd, idea, plan, task-type, cpat,
+mrd, brd, urd, brs, strs, syrs, srs
 ```
 
 **Common mistakes:**
@@ -52,7 +53,7 @@ adr, rfc, rule, guide, spec, doc, prd, idea, plan, task-type, cpat
 | `setup.tutorial.md` | `tutorial` is not a type | Rename to `setup.guide.md` |
 | `api-spec.reference.md` | `reference` is not a type | Rename to `api-spec.spec.md` or `api-spec.doc.md` |
 
-**Fix:** Rename the file using one of the 11 valid types. See [Document Types](/concepts/document-types/) for guidance on choosing the right type.
+**Fix:** Rename the file using one of the 18 valid types. See [Document Types](/concepts/document-types/) for guidance on choosing the right type.
 
 ## Missing frontmatter
 
