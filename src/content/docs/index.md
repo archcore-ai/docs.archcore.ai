@@ -1,6 +1,6 @@
 ---
 title: What Is Archcore?
-description: Git-native context for AI coding agents. Structure decisions, rules, plans, and guides in your repo so Claude Code, Cursor, Copilot, and other agents work with stronger project context.
+description: Git-native context for AI coding agents. Context engineering for repositories.
 ---
 
 Archcore is **git-native context for AI coding agents**. It turns scattered project knowledge — decisions, rules, patterns, plans — into structured documents that agents discover, read, and follow automatically.

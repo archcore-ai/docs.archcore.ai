@@ -37,7 +37,7 @@ export default defineConfig({
 				dark: './src/assets/logo-dark.png',
 				alt: 'archcore logo',
 			},
-			description: 'Structure decisions, rules, plans, and guides in your repo so Claude Code, Cursor, Copilot, and other agents work with stronger project context.',
+			description: 'Git-native context for AI coding agents. Context engineering for repositories.',
 			head: [
 				{
 					tag: 'meta',
@@ -53,7 +53,7 @@ export default defineConfig({
 				},
 				{
 					tag: 'meta',
-					attrs: { property: 'og:description', content: 'Turn scattered repo knowledge into structured context that AI coding agents can find, reuse, and follow.' },
+					attrs: { property: 'og:description', content: 'Git-native context for AI coding agents. Context engineering for repositories.' },
 				},
 				{
 					tag: 'meta',
@@ -65,7 +65,7 @@ export default defineConfig({
 				},
 				{
 					tag: 'meta',
-					attrs: { name: 'twitter:description', content: 'Structure decisions, rules, plans, and guides in your repo so Claude Code, Cursor, Copilot, and other agents work with stronger project context.' },
+					attrs: { name: 'twitter:description', content: 'Git-native context for AI coding agents. Context engineering for repositories.' },
 				},
 				{
 					tag: 'script',
@@ -75,7 +75,7 @@ export default defineConfig({
 						'@type': 'WebSite',
 						name: 'Archcore',
 						url: 'https://docs.archcore.ai',
-						description: 'Structure decisions, rules, plans, and guides in your repo so Claude Code, Cursor, Copilot, and other agents work with stronger project context.',
+						description: 'Git-native context for AI coding agents. Context engineering for repositories.',
 						publisher: {
 							'@type': 'Organization',
 							name: 'Archcore',
