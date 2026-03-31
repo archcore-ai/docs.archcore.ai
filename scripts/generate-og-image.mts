@@ -12,20 +12,19 @@ const publicDir = join(rootDir, "public");
 const interBold = readFileSync(join(__dirname, "fonts", "Inter-Bold.ttf"));
 const interRegular = readFileSync(join(__dirname, "fonts", "Inter-Regular.ttf"));
 
-// Load logo (light version for dark background)
-const logoBuffer = readFileSync(join(rootDir, "src", "assets", "logo-dark.png"));
+// Load logo (dark version for light background)
+const logoBuffer = readFileSync(join(rootDir, "src", "assets", "logo-light.png"));
 const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-// Dark theme colors (matching the landing site's dark OG card)
-const BG_COLOR = "#1a1816";
-const TEXT_PRIMARY = "#ede8df";
-const TEXT_MUTED = "#9a9590";
-const TEXT_DIM = "#5c5855";
-const GRID_COLOR = "rgba(255, 255, 255, 0.03)";
-const ACCENT = "#7c7570";
+// Light theme colors (matching the site's hero-pattern / Solarized Light palette)
+const BG_COLOR = "#fdf6e3";
+const TEXT_PRIMARY = "#1a1a1a";
+const TEXT_MUTED = "#6b6b6b";
+const TEXT_DIM = "#93a1a1";
+const GRID_COLOR = "rgba(147, 161, 161, 0.08)";
 
 const svg = await satori(
   {
@@ -42,7 +41,7 @@ const svg = await satori(
         padding: "60px 80px",
       },
       children: [
-        // Logo + brand name + "Docs" badge
+        // Logo + brand name
         {
           type: "div",
           props: {
@@ -73,21 +72,6 @@ const svg = await satori(
                   children: "archcore",
                 },
               },
-              {
-                type: "span",
-                props: {
-                  style: {
-                    fontSize: "16px",
-                    fontWeight: 400,
-                    color: ACCENT,
-                    border: `1px solid ${ACCENT}`,
-                    borderRadius: "6px",
-                    padding: "4px 12px",
-                    marginLeft: "4px",
-                  },
-                  children: "docs",
-                },
-              },
             ],
           },
         },
@@ -115,20 +99,21 @@ const svg = await satori(
                     lineHeight: 1.1,
                     letterSpacing: "-0.03em",
                   },
-                  children: "Git-native context for",
+                  children: "Archcore Docs",
                 },
               },
               {
                 type: "div",
                 props: {
                   style: {
-                    fontSize: "56px",
-                    fontWeight: 700,
-                    color: TEXT_PRIMARY,
-                    lineHeight: 1.1,
-                    letterSpacing: "-0.03em",
+                    fontSize: "40px",
+                    fontWeight: 400,
+                    color: TEXT_MUTED,
+                    lineHeight: 1.2,
+                    letterSpacing: "-0.02em",
+                    marginTop: "8px",
                   },
-                  children: "AI coding agents",
+                  children: "Git-native context for AI coding agents",
                 },
               },
             ],
@@ -154,7 +139,7 @@ const svg = await satori(
         // Spacer
         { type: "div", props: { style: { flex: "1" } } },
 
-        // Bottom bar
+        // Bottom bar: URL
         {
           type: "div",
           props: {

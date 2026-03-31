@@ -13,7 +13,9 @@ status: accepted
 
 The OG image (1200x630 PNG) is generated at build time using **Satori** (JSX → SVG) and **@resvg/resvg-js** (SVG → PNG). The layout is defined as code in `scripts/generate-og-image.mts`.
 
-The image uses a dark theme with the 70px grid pattern, "docs" badge, and docs-specific subtitle. Meta tags are configured in `astro.config.mjs` via Starlight's `head` array.
+The image uses a light theme (warm beige `#fdf6e3`, Solarized Light palette) with 70px grid pattern, matching the landing site style. The title reads "Archcore Docs" with a subtitle "Git-native context for AI coding agents" to distinguish it from the main site OG card.
+
+Meta tags are configured in `astro.config.mjs` via Starlight's `head` array, referencing `https://docs.archcore.ai/og-image.png`.
 
 ## Steps
 
@@ -39,11 +41,12 @@ No manual step needed in CI — GitHub Actions runs `npm run build`.
 
 Open `scripts/generate-og-image.mts` and modify:
 
-- **Headline text** — look for the `fontSize: "56px"` children
-- **Subtitle** — look for the `fontSize: "22px"` block
-- **Bottom bar** — the `justifyContent: "space-between"` section
-- **Colors** — constants at the top: `BG_COLOR`, `TEXT_PRIMARY`, `TEXT_MUTED`, `TEXT_DIM`
-- **Logo** — reads `src/assets/logo-dark.png` automatically
+- **Title** — the `fontSize: "56px"` child ("Archcore Docs")
+- **Tagline** — the `fontSize: "40px"` child ("Git-native context for AI coding agents")
+- **Subtitle** — the `fontSize: "22px"` block
+- **Bottom bar** — the `justifyContent: "space-between"` section (URL left, sections right)
+- **Colors** — constants at the top: `BG_COLOR` (#fdf6e3), `TEXT_PRIMARY` (#1a1a1a), `TEXT_MUTED` (#6b6b6b), `TEXT_DIM` (#93a1a1)
+- **Logo** — reads `src/assets/logo-light.png` (dark logo for light background)
 
 After editing, run `npm run og:generate` and inspect `public/og-image.png`.
 
@@ -75,4 +78,5 @@ Social platforms cache aggressively. If the image doesn't update:
 - `scripts/generate-og-image.mts` — image generator script
 - `scripts/fonts/` — Inter TTF fonts for Satori
 - `public/og-image.png` — generated output (1200x630)
+- `src/assets/logo-light.png` — dark logo used on light OG background
 - `astro.config.mjs` — OG and Twitter Card meta tags (in Starlight `head` array)
