@@ -5,14 +5,15 @@ status: accepted
 
 ## What
 
-Add programmatic OG image generation to a static site using Satori + resvg-js at build time. Produces a branded 1200x630 PNG card for social media previews.
+Add programmatic per-page OG image generation to a static docs site using Satori + resvg-js at build time. Produces a branded 1200x630 PNG card per page for social media previews, auto-discovered from content files.
 
 ## When to Use
 
-- Site needs Open Graph / Twitter Card social media previews
+- Docs site needs unique Open Graph / Twitter Card previews per page
 - No SSR/edge functions available (static hosting like GitHub Pages)
 - Want version-controlled, code-defined OG images instead of manual Figma exports
-- Need the image to auto-regenerate when content or branding changes
+- Need images to auto-regenerate when content or branding changes
+- New pages should get OG images automatically without manual registration
 
 ## Steps
 
@@ -32,41 +33,59 @@ Create `scripts/generate-og-image.mts`:
 
 1. Load fonts as `readFileSync` buffers
 2. Load logo, encode as base64 data URI
-3. Define layout as Satori object tree (`{ type, props, children }`)
-4. Render: `satori()` → SVG → `new Resvg(svg)` → `.render().asPng()`
-5. Write to `public/og-image.png`
+3. **Discover pages** — glob `src/content/docs/**/*.{md,mdx}` and `src/content/changelog/*.md`, parse frontmatter with regex to extract `title` and `description`
+4. **Derive slug** from file path (e.g., `src/content/docs/start/quick-start.mdx` → `start/quick-start`)
+5. **Map section breadcrumbs** — slug prefix to section name (e.g., `start/` → "Get Started")
+6. **Parameterize layout** — `createOgNode(title, description, breadcrumb)` returns Satori object tree
+7. For each page: `satori()` → SVG → `new Resvg(svg)` → `.render().asPng()` → write to `public/og/<slug>.png`
+8. Copy root image to `public/og-image.png` for backward compatibility
 
 Key constraints:
 - Only Flexbox, no CSS Grid, no `position: absolute`
 - Images must be base64 data URIs or remote URLs
 - `backgroundImage` supports `linear-gradient` for patterns
+- Use `mkdirSync({ recursive: true })` for nested output directories
 
-Design should match site theme. Archcore uses light Solarized palette (#fdf6e3 background, dark text) with 70px grid pattern. For docs, the title should say "Archcore Docs" to distinguish from the main site.
+Design should match site theme. Archcore uses light Solarized palette (#fdf6e3 background, dark text) with 70px grid pattern.
 
 ### 4. Wire into build pipeline
 
-For Astro (docs):
 ```json
 "og:generate": "npx tsx scripts/generate-og-image.mts",
 "prebuild": "npm run og:generate",
 "build": "npm run prebuild && astro build"
 ```
 
-### 5. Add/verify meta tags
+### 5. Override Starlight Head component
 
-For Starlight, add to `astro.config.mjs` → `head[]`:
-- `og:image`, `og:image:width` (1200), `og:image:height` (630), `og:image:type` (image/png)
-- `og:locale` (en_US)
-- `twitter:card` (summary_large_image), `twitter:image`
+Create `src/components/Head.astro` that:
+- Reads `Astro.locals.starlightRoute.id` (the page slug, available for both docs collection and StarlightPage pages)
+- Constructs per-page URL: `https://docs.archcore.ai/og/{slug}.png`
+- Filters out global og:image/twitter:image tags from the merged head array
+- Injects per-page og:image, og:image:width/height/type, twitter:image
 
-### 6. Exclude scripts from linting if needed
+Register in `astro.config.mjs`:
+```javascript
+components: {
+  Head: './src/components/Head.astro',
+},
+```
 
-Add `scripts` to ESLint `globalIgnores` if using TypeScript-checked config.
+### 6. Clean up global head[]
+
+Remove from `astro.config.mjs` head[] (now per-page):
+- `og:image`, `og:image:width`, `og:image:height`, `og:image:type`, `twitter:image`
+- `og:title`, `og:description`, `twitter:title`, `twitter:description` (Starlight defaults set these per-page from frontmatter)
+
+Keep global: `og:locale`, `og:type`, `twitter:card`, JSON-LD script.
 
 ## Things to Watch Out For
 
 - **OTF fonts break Satori** — must use `.ttf` format
 - **Social platforms cache aggressively** — use platform debuggers to force refresh after deploy
 - **Satori CSS subset** — no Grid, no absolute positioning, no `calc()` — use Flexbox only
-- **Static site limitation** — all routes share the same OG image unless prerendering per-route HTML
+- **Long titles** — allow natural text wrapping, consider smaller font size (48px vs 56px) to accommodate wrapping
+- **Description truncation** — truncate at ~120 characters to prevent overflow
+- **Head component filtering** — must filter out global og:image tags before injecting per-page ones to avoid duplicates
+- **StarlightPage compatibility** — `Astro.locals.starlightRoute.id` works for both docs collection pages and custom StarlightPage pages (uses `urlToSlug()`)
 - **Logo variant** — use dark logo (`logo-light.png`) on light background, not the light-on-dark version

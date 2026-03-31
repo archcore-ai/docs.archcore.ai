@@ -30,6 +30,7 @@ export default defineConfig({
 			title: 'archcore',
 			components: {
 				SocialIcons: './src/components/HeaderLinks.astro',
+				Head: './src/components/Head.astro',
 			},
 			favicon: '/favicon.ico',
 			logo: {
@@ -41,22 +42,6 @@ export default defineConfig({
 			head: [
 				{
 					tag: 'meta',
-					attrs: { property: 'og:image', content: 'https://docs.archcore.ai/og-image.png' },
-				},
-				{
-					tag: 'meta',
-					attrs: { property: 'og:image:width', content: '1200' },
-				},
-				{
-					tag: 'meta',
-					attrs: { property: 'og:image:height', content: '630' },
-				},
-				{
-					tag: 'meta',
-					attrs: { property: 'og:image:type', content: 'image/png' },
-				},
-				{
-					tag: 'meta',
 					attrs: { property: 'og:locale', content: 'en_US' },
 				},
 				{
@@ -65,27 +50,7 @@ export default defineConfig({
 				},
 				{
 					tag: 'meta',
-					attrs: { property: 'og:title', content: 'archcore — Git-native context for AI coding agents' },
-				},
-				{
-					tag: 'meta',
-					attrs: { property: 'og:description', content: 'Git-native context for AI coding agents. Context engineering for repositories.' },
-				},
-				{
-					tag: 'meta',
 					attrs: { name: 'twitter:card', content: 'summary_large_image' },
-				},
-				{
-					tag: 'meta',
-					attrs: { name: 'twitter:title', content: 'archcore — Git-native context for AI coding agents' },
-				},
-				{
-					tag: 'meta',
-					attrs: { name: 'twitter:description', content: 'Git-native context for AI coding agents. Context engineering for repositories.' },
-				},
-				{
-					tag: 'meta',
-					attrs: { name: 'twitter:image', content: 'https://docs.archcore.ai/og-image.png' },
 				},
 				{
 					tag: 'script',

@@ -1,0 +1,25 @@
+---
+const { head, id } = Astro.locals.starlightRoute;
+
+const slug = id || 'index';
+const ogImageUrl = `https://docs.archcore.ai/og/${slug}.png`;
+
+const ogImageKeys = new Set(['og:image', 'og:image:width', 'og:image:height', 'og:image:type', 'twitter:image']);
+
+const filteredHead = head.filter(({ tag, attrs }: { tag: string; attrs?: Record<string, string> }) => {
+	if (tag !== 'meta') return true;
+	const key = attrs?.property || attrs?.name;
+	return !key || !ogImageKeys.has(key);
+});
+
+const finalHead = [
+	...filteredHead,
+	{ tag: 'meta', attrs: { property: 'og:image', content: ogImageUrl } },
+	{ tag: 'meta', attrs: { property: 'og:image:width', content: '1200' } },
+	{ tag: 'meta', attrs: { property: 'og:image:height', content: '630' } },
+	{ tag: 'meta', attrs: { property: 'og:image:type', content: 'image/png' } },
+	{ tag: 'meta', attrs: { name: 'twitter:image', content: ogImageUrl } },
+];
+---
+
+{finalHead.map(({ tag: Tag, attrs, content }) => <Tag {...attrs} set:html={content} />)}

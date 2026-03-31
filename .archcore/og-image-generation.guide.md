@@ -11,21 +11,21 @@ status: accepted
 
 ## How it works
 
-The OG image (1200x630 PNG) is generated at build time using **Satori** (JSX → SVG) and **@resvg/resvg-js** (SVG → PNG). The layout is defined as code in `scripts/generate-og-image.mts`.
+Each docs page gets a unique OG image (1200x630 PNG) generated at build time. The prebuild script discovers all pages via glob, extracts titles from frontmatter, and generates per-page images using **Satori** (JSX → SVG) and **@resvg/resvg-js** (SVG → PNG).
 
-The image uses a light theme (warm beige `#fdf6e3`, Solarized Light palette) with 70px grid pattern, matching the landing site style. The title reads "Archcore Docs" with a subtitle "Git-native context for AI coding agents" to distinguish it from the main site OG card.
+Images use the light Solarized palette (#fdf6e3 background, dark text) with 70px grid pattern, matching the landing site style. Each image shows the page title, description, and section breadcrumb.
 
-Meta tags are configured in `astro.config.mjs` via Starlight's `head` array, referencing `https://docs.archcore.ai/og-image.png`.
+A custom Starlight Head component (`src/components/Head.astro`) injects per-page `og:image` URLs based on the route ID. No per-page frontmatter needed — new pages are auto-discovered on the next build.
 
 ## Steps
 
-### 1. Generate the image manually
+### 1. Generate images manually
 
 ```bash
 npm run og:generate
 ```
 
-Outputs `public/og-image.png`.
+Outputs per-page images to `public/og/<slug>.png` (e.g., `public/og/start/quick-start.png`) plus `public/og-image.png` as backward-compatible fallback.
 
 ### 2. Auto-generation on build
 
@@ -37,24 +37,40 @@ npm run build  # prebuild → og:generate, then astro build
 
 No manual step needed in CI — GitHub Actions runs `npm run build`.
 
-### 3. Edit the image content
+### 3. Edit image content/design
 
 Open `scripts/generate-og-image.mts` and modify:
 
-- **Title** — the `fontSize: "56px"` child ("Archcore Docs")
-- **Tagline** — the `fontSize: "40px"` child ("Git-native context for AI coding agents")
-- **Subtitle** — the `fontSize: "22px"` block
-- **Bottom bar** — the `justifyContent: "space-between"` section (URL left, sections right)
+- **Layout function** — `createOgNode(title, description, breadcrumb)` defines the Satori node tree
+- **Title font** — `fontSize: "48px"` in the title section
+- **Description** — `fontSize: "22px"`, auto-truncated at 120 characters
 - **Colors** — constants at the top: `BG_COLOR` (#fdf6e3), `TEXT_PRIMARY` (#1a1a1a), `TEXT_MUTED` (#6b6b6b), `TEXT_DIM` (#93a1a1)
+- **Section map** — `SECTION_MAP` object maps slug prefixes to section names for the breadcrumb
 - **Logo** — reads `src/assets/logo-light.png` (dark logo for light background)
 
-After editing, run `npm run og:generate` and inspect `public/og-image.png`.
+After editing, run `npm run og:generate` and inspect images in `public/og/`.
+
+### 4. Add a new page
+
+Just create the `.md`/`.mdx` file in `src/content/docs/` or `src/content/changelog/` with `title` in frontmatter. The script auto-discovers it on next build. The Head component auto-constructs the `og:image` URL from the route ID.
+
+## How per-page meta tags work
+
+The custom `src/components/Head.astro` overrides Starlight's default Head component:
+1. Reads `Astro.locals.starlightRoute.id` (the page slug)
+2. Constructs `og:image` URL: `https://docs.archcore.ai/og/{slug}.png`
+3. Filters out any global og:image/twitter:image tags from `astro.config.mjs`
+4. Injects per-page og:image, og:image:width/height/type, and twitter:image
+
+Starlight defaults already set `og:title` and `og:description` per-page from frontmatter — no global override needed.
+
+Global `head[]` in `astro.config.mjs` only contains: `og:locale`, `og:type`, `twitter:card`, and JSON-LD script.
 
 ## Verification
 
 After deploying:
 
-1. **opengraph.xyz** — paste `https://docs.archcore.ai`
+1. **opengraph.xyz** — paste different page URLs to verify unique images
 2. **Telegram** — paste URL in any chat
 3. **X/Twitter** — compose a tweet with the URL
 4. **Discord** — paste URL in a message
@@ -69,14 +85,17 @@ Social platforms cache aggressively. If the image doesn't update:
 | Issue | Cause | Fix |
 |-------|-------|-----|
 | Build fails with "Unsupported OpenType signature" | Wrong font format | Ensure `.ttf` files in `scripts/fonts/` |
-| Image not showing on social media | File missing from build | Check `public/og-image.png` exists after build |
+| Image not showing on social media | File missing from build | Check `public/og/<slug>.png` exists after build |
 | Stale preview on social platform | Platform cached old image | Use platform-specific cache purge |
 | Satori layout broken | Unsupported CSS | Satori only supports Flexbox — use `display: flex` |
+| New page has no OG image | Script didn't run | Run `npm run og:generate` or `npm run build` |
 
 ## Key files
 
-- `scripts/generate-og-image.mts` — image generator script
+- `scripts/generate-og-image.mts` — per-page image generator script
 - `scripts/fonts/` — Inter TTF fonts for Satori
-- `public/og-image.png` — generated output (1200x630)
+- `public/og/` — generated per-page images (e.g., `start/quick-start.png`)
+- `public/og-image.png` — backward-compatible fallback (copy of root page image)
 - `src/assets/logo-light.png` — dark logo used on light OG background
-- `astro.config.mjs` — OG and Twitter Card meta tags (in Starlight `head` array)
+- `src/components/Head.astro` — custom Starlight Head with per-page og:image injection
+- `astro.config.mjs` — global head[] (og:locale, og:type, twitter:card, JSON-LD only)
