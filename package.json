@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "og:generate": "npx tsx scripts/generate-og-image.mts",
+    "prebuild": "npm run og:generate",
+    "build": "npm run prebuild && astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -13,5 +15,10 @@
     "@astrojs/starlight": "^0.38.1",
     "astro": "^6.0.1",
     "sharp": "^0.34.2"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "satori": "^0.26.0",
+    "tsx": "^4.21.0"
   }
 }

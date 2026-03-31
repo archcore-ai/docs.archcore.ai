@@ -45,6 +45,22 @@ export default defineConfig({
 				},
 				{
 					tag: 'meta',
+					attrs: { property: 'og:image:width', content: '1200' },
+				},
+				{
+					tag: 'meta',
+					attrs: { property: 'og:image:height', content: '630' },
+				},
+				{
+					tag: 'meta',
+					attrs: { property: 'og:image:type', content: 'image/png' },
+				},
+				{
+					tag: 'meta',
+					attrs: { property: 'og:locale', content: 'en_US' },
+				},
+				{
+					tag: 'meta',
 					attrs: { property: 'og:type', content: 'website' },
 				},
 				{
@@ -66,6 +82,10 @@ export default defineConfig({
 				{
 					tag: 'meta',
 					attrs: { name: 'twitter:description', content: 'Git-native context for AI coding agents. Context engineering for repositories.' },
+				},
+				{
+					tag: 'meta',
+					attrs: { name: 'twitter:image', content: 'https://docs.archcore.ai/og-image.png' },
 				},
 				{
 					tag: 'script',
