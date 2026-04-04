@@ -23,16 +23,16 @@ The agent needs an MCP server configuration to connect to Archcore. Without it, 
 
 **Check:** Look for the MCP config file for your agent:
 
-| Agent | Config file |
-|-------|------------|
-| Claude Code | `.mcp.json` |
-| Cursor | `.cursor/mcp.json` |
-| GitHub Copilot | `.vscode/mcp.json` |
-| Gemini CLI | `.gemini/settings.json` |
-| OpenCode | `opencode.json` |
-| Codex CLI | `.codex/config.toml` |
-| Roo Code | `.roo/mcp.json` |
-| Cline | VS Code globalStorage (manual setup) |
+| Agent          | Config file                          |
+| -------------- | ------------------------------------ |
+| Claude Code    | `.mcp.json`                          |
+| Cursor         | `.cursor/mcp.json`                   |
+| GitHub Copilot | `.vscode/mcp.json`                   |
+| Gemini CLI     | `.gemini/settings.json`              |
+| OpenCode       | `opencode.json`                      |
+| Codex CLI      | `.codex/config.toml`                 |
+| Roo Code       | `.roo/mcp.json`                      |
+| Cline          | VS Code globalStorage (manual setup) |
 
 **Fix:** Run the setup command:
 
@@ -248,11 +248,11 @@ archcore mcp install
 
 **Examples of invalid names:**
 
-| Filename | Problem |
-|----------|---------|
-| `My Decision.adr.md` | Spaces and uppercase |
-| `jwt_strategy.adr.md` | Underscores |
-| `UsePostgres.adr.md` | Uppercase letters |
+| Filename                  | Problem                |
+| ------------------------- | ---------------------- |
+| `My Decision.adr.md`      | Spaces and uppercase   |
+| `jwt_strategy.adr.md`     | Underscores            |
+| `UsePostgres.adr.md`      | Uppercase letters      |
 | `api.v2.migration.adr.md` | Extra dots in the slug |
 
 **Fix:** Rename the file to use a valid slug:
@@ -282,10 +282,10 @@ mrd, brd, urd, brs, strs, syrs, srs
 
 **Common mistakes:**
 
-| Filename | Problem | Fix |
-|----------|---------|-----|
-| `auth.decision.md` | `decision` is not a type | Rename to `auth.adr.md` |
-| `setup.tutorial.md` | `tutorial` is not a type | Rename to `setup.guide.md` |
+| Filename                | Problem                   | Fix                                               |
+| ----------------------- | ------------------------- | ------------------------------------------------- |
+| `auth.decision.md`      | `decision` is not a type  | Rename to `auth.adr.md`                           |
+| `setup.tutorial.md`     | `tutorial` is not a type  | Rename to `setup.guide.md`                        |
 | `api-spec.reference.md` | `reference` is not a type | Rename to `api-spec.spec.md` or `api-spec.doc.md` |
 
 **Fix:** Rename the file using one of the 18 valid types. See [Document Types](/concepts/document-types/) for guidance on choosing the right type.
@@ -309,9 +309,9 @@ Your document content here...
 
 Both fields are required:
 
-| Field | Type | Required values |
-|-------|------|----------------|
-| `title` | string | Any non-empty string |
+| Field    | Type   | Required values                    |
+| -------- | ------ | ---------------------------------- |
+| `title`  | string | Any non-empty string               |
 | `status` | string | `draft`, `accepted`, or `rejected` |
 
 ### Invalid status
@@ -322,11 +322,11 @@ Both fields are required:
 
 **Valid values:**
 
-| Status | Meaning |
-|--------|---------|
-| `draft` | Work in progress (default for new documents) |
-| `accepted` | Finalized or approved |
-| `rejected` | Superseded, abandoned, or declined |
+| Status     | Meaning                                      |
+| ---------- | -------------------------------------------- |
+| `draft`    | Work in progress (default for new documents) |
+| `accepted` | Finalized or approved                        |
+| `rejected` | Superseded, abandoned, or declined           |
 
 **Fix:** Update the frontmatter to use a valid status:
 
@@ -350,6 +350,22 @@ archcore validate --fix
 ```
 
 This automatically removes orphaned relations from the manifest and saves the updated `.sync-state.json`. No manual editing needed.
+
+### Invalid tags
+
+**What you see:** A tag doesn't match the required format.
+
+**Why it happens:** Tags must be lowercase and match `^[a-z][a-z0-9_:|-]*$`. Uppercase letters, spaces, and other characters are rejected.
+
+**Examples of invalid tags:**
+
+| Tag         | Problem                  |
+| ----------- | ------------------------ |
+| `Frontend`  | Uppercase letters        |
+| `my tag`    | Spaces                   |
+| `123-start` | Must start with a letter |
+
+**Fix:** Correct the tag value. Archcore shows a "did you mean?" hint when a tag is rejected — for example, `Frontend` will suggest `frontend`.
 
 ### Invalid YAML
 

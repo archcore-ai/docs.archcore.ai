@@ -20,20 +20,41 @@ status: accepted
 
 ### Required Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `title` | string | Human-readable document title. Must not be empty |
+| Field    | Type   | Description                                         |
+| -------- | ------ | --------------------------------------------------- |
+| `title`  | string | Human-readable document title. Must not be empty    |
 | `status` | string | Document status: `draft`, `accepted`, or `rejected` |
 
 ### Status Values
 
-| Status | Meaning |
-|--------|---------|
-| `draft` | Work in progress (default for new documents) |
-| `accepted` | Finalized or approved |
+| Status     | Meaning                                                |
+| ---------- | ------------------------------------------------------ |
+| `draft`    | Work in progress (default for new documents)           |
+| `accepted` | Finalized or approved                                  |
 | `rejected` | Superseded, abandoned, or declined (preserves history) |
 
 ### Optional Fields
+
+#### tags
+
+Cross-cutting labels for multi-axis categorization. Tags let you annotate documents by team, domain, or topic — dimensions that directory structure alone cannot express.
+
+```yaml
+---
+title: E2E Auth Flow Testing
+status: accepted
+tags:
+  - frontend
+  - team:backend
+  - payment_flow
+---
+```
+
+Tags must match `^[a-z][a-z0-9_:|-]*$` — lowercase, with hyphens, underscores, colons, and pipes allowed. Colons enable namespace-like conventions (e.g., `team:payments`). Tags are stored sorted and deduplicated. Invalid tags are rejected with a "did you mean?" hint.
+
+When tags are absent, the field is omitted from output. Documents without tags parse and work normally.
+
+#### meta
 
 The `meta` field can hold arbitrary YAML metadata:
 
@@ -69,27 +90,36 @@ For example, an ADR template includes:
 
 ```markdown
 ## Context
+
 [Describe the situation and problem]
 
 ## Decision
+
 [What was decided and why]
 
 ## Alternatives Considered
+
 [Other options that were evaluated]
 
 ## Consequences
+
 ### Positive
+
 - [Benefit 1]
 
 ### Negative
+
 - [Trade-off 1]
 
 ### Risks
+
 - [Risk 1]
 
 ## Implementation Notes
+
 [Key implementation details]
 
 ## References
+
 - [Link 1]
 ```

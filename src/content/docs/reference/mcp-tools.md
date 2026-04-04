@@ -11,15 +11,17 @@ List documents with optional filters.
 
 **Parameters:**
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `types` | string[] | No | Filter by document types (e.g., `["adr", "rule"]`) |
-| `category` | string | No | Filter by layer: `vision`, `knowledge`, or `experience` |
-| `status` | string | No | Filter by status: `draft`, `accepted`, or `rejected` |
+| Name       | Type     | Required | Description                                                                                  |
+| ---------- | -------- | -------- | -------------------------------------------------------------------------------------------- |
+| `types`    | string[] | No       | Filter by document types (e.g., `["adr", "rule"]`)                                           |
+| `category` | string   | No       | Filter by layer: `vision`, `knowledge`, or `experience`                                      |
+| `status`   | string   | No       | Filter by status: `draft`, `accepted`, or `rejected`                                         |
+| `tags`     | string[] | No       | Filter by tags with OR semantics (matches documents with at least one of the specified tags) |
 
 **Returns:** Array of documents with path, title, type, layer, and status.
 
 **Example response:**
+
 ```
 [vision]
   - roadmap/auth-v2.prd.md — "Auth System Redesign" (draft)
@@ -38,9 +40,9 @@ Read a document's full content with its relations.
 
 **Parameters:**
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | string | Yes | Document path as returned by `list_documents` |
+| Name   | Type   | Required | Description                                   |
+| ------ | ------ | -------- | --------------------------------------------- |
+| `path` | string | Yes      | Document path as returned by `list_documents` |
 
 **Returns:** Full document content plus outgoing and incoming relations.
 
@@ -52,18 +54,20 @@ Create a new document. Generates from template if no content is provided.
 
 **Parameters:**
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `type` | string | Yes | Document type (e.g., `adr`, `rule`, `guide`) |
-| `filename` | string | Yes | Slug for the filename (lowercase, hyphens only) |
-| `title` | string | No | Human-readable title |
-| `status` | string | No | Status: `draft` (default), `accepted`, `rejected` |
-| `content` | string | No | Markdown body. If omitted, generates template |
-| `directory` | string | No | Subdirectory within `.archcore/` |
+| Name        | Type     | Required | Description                                       |
+| ----------- | -------- | -------- | ------------------------------------------------- |
+| `type`      | string   | Yes      | Document type (e.g., `adr`, `rule`, `guide`)      |
+| `filename`  | string   | Yes      | Slug for the filename (lowercase, hyphens only)   |
+| `title`     | string   | No       | Human-readable title                              |
+| `status`    | string   | No       | Status: `draft` (default), `accepted`, `rejected` |
+| `content`   | string   | No       | Markdown body. If omitted, generates template     |
+| `directory` | string   | No       | Subdirectory within `.archcore/`                  |
+| `tags`      | string[] | No       | Tags for cross-cutting categorization             |
 
 **Returns:** Path, type, layer, title, status, and `nearby_documents` hint (for adding relations).
 
 **Example:**
+
 ```
 Agent calls: create_document({
   type: "adr",
@@ -83,14 +87,15 @@ Modify an existing document's title, status, or content.
 
 **Parameters:**
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | string | Yes | Document path |
-| `title` | string | No | New title |
-| `status` | string | No | New status |
-| `content` | string | No | New markdown body |
+| Name      | Type     | Required | Description                                                                              |
+| --------- | -------- | -------- | ---------------------------------------------------------------------------------------- |
+| `path`    | string   | Yes      | Document path                                                                            |
+| `title`   | string   | No       | New title                                                                                |
+| `status`  | string   | No       | New status                                                                               |
+| `content` | string   | No       | New markdown body                                                                        |
+| `tags`    | string[] | No       | New tags (replaces existing). Omit to preserve current tags; pass `[]` to clear all tags |
 
-At least one of `title`, `status`, or `content` must be provided.
+At least one of `title`, `status`, `content`, or `tags` must be provided.
 
 ---
 
@@ -100,9 +105,9 @@ Permanently delete a document and all its relations.
 
 **Parameters:**
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | string | Yes | Document path |
+| Name   | Type   | Required | Description   |
+| ------ | ------ | -------- | ------------- |
+| `path` | string | Yes      | Document path |
 
 **Returns:** Confirmation with `relations_removed` count.
 
@@ -118,13 +123,14 @@ Create a directed relation between two documents.
 
 **Parameters:**
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `source` | string | Yes | Source document path |
-| `target` | string | Yes | Target document path |
-| `type` | string | Yes | Relation type: `related`, `implements`, `extends`, `depends_on` |
+| Name     | Type   | Required | Description                                                     |
+| -------- | ------ | -------- | --------------------------------------------------------------- |
+| `source` | string | Yes      | Source document path                                            |
+| `target` | string | Yes      | Target document path                                            |
+| `type`   | string | Yes      | Relation type: `related`, `implements`, `extends`, `depends_on` |
 
 **Example:**
+
 ```
 add_relation({
   source: "roadmap/auth-v2.plan.md",
@@ -141,11 +147,11 @@ Remove a directed relation between two documents.
 
 **Parameters:**
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `source` | string | Yes | Source document path |
-| `target` | string | Yes | Target document path |
-| `type` | string | Yes | Relation type |
+| Name     | Type   | Required | Description          |
+| -------- | ------ | -------- | -------------------- |
+| `source` | string | Yes      | Source document path |
+| `target` | string | Yes      | Target document path |
+| `type`   | string | Yes      | Relation type        |
 
 ---
 
@@ -155,8 +161,8 @@ List all relations, optionally filtered by document.
 
 **Parameters:**
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `path` | string | No | Filter relations involving this document |
+| Name   | Type   | Required | Description                              |
+| ------ | ------ | -------- | ---------------------------------------- |
+| `path` | string | No       | Filter relations involving this document |
 
 **Returns:** All relations (or relations for the specified document) showing source, target, and type.

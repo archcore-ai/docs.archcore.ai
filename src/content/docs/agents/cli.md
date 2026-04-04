@@ -12,6 +12,7 @@ archcore init
 ```
 
 **What it does:**
+
 1. Creates `.archcore/` directory with `settings.json`
 2. Auto-detects installed coding agents
 3. Installs MCP server config for detected agents
@@ -30,6 +31,7 @@ archcore validate [--fix]
 ```
 
 **Checks performed:**
+
 - Directory structure exists
 - File naming follows `<slug>.<type>.md` pattern
 - Slugs are lowercase alphanumeric with hyphens only
@@ -41,8 +43,8 @@ archcore validate [--fix]
 
 **Flags:**
 
-| Flag | Description |
-|------|-------------|
+| Flag    | Description                                      |
+| ------- | ------------------------------------------------ |
 | `--fix` | Auto-remove orphaned relations and save manifest |
 
 ---
@@ -56,8 +58,10 @@ archcore doctor
 ```
 
 Runs all validation checks plus:
+
 - Verifies `settings.json` exists and is valid
 - Checks server reachability (if server URL is configured)
+- Reports tag hygiene issues (invalid format, singleton tags that may be typos)
 
 ---
 
@@ -73,12 +77,12 @@ archcore config set <key> <value>  # Set a config value
 
 **Available keys:**
 
-| Key | Values | Description |
-|-----|--------|-------------|
-| `sync` | `none`, `cloud`, `on-prem` | Sync type (currently locked) |
-| `project_id` | integer | Project ID for sync (currently locked) |
-| `archcore_url` | URL | Server URL for on-prem (currently locked) |
-| `language` | language code | Language for document content (e.g., `en`, `ru`) |
+| Key            | Values                     | Description                                      |
+| -------------- | -------------------------- | ------------------------------------------------ |
+| `sync`         | `none`, `cloud`, `on-prem` | Sync type (currently locked)                     |
+| `project_id`   | integer                    | Project ID for sync (currently locked)           |
+| `archcore_url` | URL                        | Server URL for on-prem (currently locked)        |
+| `language`     | language code              | Language for document content (e.g., `en`, `ru`) |
 
 **Examples:**
 
