@@ -110,10 +110,10 @@ You can also organize by team (`backend/`, `frontend/`, `platform/`) or mix appr
 | `settings.json` | Required. Sync configuration and language settings |
 | `.sync-state.json` | Auto-generated. Stores document relations and sync state |
 
-Both files are managed by the [CLI](/agents/cli/) and skipped during document scanning.
+Both files are managed by the [CLI](/cli/commands/) and skipped during document scanning.
 
 ## Next Steps
 
 - [Document Types](/concepts/document-types/) -- all 18 types and when to use each
-- [Quick Start](/start/quick-start/) -- create your first document
-- [MCP Server](/agents/mcp-server/) -- let AI agents read and write project context
+- [Plugin quick start](/start/plugin-quick-start/) or [CLI quick start](/cli/quick-start/) -- create your first document
+- [MCP Server](/cli/mcp-server/) -- let AI agents read and write project context

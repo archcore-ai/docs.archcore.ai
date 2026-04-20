@@ -1,30 +1,34 @@
 ---
 title: MCP Server
-description: How Archcore's MCP server gives AI coding agents access to project context, and how session hooks inject context automatically.
+description: How the Archcore MCP server connects AI coding agents to .archcore/, the 8 tools it exposes, and how session hooks inject context at the start of every conversation.
 ---
+
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="cli" />
 
 The MCP server is how your agent accesses `.archcore/`. It gives agents tools to list, read, create, update, and link documents — all within the conversation.
 
 You usually don't need to think about MCP directly. `archcore init` sets it up automatically. This page explains what happens under the hood and how to configure it manually if needed.
 
-## What Agents Can Do
+## What agents can do
 
 Once MCP is configured, agents interact with your documents through 8 tools:
 
-| Action | Tool | Description |
-|--------|------|-------------|
-| Browse | `list_documents` | List documents filtered by type, layer, or status |
-| Read | `get_document` | Get full document content with relations |
-| Create | `create_document` | Create new documents from templates |
-| Update | `update_document` | Modify title, status, or content |
-| Delete | `remove_document` | Remove a document permanently |
-| Link | `add_relation` | Create a relation between two documents |
-| Unlink | `remove_relation` | Remove a relation |
-| Browse links | `list_relations` | View all relations or filter by document |
+| Action        | Tool              | Description                                            |
+| ------------- | ----------------- | ------------------------------------------------------ |
+| Browse        | `list_documents`  | List documents filtered by type, layer, or status      |
+| Read          | `get_document`    | Get full document content with relations               |
+| Create        | `create_document` | Create new documents from templates                    |
+| Update        | `update_document` | Modify title, status, or content                       |
+| Delete        | `remove_document` | Remove a document permanently                          |
+| Link          | `add_relation`    | Create a relation between two documents                |
+| Unlink        | `remove_relation` | Remove a relation                                      |
+| Browse links  | `list_relations`  | View all relations or filter by document               |
 
-See [MCP Tools Reference](/reference/mcp-tools/) for the complete API with parameters and examples.
+See [MCP tools reference](/reference/mcp-tools/) for the complete API with parameters and examples.
 
-## Built-in Agent Instructions
+## Built-in agent instructions
 
 The MCP server doesn't just expose tools — it teaches agents how to use them. When an agent connects, it receives instructions covering:
 
@@ -38,7 +42,7 @@ These instructions are sent automatically. You don't need to explain Archcore co
 
 ## Installation
 
-### Automatic (Recommended)
+### Automatic (recommended)
 
 ```bash
 archcore init
@@ -60,7 +64,7 @@ Or for a specific agent:
 archcore mcp install --agent claude-code
 ```
 
-### Manual Config
+### Manual config
 
 If you need to configure MCP by hand, add to your agent's MCP config:
 
@@ -75,9 +79,9 @@ If you need to configure MCP by hand, add to your agent's MCP config:
 }
 ```
 
-Config file locations vary by agent — see [Supported Agents](/agents/supported-agents/) for details.
+Config file locations vary by agent — see [Agent integrations](/cli/agent-integrations/) for details.
 
-## Language Support
+## Language support
 
 If you set a language in your config:
 
@@ -87,13 +91,13 @@ archcore config set language ru
 
 The MCP server instructions will include a directive for the agent to write document content in that language.
 
-## Session Hooks
+## Session hooks
 
 Hooks inject a summary of your `.archcore/` directory into the agent's context the moment a session starts — before you type anything. This means the agent can reference your decisions, rules, and patterns from the first message.
 
 Hooks are optional. MCP tools work without them. But hooks make the experience significantly smoother.
 
-### How Hooks Work
+### How hooks work
 
 1. You start an agent session (e.g., open Claude Code)
 2. The agent triggers its `SessionStart` event
@@ -101,7 +105,7 @@ Hooks are optional. MCP tools work without them. But hooks make the experience s
 4. Archcore outputs a list of available documents with their types and titles
 5. The agent receives this project context alongside the conversation
 
-### Installing Hooks
+### Installing hooks
 
 Hooks are installed automatically during `archcore init`. To install manually:
 
@@ -115,7 +119,7 @@ Or for a specific agent:
 archcore hooks install --agent claude-code
 ```
 
-### Hook Config Example
+### Hook config example
 
 For Claude Code, the hook is added to `.claude/settings.json`:
 
@@ -137,12 +141,20 @@ For Claude Code, the hook is added to `.claude/settings.json`:
 }
 ```
 
-### When You Don't Need Hooks
+See [Hooks](/cli/hooks/) for everything hooks emit and how to write custom ones.
 
-- **You always start by asking about context** — if your workflow is to ask the agent "what documents exist?" at the start, hooks don't add much
-- **Your agent doesn't support hooks** — some agents lack hook support; MCP tools still work fine
-- **You prefer explicit control** — some users prefer to decide when the agent loads context
+### When you don't need hooks
 
-## Protocol Details
+- **You always start by asking about context** — if your workflow is to ask the agent "what documents exist?" at the start, hooks don't add much.
+- **Your agent doesn't support hooks** — some agents lack hook support; MCP tools still work fine.
+- **You prefer explicit control** — some users prefer to decide when the agent loads context.
+
+## Protocol details
 
 The MCP server runs as a subprocess launched by your coding agent. When the agent starts, it spawns `archcore mcp` and communicates over stdin/stdout using JSON-RPC 2.0 (stdio transport). The server stays running for the duration of the session.
+
+## Next steps
+
+- [Agent integrations](/cli/agent-integrations/) — per-agent support matrix and config paths.
+- [Hooks](/cli/hooks/) — the session-start hook and what it outputs.
+- [MCP tools reference](/reference/mcp-tools/) — full API spec.

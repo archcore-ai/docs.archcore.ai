@@ -11,7 +11,7 @@ The `.archcore/` directory in your repository **is** your project context. No ex
 
 ### One Setup, Every Agent
 
-Archcore uses [MCP (Model Context Protocol)](/agents/mcp-server/) — an open standard for connecting AI agents to tools and data. One `.archcore/` directory works with Claude Code, Cursor, Copilot, Gemini CLI, and more. No copy-pasting rules between `.cursorrules` and `CLAUDE.md`.
+Archcore uses [MCP (Model Context Protocol)](/cli/mcp-server/) — an open standard for connecting AI agents to tools and data. One `.archcore/` directory works with Claude Code, Cursor, Copilot, Gemini CLI, and more. No copy-pasting rules between `.cursorrules` and `CLAUDE.md`.
 
 ### Documentation as Code
 
@@ -135,13 +135,13 @@ Three different layers, organized by domain. The semantic layer comes from the t
 
 ## Agents Read, Write, and Connect
 
-Agents don't just passively read documents — they create, update, and link them. [Session hooks](/agents/mcp-server/) inject the full document list at session start, so agents know what structured context exists from the first message.
+Agents don't just passively read documents — they create, update, and link them. [Session hooks](/cli/mcp-server/) inject the full document list at session start, so agents know what structured context exists from the first message.
 
 You can say "create an ADR for the decision we just discussed" or "link this rule to the ADR it came from" and the agent handles it through MCP.
 
 ## Next Steps
 
-- [Quick Start](/start/quick-start/) — set up Archcore in 2 minutes
+- [Plugin quick start](/start/plugin-quick-start/) or [CLI quick start](/cli/quick-start/) — set up Archcore in 2 minutes
 - [Document Types](/concepts/document-types/) — full reference for all 18 types
 - [Relations](/concepts/relations/) — link documents with directed relations
-- [MCP Server](/agents/mcp-server/) — how agents connect to your project context
+- [MCP Server](/cli/mcp-server/) — how agents connect to your project context

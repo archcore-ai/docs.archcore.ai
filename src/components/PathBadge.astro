@@ -1,0 +1,54 @@
+---
+type Scope = 'plugin' | 'cli' | 'shared';
+
+interface Props {
+	scope: Scope;
+	label?: string;
+}
+
+const { scope, label } = Astro.props;
+
+const defaults: Record<Scope, string> = {
+	plugin: 'Plugin',
+	cli: 'CLI',
+	shared: 'Shared',
+};
+
+const text = label ?? defaults[scope];
+---
+
+<span class={`path-badge path-badge--${scope}`}>{text}</span>
+
+<style>
+	.path-badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 0.15rem 0.55rem;
+		border-radius: 9999px;
+		font-size: 0.75rem;
+		font-weight: 600;
+		line-height: 1.5;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
+		border: 1px solid transparent;
+		background: var(--sl-color-accent-low);
+		color: var(--sl-color-accent-high);
+	}
+
+	.path-badge--plugin {
+		background: color-mix(in oklch, var(--ac-path-plugin) 18%, transparent);
+		color: var(--ac-path-plugin);
+		border-color: color-mix(in oklch, var(--ac-path-plugin) 40%, transparent);
+	}
+
+	.path-badge--cli {
+		background: color-mix(in oklch, var(--ac-path-cli) 15%, transparent);
+		color: var(--ac-path-cli);
+		border-color: color-mix(in oklch, var(--ac-path-cli) 35%, transparent);
+	}
+
+	.path-badge--shared {
+		background: var(--sl-color-accent-low);
+		color: var(--sl-color-accent-high);
+	}
+</style>

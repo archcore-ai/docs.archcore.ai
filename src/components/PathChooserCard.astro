@@ -1,0 +1,102 @@
+---
+type Scope = 'plugin' | 'cli' | 'shared';
+
+interface Props {
+	scope: Scope;
+	title: string;
+	audience: string;
+	description: string;
+	href: string;
+	cta?: string;
+}
+
+const { scope, title, audience, description, href, cta = 'Open' } = Astro.props;
+---
+
+<a href={href} class={`path-card path-card--${scope}`}>
+	<div class="path-card__audience">{audience}</div>
+	<div class="path-card__title">{title}</div>
+	<p class="path-card__description">{description}</p>
+	<span class="path-card__cta">
+		{cta} <span aria-hidden="true">&rarr;</span>
+	</span>
+</a>
+
+<style>
+	.path-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		padding: 1.5rem;
+		border-radius: 0.75rem;
+		border: 1px solid var(--sl-color-gray-5);
+		background: var(--sl-color-bg-nav);
+		text-decoration: none;
+		color: inherit;
+		transition:
+			border-color 0.15s ease,
+			transform 0.15s ease;
+	}
+
+	.path-card:hover {
+		transform: translateY(-2px);
+	}
+
+	.path-card--plugin {
+		border-top: 3px solid var(--ac-path-plugin);
+	}
+	.path-card--plugin:hover {
+		border-color: var(--ac-path-plugin);
+	}
+
+	.path-card--cli {
+		border-top: 3px solid var(--ac-path-cli);
+	}
+	.path-card--cli:hover {
+		border-color: var(--ac-path-cli);
+	}
+
+	.path-card--shared {
+		border-top: 3px solid var(--sl-color-accent);
+	}
+	.path-card--shared:hover {
+		border-color: var(--sl-color-accent);
+	}
+
+	.path-card__audience {
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: var(--sl-color-gray-3);
+	}
+
+	.path-card__title {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--sl-color-white);
+		line-height: 1.2;
+	}
+
+	.path-card__description {
+		margin: 0;
+		color: var(--sl-color-gray-2);
+		line-height: 1.55;
+		font-size: 0.95rem;
+	}
+
+	.path-card__cta {
+		margin-top: auto;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: var(--sl-color-text-accent);
+	}
+
+	.path-card--plugin .path-card__cta {
+		color: var(--ac-path-plugin);
+	}
+
+	.path-card--cli .path-card__cta {
+		color: var(--ac-path-cli);
+	}
+</style>

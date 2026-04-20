@@ -1,0 +1,119 @@
+---
+title: Plugin Troubleshooting
+description: Common issues with the Archcore Plugin — commands not appearing, MCP server not found, validation failures, host-specific hook problems.
+---
+
+import PathBadge from '../../../components/PathBadge.astro';
+import CrossLinkCallout from '../../../components/CrossLinkCallout.astro';
+
+<PathBadge scope="plugin" />
+
+Common issues specific to running the plugin inside Claude Code or Cursor. For CLI-level issues (MCP not reachable, `.archcore/` missing, validation errors), see [CLI troubleshooting](/cli/troubleshooting/).
+
+## `/archcore:*` commands don't appear
+
+**Symptom:** Typing `/archcore:help` does nothing, or the autocomplete doesn't list Archcore skills.
+
+**Checks, in order:**
+
+1. **Plugin is installed.**
+	 ```bash
+	 # Claude Code
+	 claude plugin list
+	 # Cursor: check plugin settings
+	 ```
+	 You should see `archcore@archcore-plugins`.
+
+2. **Host was restarted.** Plugins load at startup. After installing or updating, restart the host.
+
+3. **Session-start hook ran.** Look at the session opening messages — you should see a short "Archcore context loaded" line. If not, the hook didn't fire.
+
+4. **Run `/archcore:verify`.** The plugin's self-check validates that all skills, agents, and hook scripts are present.
+
+## "Plugin failed to load"
+
+**Symptom:** The host reports a plugin load error at session start.
+
+**Most common causes:**
+
+- The plugin package is missing `.claude-plugin/plugin.json` (Claude Code) or `.cursor-plugin/plugin.json` (Cursor).
+- A skill file's YAML frontmatter is malformed.
+- A hook script is not executable.
+
+**Fix:** Reinstall from the marketplace:
+
+```bash
+claude plugin uninstall archcore@archcore-plugins
+claude plugin install archcore@archcore-plugins
+```
+
+For local dev installs, ensure `bin/*` scripts are executable (`chmod +x bin/*`).
+
+## MCP server not found
+
+**Symptom:** Commands run but the agent reports "MCP tool not available" or "server not connected".
+
+The plugin does **not** ship its own MCP server — it reuses the CLI's. So this is almost always a CLI-side issue.
+
+<CrossLinkCallout
+	to="/cli/troubleshooting/"
+	label="Open CLI troubleshooting"
+	direction="plugin-to-cli"
+>
+	Start there — if the CLI's MCP server isn't reachable, no amount of plugin debugging will help.
+</CrossLinkCallout>
+
+Quick sanity checks:
+
+```bash
+archcore --version           # CLI on PATH?
+archcore status              # .archcore/ valid?
+which archcore               # which binary?
+```
+
+## Writes blocked unexpectedly
+
+**Symptom:** The agent tries to fix a typo in a `.archcore/` file and gets blocked. The hook says "use MCP tools instead".
+
+This is the `PreToolUse` hook doing its job. The fix is to use `update_document` with the new content instead of `Edit`. Ask the agent:
+
+> Use `update_document` to correct the typo in the frontmatter title.
+
+If you genuinely need to edit `settings.json` or `.sync-state.json`, those paths are allowed — only document files (`*.md`) are blocked.
+
+## Validation fails after every write
+
+**Symptom:** Every time a skill creates or updates a document, the post-mutation hook reports a validation error.
+
+1. Run `archcore doctor` from the shell — the CLI gives a precise error.
+2. Common causes: slug with uppercase letters, missing `title`/`status` frontmatter, tag with forbidden characters.
+3. Skills should handle all three; if they don't, file a bug on the plugin repo.
+
+## Cascade warnings overwhelm the output
+
+**Symptom:** Every mutation dumps a long "cascade dependents may need review" block.
+
+This means a lot of documents are linked to the one you just changed. That's working-as-intended — but you can reduce noise by:
+
+- Splitting the updated document into smaller, more focused pieces.
+- Accepting some cascade drift deliberately (status `accepted` on the dependent means "I've reviewed this").
+
+There's no global mute — the warning is intentional friction.
+
+## Cursor-specific: `afterMCPExecution` not firing
+
+**Symptom:** On Cursor, validation and cascade checks don't run after MCP calls.
+
+Cursor only fires `afterMCPExecution` for successful MCP calls. If the MCP call itself failed (invalid frontmatter, for example), the hook won't fire — you'll see the MCP error directly.
+
+## Claude Code-specific: both `Write` and `Edit` blocked
+
+**Symptom:** On Claude Code, you can't fix a file manually even though you know what you're doing.
+
+That's deliberate — the matcher is `Write|Edit`. If you truly need to bypass (one-off rename, recovering from a corrupted state), edit the file from a separate shell with `vim`/`$EDITOR`; the plugin doesn't intercept shells.
+
+## Next steps
+
+- [How plugin works](/plugin/how-it-works/) — understand what each hook is doing before debugging.
+- [CLI troubleshooting](/cli/troubleshooting/) — for MCP/validate issues.
+- [Supported hosts](/plugin/supported-hosts/) — for host-specific differences.

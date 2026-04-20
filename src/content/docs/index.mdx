@@ -1,0 +1,47 @@
+---
+title: Use Archcore your way
+description: Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions. Pick the plugin for the full UX in Claude Code and Cursor, or the CLI for direct integrations with every other agent.
+template: splash
+hero:
+  tagline: Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions.
+  actions:
+    - text: Plugin quick start
+      link: /start/plugin-quick-start/
+      icon: right-arrow
+      variant: primary
+    - text: CLI quick start
+      link: /cli/quick-start/
+      icon: right-arrow
+---
+
+import PathChooser from '../../components/PathChooser.astro';
+
+Archcore turns your repository into structured, machine-readable context. Typed documents — decisions, rules, guides, plans — that every AI coding agent discovers automatically through MCP.
+
+There are two ways to use it. Both read and write the same `.archcore/` directory.
+
+<PathChooser />
+
+## What changes when you install it
+
+Without Archcore, asking an AI for "a new service" means the agent:
+
+- guesses the folder structure
+- ignores conventions it has never been told about
+- produces code that drifts from decisions buried in docs
+- rediscovers patterns you've already written down
+
+With Archcore, the same ask and the agent:
+
+- places files where your architecture says they belong
+- follows rules defined in `.archcore/`
+- respects ADRs and existing specs
+- reuses patterns (`cpat`) you've already captured
+
+## Explore
+
+- [What is Archcore?](/concepts/what-is-archcore/) — the problem, the solution, and the shape of the system.
+- [Mental Model](/concepts/mental-model/) — CLI as compiler, plugin as runtime.
+- [Document Types](/concepts/document-types/) — the 18 types your agent will create.
+- [Use Cases](/concepts/use-cases/) — how teams use Archcore in practice.
+- [Changelog](/changelog/) — recent releases.

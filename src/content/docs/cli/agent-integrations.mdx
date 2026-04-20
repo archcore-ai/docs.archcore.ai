@@ -1,11 +1,15 @@
 ---
-title: Supported AI Coding Agents
-description: AI coding agents that work with Archcore — Claude Code, Cursor, GitHub Copilot, Gemini CLI, and more. Support status, features, and setup guides.
+title: Agent Integrations
+description: The AI coding agents Archcore supports out of the box — Claude Code, Cursor, GitHub Copilot, Gemini CLI, OpenCode, Codex CLI, Roo Code, Cline. Support matrix and config paths.
 ---
+
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="cli" />
 
 Archcore supports 8 coding agents out of the box. Each agent gets MCP server configuration and (where supported) session hooks installed automatically during `archcore init`.
 
-## Support Matrix
+## Support matrix
 
 | Agent          | MCP    | Hooks |
 | -------------- | ------ | ----- |
@@ -21,7 +25,7 @@ Archcore supports 8 coding agents out of the box. Each agent gets MCP server con
 **MCP** = agent can list, read, create, update documents through Archcore tools.
 **Hooks** = agent receives document context automatically at session start.
 
-## Auto-Detection
+## Auto-detection
 
 `archcore init` detects agents by looking for their configuration directories:
 
@@ -38,7 +42,7 @@ Archcore supports 8 coding agents out of the box. Each agent gets MCP server con
 
 If no agents are detected, Archcore falls back to configuring Claude Code.
 
-## MCP Config Locations
+## MCP config locations
 
 | Agent          | ID            | Config File                    |
 | -------------- | ------------- | ------------------------------ |
@@ -51,7 +55,7 @@ If no agents are detected, Archcore falls back to configuring Claude Code.
 | Roo Code       | `roo-code`    | `.roo/mcp.json`                |
 | Cline          | `cline`       | VS Code globalStorage (manual) |
 
-## Manual Installation
+## Manual installation
 
 Install MCP for a specific agent:
 
@@ -65,8 +69,20 @@ Install hooks for a specific agent:
 archcore hooks install --agent claude-code
 ```
 
-## Best Experience
+## Best experience
 
 For the best experience, use an agent that supports both MCP and hooks. Claude Code, Cursor, GitHub Copilot, and Gemini CLI currently offer the most complete integration — agents receive context at session start and have full document management tools available.
 
 Agents without hook support (OpenCode, Codex CLI, Roo Code, Cline) still work well through MCP tools. The main difference is that you'll need to explicitly ask the agent to check for documents rather than having context injected automatically.
+
+## Plugin vs CLI integration
+
+This page lists the **CLI-level** integrations — every supported agent gets MCP and (where possible) hooks.
+
+Two of these hosts (Claude Code and Cursor) additionally support the higher-level **Archcore Plugin** — skills, tracks, built-in agents, and guardrails. See [Plugin supported hosts](/plugin/supported-hosts/) for the plugin-specific matrix.
+
+## Next steps
+
+- [MCP server](/cli/mcp-server/) — how agents connect.
+- [Hooks](/cli/hooks/) — what the session-start hook emits.
+- [Commands](/cli/commands/) — the `archcore` commands that drive integration.

@@ -1,9 +1,13 @@
 ---
-title: Troubleshooting
-description: Common issues with Archcore — agent visibility, MCP server startup, and validation errors.
+title: CLI Troubleshooting
+description: Common CLI-level issues with Archcore — agent visibility, MCP server startup, validation errors. Diagnostic steps and fixes.
 ---
 
-This page covers the most common issues you'll hit when working with Archcore. Each section describes symptoms, how to diagnose the problem, and how to fix it.
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="cli" />
+
+Common CLI-level issues. For plugin-specific problems (commands not appearing, host-specific hooks), see [plugin troubleshooting](/plugin/troubleshooting/).
 
 For a quick all-in-one check, run:
 
@@ -13,7 +17,7 @@ archcore doctor
 
 This validates your project context — `settings.json`, document structure, MCP configuration, and server reachability — in one pass. The output tells you exactly what's wrong and how to fix it.
 
-## Agent Cannot See Documents
+## Agent cannot see documents
 
 Your agent says it can't find any documents, or it doesn't seem to know about Archcore at all. Work through the checks below in order — they're arranged from most common to least common.
 
@@ -46,7 +50,7 @@ Or re-run full initialization, which also installs hooks:
 archcore init
 ```
 
-Both commands auto-detect your agents and write the correct config files. See [Supported Agents](/agents/supported-agents/) for the full agent registry.
+Both commands auto-detect your agents and write the correct config files. See [Agent integrations](/cli/agent-integrations/) for the full agent registry.
 
 ### Config points to wrong command
 
@@ -85,7 +89,7 @@ For GitHub Copilot, the format is slightly different:
 archcore mcp install
 ```
 
-See [Supported Agents](/agents/supported-agents/) for config file locations per agent.
+See [Agent integrations](/cli/agent-integrations/) for config file locations per agent.
 
 ### Archcore not in PATH
 
@@ -110,7 +114,7 @@ Then verify:
 archcore --version
 ```
 
-If you haven't installed Archcore yet, follow the [Quick Start](/start/quick-start/).
+If you haven't installed Archcore yet, follow [Install](/cli/install/).
 
 ### Wrong working directory
 
@@ -132,11 +136,9 @@ If you haven't initialized the project yet:
 archcore init
 ```
 
-This creates the `.archcore/` directory, writes `settings.json`, and configures MCP and hooks for your detected agents.
-
 ### Hooks not installed
 
-Without session hooks, the agent doesn't receive project context when a conversation starts. The agent can still use MCP tools if configured, but it won't proactively check for documents — it only discovers them if it happens to call the MCP tools.
+Without session hooks, the agent doesn't receive project context when a conversation starts. The agent can still use MCP tools if configured, but it won't proactively check for documents.
 
 **Check:** For Claude Code, look for the hook in `.claude/settings.json`:
 
@@ -164,11 +166,11 @@ Without session hooks, the agent doesn't receive project context when a conversa
 archcore hooks install
 ```
 
-This installs hooks for all detected agents. See [MCP Server](/agents/mcp-server/) for agent-specific details.
+This installs hooks for all detected agents. See [Hooks](/cli/hooks/) for agent-specific details.
 
 ### Agent doesn't support MCP
 
-Some agents or agent modes don't support the Model Context Protocol. If your agent isn't in the [supported agents list](/agents/supported-agents/), it can't connect to the Archcore MCP server.
+Some agents or agent modes don't support the Model Context Protocol. If your agent isn't in the [agent integrations](/cli/agent-integrations/) list, it can't connect to the Archcore MCP server.
 
 **Supported agents:** Claude Code, Cursor, GitHub Copilot, Gemini CLI, OpenCode, Codex CLI, Roo Code, Cline.
 
@@ -192,11 +194,11 @@ This reports any issues with file naming, frontmatter, or document structure.
 - Missing or invalid YAML frontmatter (`title` and `status` are required)
 - Unknown document type in the filename
 
-**Fix:** Correct the issues reported by `archcore status`. See [Validation Errors](#validation-errors) below for detailed guidance on each error type.
+**Fix:** Correct the issues reported by `archcore status`. See [Validation errors](#validation-errors) below for detailed guidance on each error type.
 
-## MCP Server Not Starting
+## MCP server not starting
 
-The MCP server runs as a subprocess that your coding agent launches automatically. When it fails to start, the agent either reports an MCP error or silently loses access to your repo context. This section covers issues specific to server startup — for general connectivity problems, see [Agent Cannot See Documents](#agent-cannot-see-documents) above.
+The MCP server runs as a subprocess that your coding agent launches automatically. When it fails to start, the agent either reports an MCP error or silently loses access to your repo context.
 
 ### Permission denied
 
@@ -218,7 +220,7 @@ chmod +x $(which archcore)
 
 ### Multiple archcore versions
 
-If you have multiple installations (e.g., a global install and a project-local one), the agent might pick up the wrong version — or one that's broken.
+If you have multiple installations (e.g., a global install and a project-local one), the agent might pick up the wrong version.
 
 **Check:**
 
@@ -239,9 +241,9 @@ which -a archcore
 archcore mcp install
 ```
 
-## Validation Errors
+## Validation errors
 
-`archcore status` checks every document in `.archcore/` for correct naming, structure, and frontmatter. This section explains each error you might see and how to fix it.
+`archcore status` checks every document in `.archcore/` for correct naming, structure, and frontmatter.
 
 ### Invalid filename
 
@@ -261,20 +263,17 @@ archcore mcp install
 **Fix:** Rename the file to use a valid slug:
 
 ```bash
-# Wrong
 mv ".archcore/My Decision.adr.md" ".archcore/my-decision.adr.md"
-
-# Wrong
 mv ".archcore/jwt_strategy.adr.md" ".archcore/jwt-strategy.adr.md"
 ```
 
-Slugs must match the pattern `^[a-z0-9]+(-[a-z0-9]+)*$`. See [Document Format](/reference/document-format/) for the full spec.
+Slugs must match `^[a-z0-9]+(-[a-z0-9]+)*$`. See [Document format](/reference/document-format/) for the full spec.
 
 ### Unknown document type
 
 **What you see:** The type portion of the filename isn't recognized.
 
-**Why it happens:** The type (the middle part of `slug.type.md`) must be one of the 18 valid types. Anything else is rejected.
+**Why it happens:** The type (the middle part of `slug.type.md`) must be one of the 18 valid types.
 
 **Valid types:**
 
@@ -291,13 +290,13 @@ mrd, brd, urd, brs, strs, syrs, srs
 | `setup.tutorial.md`     | `tutorial` is not a type  | Rename to `setup.guide.md`                        |
 | `api-spec.reference.md` | `reference` is not a type | Rename to `api-spec.spec.md` or `api-spec.doc.md` |
 
-**Fix:** Rename the file using one of the 18 valid types. See [Document Types](/concepts/document-types/) for guidance on choosing the right type.
+**Fix:** Rename the file using one of the 18 valid types. See [Document types](/concepts/document-types/) for guidance on choosing.
 
 ### Missing frontmatter
 
 **What you see:** The document is missing YAML frontmatter, or the frontmatter is missing required fields.
 
-**Why it happens:** Every Archcore document requires YAML frontmatter with both `title` and `status` fields. If either is missing, the document fails validation.
+**Why it happens:** Every Archcore document requires YAML frontmatter with both `title` and `status` fields.
 
 **Fix:** Add the required frontmatter at the top of the file:
 
@@ -321,9 +320,7 @@ Both fields are required:
 
 **What you see:** The `status` field contains an unrecognized value.
 
-**Why it happens:** Status must be exactly one of three values. No other values are allowed — not `active`, not `approved`, not `archived`.
-
-**Valid values:**
+**Why it happens:** Status must be exactly one of three values. Not `active`, not `approved`, not `archived`.
 
 | Status     | Meaning                                      |
 | ---------- | -------------------------------------------- |
@@ -331,36 +328,27 @@ Both fields are required:
 | `accepted` | Finalized or approved                        |
 | `rejected` | Superseded, abandoned, or declined           |
 
-**Fix:** Update the frontmatter to use a valid status:
-
-```yaml
----
-title: API Rate Limiting
-status: accepted
----
-```
+**Fix:** Update the frontmatter to use a valid status.
 
 ### Orphaned relations
 
 **What you see:** A relation points to a document that no longer exists on disk.
 
-**Why it happens:** You deleted or renamed a document, but the relation referencing it still exists in `.sync-state.json`. The relation's target path no longer matches any file.
+**Why it happens:** You deleted or renamed a document, but the relation referencing it still exists in `.sync-state.json`.
 
-**Fix:** Run doctor with the `--fix` flag:
+**Fix:**
 
 ```bash
 archcore doctor --fix
 ```
 
-This automatically removes orphaned relations from the manifest before running checks and saves the updated `.sync-state.json`. No manual editing needed.
+This automatically removes orphaned relations from the manifest before running checks.
 
 ### Invalid tags
 
 **What you see:** A tag doesn't match the required format.
 
-**Why it happens:** Tags must be lowercase and match `^[a-z][a-z0-9_:|-]*$`. Uppercase letters, spaces, and other characters are rejected.
-
-**Examples of invalid tags:**
+**Why it happens:** Tags must be lowercase and match `^[a-z][a-z0-9_:|-]*$`.
 
 | Tag         | Problem                  |
 | ----------- | ------------------------ |
@@ -368,46 +356,19 @@ This automatically removes orphaned relations from the manifest before running c
 | `my tag`    | Spaces                   |
 | `123-start` | Must start with a letter |
 
-**Fix:** Correct the tag value. Archcore shows a "did you mean?" hint when a tag is rejected — for example, `Frontend` will suggest `frontend`.
+**Fix:** Correct the tag value. Archcore shows a "did you mean?" hint when a tag is rejected.
 
 ### Invalid YAML
 
 **What you see:** The frontmatter can't be parsed as valid YAML.
 
-**Why it happens:** The YAML between the `---` delimiters has a syntax error. Common causes:
+**Why it happens:** Syntax error between the `---` delimiters. Common causes:
 
-- **Missing closing `---`** — the frontmatter block needs both an opening and closing delimiter
-- **Tabs instead of spaces** — YAML requires spaces for indentation, not tabs
-- **Unquoted special characters** — colons, brackets, or other YAML-significant characters in values need quoting
+- Missing closing `---`
+- Tabs instead of spaces
+- Unquoted special characters (colons, brackets) in values
 
-**Examples:**
-
-```yaml
-# Wrong: missing closing ---
----
-title: My Document
-status: draft
-
-Content starts here without closing the frontmatter...
-```
-
-```yaml
-# Wrong: unquoted colon in title
----
-title: Decision: Use PostgreSQL
-status: draft
----
-```
-
-```yaml
-# Correct: quote the value
----
-title: "Decision: Use PostgreSQL"
-status: draft
----
-```
-
-**Fix:** Correct the YAML syntax. If you're unsure what's wrong, start with a minimal frontmatter block and add fields back one at a time:
+**Fix:** Correct the YAML syntax. If unsure, start with a minimal frontmatter block:
 
 ```yaml
 ---
@@ -416,24 +377,19 @@ status: draft
 ---
 ```
 
-### Using --fix
+### Using `--fix`
 
 `archcore doctor --fix` automates what it can:
 
 - Removes orphaned relations from `.sync-state.json` before running checks
 - Saves the cleaned manifest
 
-It does **not** auto-fix:
+It does **not** auto-fix invalid filenames, missing frontmatter, unknown document types, or YAML syntax — you have to correct those manually.
 
-- Invalid filenames (you need to rename files manually)
-- Missing or invalid frontmatter (you need to edit the file)
-- Unknown document types (you need to rename the file)
-- Invalid YAML syntax (you need to fix the markup)
-
-For a full project health check, run:
+For a full project health check:
 
 ```bash
 archcore doctor
 ```
 
-This checks `settings.json`, document structure, MCP configuration, and server reachability in one pass. See [CLI Reference](/agents/cli/) for details.
+See [Commands](/cli/commands/) for details.

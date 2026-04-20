@@ -1,0 +1,88 @@
+---
+title: archcore init
+description: What `archcore init` does — create .archcore/, detect coding agents, and write MCP configs and session hooks for each one.
+---
+
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="cli" />
+
+`archcore init` is the one command that turns any repository into an Archcore-aware project. Run it once per repo.
+
+## Usage
+
+```bash
+cd your-project
+archcore init
+```
+
+## What it does
+
+1. **Creates `.archcore/`** with a default `settings.json`:
+
+	 ```json
+	 {
+	   "sync": "none"
+	 }
+	 ```
+
+2. **Auto-detects installed coding agents** by looking for known configuration directories and files:
+
+	 | Agent          | Detected by                                    |
+	 | -------------- | ---------------------------------------------- |
+	 | Claude Code    | `.claude/` directory                           |
+	 | Cursor         | `.cursor/` directory                           |
+	 | GitHub Copilot | `.github/copilot-instructions.md` file         |
+	 | Gemini CLI     | `.gemini/` directory                           |
+	 | OpenCode       | `opencode.json` file or `.opencode/` directory |
+	 | Codex CLI      | `.codex/` directory                            |
+	 | Roo Code       | `.roo/` directory                              |
+	 | Cline          | `.clinerules/` directory                       |
+
+	 If no agents are detected, `init` falls back to Claude Code configuration so you have something to work with.
+
+3. **Writes MCP config** for every detected agent. The exact file location depends on the agent — see [agent integrations](/cli/agent-integrations/) for the full table.
+
+4. **Installs session hooks** for agents that support them (Claude Code, Cursor, Copilot, Gemini CLI). Hooks inject a summary of your `.archcore/` documents into the agent's context at session start.
+
+## After `init`
+
+Your project looks like this:
+
+```
+your-project/
+├── .archcore/
+│   └── settings.json
+├── .mcp.json               # Claude Code MCP config (example)
+├── .claude/
+│   └── settings.json       # session hook
+└── src/...
+```
+
+From here:
+
+- Create your first document by asking your agent to record a real decision — see [Quick start](/cli/quick-start/).
+- Validate structure with `archcore status`.
+- Check full health with `archcore doctor`.
+
+## Re-running `init`
+
+Safe to re-run. It will:
+
+- Leave existing `.archcore/settings.json` untouched.
+- Re-apply MCP and hook configs (idempotent writes).
+- Pick up any newly-installed agents.
+
+## Related commands
+
+- `archcore mcp install` — install MCP config without touching anything else.
+- `archcore hooks install` — install hooks without touching anything else.
+- `archcore status` / `archcore doctor` — check structure after init.
+
+See [commands](/cli/commands/) for the full reference.
+
+## Next steps
+
+- [Quick start](/cli/quick-start/) — create your first document.
+- [MCP server](/cli/mcp-server/) — what `init` wires up.
+- [Hooks](/cli/hooks/) — what the session-start hook actually does.

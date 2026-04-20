@@ -7,7 +7,7 @@ status: accepted
 
 Documentation site for the [Archcore CLI](https://github.com/archcore-ai/cli), deployed at **docs.archcore.ai**.
 
-Archcore is git-native context for AI coding agents. It helps teams structure decisions, rules, plans, and guides inside the repository so agents can work with stronger project context. This site provides getting-started guides, concept explanations, agent setup docs, and CLI/MCP reference.
+Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions. It helps teams structure decisions, rules, plans, and guides inside the repository so agents can work with stronger project context. This site provides getting-started guides, concept explanations, agent setup docs, and CLI/MCP reference.
 
 ## Architecture
 

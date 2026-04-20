@@ -6,10 +6,11 @@ import starlight from '@astrojs/starlight';
 export default defineConfig({
 	site: 'https://docs.archcore.ai',
 	redirects: {
-		'/getting-started/installation/': '/start/quick-start/',
-		'/getting-started/quick-start/': '/start/quick-start/',
-		'/getting-started/first-10-minutes/': '/start/quick-start/',
-		'/getting-started/why-not-flat-files/': '/start/vs-flat-files/',
+		// Legacy paths
+		'/getting-started/installation/': '/cli/install/',
+		'/getting-started/quick-start/': '/start/plugin-quick-start/',
+		'/getting-started/first-10-minutes/': '/start/plugin-quick-start/',
+		'/getting-started/why-not-flat-files/': '/concepts/vs-flat-files/',
 		'/concepts/philosophy/': '/concepts/how-it-works/',
 		'/concepts/context-layers/': '/concepts/how-it-works/',
 		'/concepts/directory-structure/': '/concepts/documents/',
@@ -17,13 +18,26 @@ export default defineConfig({
 		'/use-cases/coding-rules/': '/concepts/use-cases/',
 		'/use-cases/shared-project-memory/': '/concepts/use-cases/',
 		'/use-cases/implementation-plans/': '/concepts/use-cases/',
-		'/integrations/mcp-server/': '/agents/mcp-server/',
-		'/integrations/supported-agents/': '/agents/supported-agents/',
-		'/integrations/hooks/': '/agents/mcp-server/',
-		'/reference/cli-commands/': '/agents/cli/',
-		'/troubleshooting/agent-not-seeing-documents/': '/reference/troubleshooting/',
-		'/troubleshooting/mcp-not-starting/': '/reference/troubleshooting/',
-		'/troubleshooting/validation-errors/': '/reference/troubleshooting/',
+		'/integrations/mcp-server/': '/cli/mcp-server/',
+		'/integrations/supported-agents/': '/cli/agent-integrations/',
+		'/integrations/hooks/': '/cli/hooks/',
+		'/reference/cli-commands/': '/cli/commands/',
+		'/troubleshooting/agent-not-seeing-documents/': '/cli/troubleshooting/',
+		'/troubleshooting/mcp-not-starting/': '/cli/troubleshooting/',
+		'/troubleshooting/validation-errors/': '/cli/troubleshooting/',
+
+		// IA restructure — Get Started group retired in favor of path-based layout
+		'/start/quick-start/': '/start/plugin-quick-start/',
+		'/start/vs-flat-files/': '/concepts/vs-flat-files/',
+
+		// Former "Agents & Tools" group folded under /cli/
+		'/agents/supported-agents/': '/cli/agent-integrations/',
+		'/agents/mcp-server/': '/cli/mcp-server/',
+		'/agents/cli/': '/cli/commands/',
+
+		// CLI-specific reference pages moved under /cli/
+		'/reference/configuration/': '/cli/configuration/',
+		'/reference/troubleshooting/': '/cli/troubleshooting/',
 	},
 	integrations: [
 		starlight({
@@ -38,7 +52,7 @@ export default defineConfig({
 				dark: './src/assets/logo-dark.png',
 				alt: 'archcore logo',
 			},
-			description: 'Git-native context for AI coding agents. Context engineering for repositories.',
+			description: 'Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions.',
 			head: [
 				{
 					tag: 'meta',
@@ -60,7 +74,7 @@ export default defineConfig({
 						'@type': 'WebSite',
 						name: 'Archcore',
 						url: 'https://docs.archcore.ai',
-						description: 'Git-native context for AI coding agents. Context engineering for repositories.',
+						description: 'Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions.',
 						publisher: {
 							'@type': 'Organization',
 							name: 'Archcore',
@@ -78,38 +92,64 @@ export default defineConfig({
 			customCss: ['./src/styles/custom.css'],
 			sidebar: [
 				{
-					label: 'Get Started',
+					label: 'Start Here',
 					items: [
-						{ label: 'Introduction', slug: '' },
-						{ label: 'Quick Start', slug: 'start/quick-start' },
-						{ label: 'Flat Files vs Archcore', slug: 'start/vs-flat-files' },
+						{ label: 'Overview', slug: '' },
+						{ label: 'Choose Plugin or CLI', slug: 'start/choose' },
+						{ label: 'Plugin Quick Start', slug: 'start/plugin-quick-start' },
+						{ label: 'CLI Quick Start', slug: 'cli/quick-start' },
+						{ label: 'Migrate from Flat Files', slug: 'start/migrate-from-flat-files' },
+					],
+				},
+				{
+					label: 'Plugin',
+					items: [
+						{ label: 'Overview', slug: 'plugin/overview' },
+						{ label: 'Install', slug: 'plugin/install' },
+						{ label: 'Supported Hosts', slug: 'plugin/supported-hosts' },
+						{ label: 'How Plugin Works', slug: 'plugin/how-it-works' },
+						{ label: 'Skills', slug: 'plugin/skills' },
+						{ label: 'Intent Commands', slug: 'plugin/intent-commands' },
+						{ label: 'Tracks', slug: 'plugin/tracks' },
+						{ label: 'Built-in Agents', slug: 'plugin/agents' },
+						{ label: 'Troubleshooting', slug: 'plugin/troubleshooting' },
+					],
+				},
+				{
+					label: 'CLI',
+					items: [
+						{ label: 'Overview', slug: 'cli/overview' },
+						{ label: 'Install', slug: 'cli/install' },
+						{ label: 'Quick Start', slug: 'cli/quick-start' },
+						{ label: 'archcore init', slug: 'cli/init' },
+						{ label: 'Commands', slug: 'cli/commands' },
+						{ label: 'MCP Server', slug: 'cli/mcp-server' },
+						{ label: 'Hooks', slug: 'cli/hooks' },
+						{ label: 'Agent Integrations', slug: 'cli/agent-integrations' },
+						{ label: 'Configuration', slug: 'cli/configuration' },
+						{ label: 'Troubleshooting', slug: 'cli/troubleshooting' },
 					],
 				},
 				{
 					label: 'Concepts',
 					items: [
+						{ label: 'What Is Archcore?', slug: 'concepts/what-is-archcore' },
+						{ label: 'Mental Model', slug: 'concepts/mental-model' },
 						{ label: 'How It Works', slug: 'concepts/how-it-works' },
 						{ label: 'Document Types', slug: 'concepts/document-types' },
 						{ label: 'Documents & Layout', slug: 'concepts/documents' },
 						{ label: 'Relations', slug: 'concepts/relations' },
+						{ label: 'Flat Files vs Archcore', slug: 'concepts/vs-flat-files' },
 						{ label: 'Use Cases', slug: 'concepts/use-cases' },
-					],
-				},
-				{
-					label: 'Agents & Tools',
-					items: [
-						{ label: 'Supported Agents', slug: 'agents/supported-agents' },
-						{ label: 'MCP Server', slug: 'agents/mcp-server' },
-						{ label: 'CLI Commands', slug: 'agents/cli' },
 					],
 				},
 				{
 					label: 'Reference',
 					items: [
-						{ label: 'MCP Tools', slug: 'reference/mcp-tools' },
-						{ label: 'Configuration', slug: 'reference/configuration' },
 						{ label: 'Document Format', slug: 'reference/document-format' },
-						{ label: 'Troubleshooting', slug: 'reference/troubleshooting' },
+						{ label: 'MCP Tools', slug: 'reference/mcp-tools' },
+						{ label: 'Plugin Skills', slug: 'reference/skills' },
+						{ label: 'Tracks', slug: 'reference/tracks' },
 					],
 				},
 			],

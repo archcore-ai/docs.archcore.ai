@@ -1,0 +1,45 @@
+---
+import PathChooserCard from './PathChooserCard.astro';
+---
+
+<div class="path-chooser">
+	<PathChooserCard
+		scope="plugin"
+		audience="Best for most teams"
+		title="Plugin"
+		description="Use Archcore through a higher-level plugin in Claude Code or Cursor. Skills, tracks, built-in agents, and guardrails out of the box."
+		href="/plugin/overview/"
+		cta="Plugin quick start"
+	/>
+	<PathChooserCard
+		scope="cli"
+		audience="Best for direct integrations"
+		title="CLI"
+		description="Use Archcore as a core context layer through the CLI, MCP server, and session hooks. Works with 8 coding agents."
+		href="/cli/overview/"
+		cta="CLI quick start"
+	/>
+	<PathChooserCard
+		scope="shared"
+		audience="Understand the model"
+		title="Concepts"
+		description="Document types, relations, layout, and why Archcore exists. The shared mental model that both paths build on."
+		href="/concepts/what-is-archcore/"
+		cta="Read concepts"
+	/>
+</div>
+
+<style>
+	.path-chooser {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1fr;
+		margin: 2rem 0;
+	}
+
+	@media (min-width: 60rem) {
+		.path-chooser {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+</style>

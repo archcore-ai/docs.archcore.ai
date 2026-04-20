@@ -1,0 +1,134 @@
+---
+title: Migrate from Flat Files
+description: Move from CLAUDE.md, .cursorrules, or docs/ to Archcore. A pragmatic incremental playbook — you don't have to rewrite everything.
+---
+
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="shared" />
+
+You already have a `CLAUDE.md`, `.cursorrules`, a `docs/` folder, or team knowledge scattered across Slack. You don't need to blow it all up. Archcore is additive — keep what works, extract what doesn't.
+
+## Why migrate at all
+
+Flat files hit a wall around 50–200 lines. See [Flat files vs Archcore](/concepts/vs-flat-files/) for the full comparison. The short version:
+
+- Agents can't query flat files — they re-read everything every turn.
+- Multi-agent teams maintain overlapping files that drift apart.
+- No lifecycle, no status, no relations.
+
+Structured documents fix all three, and every modern agent reads them through MCP.
+
+## The incremental playbook
+
+### Step 1 — initialize
+
+Install and initialize the CLI:
+
+```bash
+curl -fsSL https://archcore.ai/install.sh | bash
+archcore init
+```
+
+Or follow the [Plugin quick start](/start/plugin-quick-start/) if you want the higher-level UX in Claude Code or Cursor.
+
+### Step 2 — identify the top 3 things agents need
+
+Open your existing `CLAUDE.md` / `.cursorrules` / docs. Pick three high-value chunks. Typical candidates:
+
+- A **decision** that still constrains current work (e.g., "we picked PostgreSQL because X").
+- A **rule** that every new PR should follow (e.g., "all API errors use this JSON shape").
+- A **procedure** engineers keep asking about (e.g., "how to add a new migration").
+
+You don't need to migrate the whole file. Start where agents will feel the difference on the next session.
+
+### Step 3 — ask your agent to do the conversion
+
+With MCP and (optionally) the plugin installed, ask:
+
+> "Convert the PostgreSQL section of CLAUDE.md into an Archcore ADR."
+
+> "Extract the API error rule from CLAUDE.md into a rule document."
+
+> "Turn the migration steps in docs/runbooks/migrations.md into a guide."
+
+The agent reads the source text, picks the right document type, and creates the structured document via MCP (`create_document`). You review, tweak, and accept.
+
+### Step 4 — link the documents
+
+Decisions produce rules. Rules need guides. Ask:
+
+> "Link the migration rule to the PostgreSQL ADR."
+
+The agent adds the relation. Your `.archcore/` starts accumulating a graph, not just a pile of files.
+
+### Step 5 — leave the rest for now
+
+Your `CLAUDE.md` and `.cursorrules` can stay. Over weeks, as each section proves useful, extract it into the right document type. What's left in `CLAUDE.md` at the end is only what's truly ephemeral or agent-specific.
+
+## Common mapping
+
+| Flat-file thing                         | Archcore type  | Notes                                                                 |
+| --------------------------------------- | -------------- | --------------------------------------------------------------------- |
+| "We decided to use X"                   | `adr`          | Record context, decision, alternatives, consequences.                 |
+| "Always do X. Never do Y."              | `rule`         | Imperative statements + rationale + enforcement.                      |
+| "Here's how to set up Z"                | `guide`        | Prerequisites, numbered steps, verification.                          |
+| "The API contract is…"                  | `spec`         | Normative behavior, constraints, conformance criteria.                |
+| "List of our services / components"     | `doc`          | Reference material — registries, glossaries, lookup tables.           |
+| "We're going to build X"                | `prd` / `plan` | Product requirements or implementation plan.                          |
+| "When creating a new endpoint, do…"     | `task-type`    | Recurring task with steps and watch-outs.                             |
+| "We changed our pattern from X to Y"    | `cpat`         | Code pattern change with before/after scope.                          |
+
+See [Document types](/concepts/document-types/) for the full list.
+
+## When to keep the flat file
+
+Keep a short `CLAUDE.md` / `.cursorrules` for:
+
+- Agent-specific toggles (e.g., "always use 2-space indent in this repo").
+- Per-tool workflow preferences.
+- Very short notes that don't justify a dedicated document.
+
+Everything bigger lives in `.archcore/`.
+
+## Common migration patterns
+
+### From a giant `CLAUDE.md`
+
+1. Extract decisions first (fastest win).
+2. Extract mandatory rules next.
+3. Extract how-tos / runbooks.
+4. Leave personal tool preferences in place.
+
+### From `docs/adr/`
+
+If you already have `adr/0001-…md` style docs:
+
+> "Migrate the files under docs/adr into Archcore ADR format."
+
+The agent converts filenames to `slug.adr.md`, adds frontmatter, and places them in `.archcore/`.
+
+### From a wiki or Notion
+
+Archcore is file-first — copy the three most-referenced pages into `.archcore/` manually or via agent, then link them. Migrate more only when someone asks for it.
+
+## Verify
+
+After migrating a batch:
+
+```bash
+archcore status
+archcore doctor
+```
+
+If both are green, agents can already see and follow the new content. Start a fresh session and ask:
+
+> "What decisions have we recorded about the database layer?"
+
+The agent should cite your new ADR, not generic knowledge.
+
+## Next steps
+
+- [Plugin quick start](/start/plugin-quick-start/) — highest-level UX in Claude Code / Cursor.
+- [CLI quick start](/cli/quick-start/) — minimal direct setup.
+- [Flat files vs Archcore](/concepts/vs-flat-files/) — the full comparison.

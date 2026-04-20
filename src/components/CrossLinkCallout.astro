@@ -1,0 +1,64 @@
+---
+type Direction = 'plugin-to-cli' | 'cli-to-plugin' | 'shared-to-plugin' | 'shared-to-cli';
+
+interface Props {
+	to: string;
+	label: string;
+	direction: Direction;
+}
+
+const { to, label, direction } = Astro.props;
+
+const scope = direction.endsWith('-to-plugin') ? 'plugin' : 'cli';
+---
+
+<aside class={`cross-link cross-link--${scope}`}>
+	<slot />
+	<a href={to} class="cross-link__link">
+		{label} <span aria-hidden="true">&rarr;</span>
+	</a>
+</aside>
+
+<style>
+	.cross-link {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin: 1.5rem 0;
+		padding: 1rem 1.25rem;
+		border-radius: 0.5rem;
+		border-left: 3px solid var(--sl-color-accent);
+		background: var(--sl-color-accent-low);
+		font-size: 0.95rem;
+		line-height: 1.55;
+	}
+
+	.cross-link--plugin {
+		border-left-color: var(--ac-path-plugin);
+		background: color-mix(in oklch, var(--ac-path-plugin) 10%, transparent);
+	}
+
+	.cross-link--cli {
+		border-left-color: var(--ac-path-cli);
+		background: color-mix(in oklch, var(--ac-path-cli) 8%, transparent);
+	}
+
+	.cross-link__link {
+		align-self: flex-start;
+		font-weight: 600;
+		text-decoration: none;
+		color: var(--sl-color-text-accent);
+	}
+
+	.cross-link--plugin .cross-link__link {
+		color: var(--ac-path-plugin);
+	}
+
+	.cross-link--cli .cross-link__link {
+		color: var(--ac-path-cli);
+	}
+
+	.cross-link__link:hover {
+		text-decoration: underline;
+	}
+</style>

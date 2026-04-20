@@ -1,0 +1,156 @@
+---
+title: CLI Quick Start
+description: Initialize Archcore in a project, configure an AI coding agent through MCP, and create your first document — all from the CLI.
+---
+
+import PathBadge from '../../../components/PathBadge.astro';
+import CrossLinkCallout from '../../../components/CrossLinkCallout.astro';
+
+<PathBadge scope="cli" />
+
+Get Archcore running in your repo in under two minutes. This guide uses the CLI only — for the higher-level plugin experience in Claude Code or Cursor, see [Plugin Quick Start](/start/plugin-quick-start/).
+
+## Prerequisites
+
+Install the CLI first — see [install](/cli/install/).
+
+Verify:
+
+```bash
+archcore --version
+```
+
+## Initialize your project
+
+From the root of any repository:
+
+```bash
+cd your-project
+archcore init
+```
+
+This does three things:
+
+1. Creates the `.archcore/` directory with a default `settings.json`.
+2. Auto-detects installed coding agents (Claude Code, Cursor, Copilot, Gemini CLI, and more — see [agent integrations](/cli/agent-integrations/) for the full list).
+3. Writes MCP server config and session hooks for every agent it detects.
+
+If no agents are detected, `init` falls back to Claude Code configuration.
+
+## Verify the agent sees Archcore
+
+Open your coding agent and ask:
+
+> "What Archcore documents exist in this project?"
+
+The agent should reply that there are no documents yet. If it doesn't recognize the question, MCP isn't wired up — see [troubleshooting](/cli/troubleshooting/).
+
+## Create your first document
+
+Ask the agent to record a real decision in your project:
+
+> "Create an ADR about using PostgreSQL as our primary database"
+
+The agent calls the `create_document` MCP tool and generates a file with the right template, frontmatter, and sections.
+
+Check what it created:
+
+```bash
+ls .archcore/
+```
+
+You should see a file like `use-postgres.adr.md`. Open it:
+
+```markdown
+---
+title: Use PostgreSQL as Primary Database
+status: draft
+---
+
+## Context
+
+We need a reliable relational database for our application.
+
+## Decision
+
+Use PostgreSQL for all persistent data storage.
+
+## Alternatives Considered
+
+- MySQL — fewer advanced features (JSONB, arrays, CTEs)
+- MongoDB — doesn't fit our relational data model
+
+## Consequences
+
+### Positive
+- Strong ACID guarantees
+- Excellent ecosystem and tooling
+
+### Negative
+- Requires schema migrations for changes
+- Horizontal scaling is more complex than NoSQL
+```
+
+The key pieces: YAML frontmatter with `title` and `status`, the `slug.type.md` filename, and template sections matching the ADR type.
+
+:::tip
+You can also create documents manually, but letting the agent do it through MCP is faster and automatically follows the [document format](/reference/document-format/).
+:::
+
+Check that everything is structured correctly:
+
+```bash
+archcore status
+```
+
+## Use it in conversations
+
+Start a new conversation and ask questions that require project context:
+
+> "What architectural decisions have been made in this project?"
+
+The agent calls `list_documents`, finds your ADR, and reports back. Go deeper:
+
+> "Summarize our database decision and its trade-offs"
+
+The agent reads the full document and answers from your repo context — not from generic knowledge.
+
+This is the core loop: capture knowledge as structured documents, and every agent session has that context from the first message.
+
+## Build on it
+
+Decisions produce rules. Rules need guides. Create a second document that connects to the first:
+
+> "Create a rule for database migrations based on the PostgreSQL ADR"
+
+Then link them:
+
+> "Link the migration rule to the PostgreSQL ADR"
+
+The agent calls `add_relation` to connect the two documents. Any agent reading either one now sees the connection.
+
+Ask: *"Show me all documents and their relations."* You should see both documents and the relation between them — the beginning of a structured project context that grows with your codebase.
+
+## Adopting in an existing repo
+
+Archcore is additive — it works alongside your existing files.
+
+- **You have a `CLAUDE.md` or `.cursorrules`:** keep it. Over time, extract structured knowledge into typed `.archcore/` documents. A coding standard becomes a `.rule.md`. A setup procedure becomes a `.guide.md`.
+- **You have `docs/` or existing ADRs:** ask your agent *"Migrate our existing documentation into Archcore format."* It reads your files, picks the right types, and creates structured documents.
+- **You have a wiki or Notion:** start by capturing the most frequently referenced decisions and rules. Migrate incrementally.
+
+See [migrate from flat files](/start/migrate-from-flat-files/) for a more detailed playbook.
+
+<CrossLinkCallout
+	to="/plugin/overview/"
+	label="Try the plugin layer"
+	direction="cli-to-plugin"
+>
+	Want skills like `/archcore:adr` and multi-step tracks without explaining them to the agent each time?
+</CrossLinkCallout>
+
+## Next steps
+
+- [Commands](/cli/commands/) — every `archcore` subcommand in one reference.
+- [MCP server](/cli/mcp-server/) — the 8 tools your agent can call, and how the server is started.
+- [How it works](/concepts/how-it-works/) — the design principles behind Archcore.

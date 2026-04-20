@@ -1,7 +1,11 @@
 ---
-title: Why Not Just Flat Instruction Files?
+title: Flat Files vs Archcore
 description: How Archcore compares to CLAUDE.md, .cursorrules, and other flat-file approaches — and when each makes sense.
 ---
+
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="shared" />
 
 Most teams start with flat instruction files — `CLAUDE.md`, `.cursorrules`, a `docs/` folder, or a wiki. These work for small projects. This page explains where they stop working and what Archcore does differently.
 
@@ -55,7 +59,7 @@ Every document has a status: `draft`, `accepted`, or `rejected`. Superseded deci
 
 ### Cross-agent, agent-native
 
-One `.archcore/` directory works with [Claude Code, Cursor, Copilot, Gemini CLI, and more](/agents/supported-agents/). Agents don't just read — they query by type and status, create documents from templates, and add relations through [MCP](/agents/mcp-server/).
+One `.archcore/` directory works with [Claude Code, Cursor, Copilot, Gemini CLI, and more](/cli/agent-integrations/). Agents don't just read — they query by type and status, create documents from templates, and add relations through [MCP](/cli/mcp-server/).
 
 ## When to switch
 
@@ -78,6 +82,6 @@ One `.archcore/` directory works with [Claude Code, Cursor, Copilot, Gemini CLI,
 
 ## Next steps
 
-- [Quick Start](/start/quick-start/) — install and set up your first project
-- [Document Types](/concepts/document-types/) — learn all 18 types and when to use each
-- [How It Works](/concepts/how-it-works/) — the design principles behind Archcore
+- [Plugin quick start](/start/plugin-quick-start/) — get the full UX in Claude Code or Cursor.
+- [CLI quick start](/cli/quick-start/) — install the CLI and create your first document.
+- [Document Types](/concepts/document-types/) — the 18 types and when to use each.

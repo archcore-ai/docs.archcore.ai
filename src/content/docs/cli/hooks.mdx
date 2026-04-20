@@ -1,0 +1,97 @@
+---
+title: Hooks
+description: The Archcore CLI session-start hook — what it emits, how agents consume it, and how to install or invoke it manually.
+---
+
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="cli" />
+
+Hooks are how Archcore injects project context into an agent session before you type anything. One hook, one event: **session start**.
+
+## What the hook does
+
+At session start, the agent invokes:
+
+```bash
+archcore hooks <agent-id> session-start
+```
+
+Archcore responds with:
+
+- An index of every document in `.archcore/` — path, type, title, status.
+- A summary of relations (which documents reference which).
+- Any drift signals detected since the last run.
+
+This output goes straight into the agent's working context, so the agent already "knows" about your ADRs, rules, guides, and plans on turn one.
+
+## Installing
+
+Hooks are installed automatically during `archcore init`. To install them manually for all detected agents:
+
+```bash
+archcore hooks install
+```
+
+Or for a single agent:
+
+```bash
+archcore hooks install --agent claude-code
+```
+
+## Supported agents
+
+Four agents support hooks today:
+
+| Agent          | Hook file                            |
+| -------------- | ------------------------------------ |
+| Claude Code    | `.claude/settings.json`              |
+| Cursor         | `.cursor/settings.json`              |
+| GitHub Copilot | `.vscode/settings.json`              |
+| Gemini CLI     | `.gemini/settings.json`              |
+
+OpenCode, Codex CLI, Roo Code, and Cline do not support session hooks yet. You can still use MCP with them — just ask the agent to list documents when you want context.
+
+## Example config — Claude Code
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "archcore hooks claude-code session-start"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Installed automatically by `archcore init` and `archcore hooks install`.
+
+## Running the hook manually
+
+Useful for debugging:
+
+```bash
+archcore hooks claude-code session-start
+```
+
+The output is the same as what the agent sees at session start.
+
+## When you don't need hooks
+
+- You always start conversations by asking the agent to list documents.
+- Your agent doesn't support hooks (MCP alone still works).
+- You want explicit control over when context gets loaded.
+
+## Next steps
+
+- [MCP server](/cli/mcp-server/) — the other integration layer.
+- [Agent integrations](/cli/agent-integrations/) — the full per-agent support table.
+- [Plugin's session lifecycle](/plugin/how-it-works/) — if you use the plugin, there's an extra layer on top.

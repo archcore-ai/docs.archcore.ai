@@ -1,0 +1,130 @@
+---
+title: Plugin Quick Start
+description: Install the Archcore Plugin in Claude Code or Cursor, initialize your project, and run your first intent command in under three minutes.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="plugin" />
+
+Get the full Archcore experience inside Claude Code or Cursor. Skills, tracks, built-in agents, and guardrails — all on top of your repo.
+
+## 1. Install the CLI
+
+The plugin reuses the MCP server provided by the CLI. Install it first:
+
+<Tabs>
+	<TabItem label="macOS / Linux">
+		```bash
+		curl -fsSL https://archcore.ai/install.sh | bash
+		```
+	</TabItem>
+	<TabItem label="Windows">
+		```powershell
+		irm https://archcore.ai/install.ps1 | iex
+		```
+	</TabItem>
+</Tabs>
+
+Verify:
+
+```bash
+archcore --version
+```
+
+See the full [CLI install guide](/cli/install/) if you hit any issues.
+
+## 2. Initialize your project
+
+```bash
+cd your-project
+archcore init
+```
+
+This creates `.archcore/` and wires MCP configs and session hooks for every agent it detects.
+
+## 3. Install the plugin
+
+<Tabs>
+	<TabItem label="Claude Code">
+		```bash
+		claude plugin marketplace add archcore-ai/archcore-plugin
+		claude plugin install archcore@archcore-plugins
+		```
+
+		Or from within Claude Code:
+
+		```
+		/plugin marketplace add archcore-ai/archcore-plugin
+		/plugin install archcore@archcore-plugins
+		```
+	</TabItem>
+	<TabItem label="Cursor">
+		Install from the Cursor plugin marketplace, or locally:
+
+		```bash
+		cursor --plugin-dir ./archcore-plugin
+		```
+	</TabItem>
+</Tabs>
+
+**Restart your host** so the session-start hook can run.
+
+## 4. Verify
+
+Open a fresh conversation and run:
+
+```
+/archcore:help
+```
+
+You should see a list of available skills grouped by family (intent commands, document types, tracks). If not, see [plugin troubleshooting](/plugin/troubleshooting/).
+
+## 5. Create your first decision
+
+Use the intent command to record a real decision:
+
+```
+/archcore:decide use PostgreSQL as our primary database
+```
+
+The plugin routes to the `adr` skill, creates a draft ADR through MCP, and offers a rule + guide follow-up. Accept it:
+
+```
+/archcore:standard migration format
+```
+
+This triggers the `standard-track`: `adr` → `rule` → `guide`, with relations wired automatically.
+
+Check the result:
+
+```bash
+ls .archcore/
+archcore status
+```
+
+You should see three linked documents, all validated.
+
+## 6. Try a multi-step track
+
+For something bigger:
+
+```
+/archcore:architecture-track event-driven orders
+```
+
+The plugin walks you through an ADR, a spec, and a plan — one document per step, with the right relations between them. You review each step before the next.
+
+## What you get
+
+- **Skills** — 32 slash commands covering 18 document types, 8 intent commands, and 6 tracks.
+- **Built-in agents** — `archcore-assistant` for multi-document flows, `archcore-auditor` for reviews.
+- **Guardrails** — direct `.archcore/*.md` writes are blocked; every mutation is validated; cascade staleness is flagged.
+
+## Next steps
+
+- [Plugin overview](/plugin/overview/) — what ships in the box.
+- [Intent commands](/plugin/intent-commands/) — the 8 routing commands.
+- [Tracks](/plugin/tracks/) — the 6 multi-step workflows.
+- [Document types](/concepts/document-types/) — the vocabulary you're using.

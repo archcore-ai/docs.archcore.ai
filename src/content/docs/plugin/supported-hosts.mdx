@@ -1,0 +1,73 @@
+---
+title: Supported Hosts
+description: Host support matrix for the Archcore Plugin — Claude Code (production), Cursor (implemented), GitHub Copilot and Codex CLI (planned).
+---
+
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="plugin" />
+
+The plugin targets AI coding agents that implement both Agent Skills and MCP as open standards. Skills, built-in agents, and MCP tools are shared across hosts. Only **hooks** and **plugin manifests** are host-specific.
+
+## Support matrix
+
+| Host             | Status       | Install                        | Hooks API                                               |
+| ---------------- | ------------ | ------------------------------ | ------------------------------------------------------- |
+| **Claude Code**  | Production   | Plugin marketplace             | `SessionStart`, `PreToolUse`, `PostToolUse`             |
+| **Cursor**       | Implemented  | Plugin marketplace / local dir | `sessionStart`, `preToolUse`, `postToolUse`, `afterMCPExecution` |
+| GitHub Copilot   | Planned      | —                              | —                                                       |
+| Codex CLI        | Planned      | —                              | —                                                       |
+
+**Production** means the plugin is deployed and used day-to-day; bug fixes and new skills ship through the marketplace.
+
+**Implemented** means every skill and agent works, and all documented hooks fire, but some host-level edge cases still surface occasionally.
+
+## Host-specific differences
+
+The plugin keeps skills, agents, and MCP tools identical across hosts. The differences are at the edges:
+
+### Plugin manifest
+
+| Aspect           | Claude Code                            | Cursor                                   |
+| ---------------- | -------------------------------------- | ---------------------------------------- |
+| Manifest file    | `.claude-plugin/plugin.json` (minimal) | `.cursor-plugin/plugin.json` (explicit)  |
+| Field pointers   | Convention-based                       | Explicit `skills`, `agents`, `hooks`     |
+
+### Hook files
+
+| Aspect           | Claude Code                            | Cursor                                   |
+| ---------------- | -------------------------------------- | ---------------------------------------- |
+| Hook file        | `hooks/hooks.json`                     | `hooks/cursor.hooks.json`                |
+| Trigger names    | `SessionStart`, `PreToolUse`, `PostToolUse` | `sessionStart`, `preToolUse`, `postToolUse`, `afterMCPExecution` |
+| Write matcher    | `Write|Edit`                           | `Write` only                             |
+| Output protocol  | Exit codes + structured JSON           | JSON wrapper objects                     |
+
+Both hook files live in the same plugin package and are selected automatically by the host.
+
+### Cursor: `afterMCPExecution`
+
+Cursor exposes an extra `afterMCPExecution` trigger that fires after MCP tool calls succeed. The plugin uses it to run `archcore validate` and the cascade staleness check in a single hook. On Claude Code, the same work happens via `PostToolUse` with two matchers.
+
+## Choosing a host
+
+**Use Claude Code if:**
+- You want the most mature path — it has the deepest testing coverage.
+- You're already invested in the Claude Code CLI workflow.
+
+**Use Cursor if:**
+- You prefer a full editor over a terminal-first agent.
+- You want `afterMCPExecution` semantics (single post-MCP hook).
+
+**Both are first-class.** Skills, tracks, agents, and guardrails behave identically.
+
+## Unsupported hosts
+
+The plugin is not available on GitHub Copilot or Codex CLI yet. Those hosts currently work with the [CLI path](/cli/overview/) only — you get MCP access and agent integrations, but no plugin skills or tracks.
+
+Track planned host support in the plugin's [repository](https://github.com/archcore-ai/archcore-plugin).
+
+## Next steps
+
+- [How plugin works](/plugin/how-it-works/) — the hook lifecycle that differs per host.
+- [Install](/plugin/install/) — marketplace commands per host.
+- [Troubleshooting](/plugin/troubleshooting/) — host-specific issues.

@@ -1,13 +1,17 @@
 ---
-title: Configuration Reference
-description: Complete reference for .archcore/settings.json — project settings, sync types (local, cloud, on-prem), language options, and validation rules.
+title: Configuration
+description: Complete reference for .archcore/settings.json — sync types (none, cloud, on-prem), language, and validation rules.
 ---
 
-## Settings File
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="cli" />
+
+## Settings file
 
 Configuration is stored in `.archcore/settings.json`. This file is created during `archcore init` and managed through `archcore config`.
 
-### Minimal Config (Local Only)
+### Minimal config (local only)
 
 ```json
 {
@@ -15,7 +19,7 @@ Configuration is stored in `.archcore/settings.json`. This file is created durin
 }
 ```
 
-### With Language
+### With language
 
 ```json
 {
@@ -33,9 +37,9 @@ Configuration is stored in `.archcore/settings.json`. This file is created durin
 | `archcore_url` | string | No | Server URL for on-prem sync |
 | `language` | string | No | Language code for document content |
 
-## Sync Types
+## Sync types
 
-### `none` — Local Only
+### `none` — local only
 
 Documents stay local. No server communication.
 
@@ -48,7 +52,7 @@ Documents stay local. No server communication.
 **Allowed fields:** `sync`, `language`
 **Forbidden fields:** `project_id`, `archcore_url`
 
-### `cloud` — Cloud Sync
+### `cloud` — cloud sync
 
 Syncs to `https://app.archcore.ai`.
 
@@ -66,7 +70,7 @@ Syncs to `https://app.archcore.ai`.
 Cloud sync is not yet available. The `sync` field is currently locked to `none`.
 :::
 
-### `on-prem` — Self-Hosted Server
+### `on-prem` — self-hosted server
 
 Syncs to a self-hosted Archcore server.
 
@@ -85,7 +89,7 @@ Syncs to a self-hosted Archcore server.
 On-prem sync is not yet available.
 :::
 
-## Validation Rules
+## Validation rules
 
 - `sync` must be one of: `none`, `cloud`, `on-prem`
 - Fields must be consistent with the sync type (e.g., `archcore_url` is forbidden for `cloud`)
@@ -93,7 +97,7 @@ On-prem sync is not yet available.
 - `archcore_url` must not be empty when sync is `on-prem`
 - Optional fields use `omitempty` — omitted fields use code-level defaults
 
-## Managing Config
+## Managing config
 
 ```bash
 # View current sync type
@@ -105,3 +109,8 @@ archcore config get language
 # Set a value
 archcore config set language en
 ```
+
+## Next steps
+
+- [Commands](/cli/commands/) — every `archcore config` flag and subcommand.
+- [Troubleshooting](/cli/troubleshooting/) — settings-related errors.

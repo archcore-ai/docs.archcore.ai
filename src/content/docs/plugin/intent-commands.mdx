@@ -1,0 +1,113 @@
+---
+title: Intent Commands
+description: The 8 Archcore Plugin intent commands — /archcore:capture, plan, decide, standard, review, status, actualize, help. Describe what you want and the skill routes to the right type or flow.
+---
+
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="plugin" />
+
+Intent commands are the primary user interface of the plugin. You describe what you want, the command routes to the right document types and the right multi-step flow.
+
+Use these when you don't want to think about which of the 18 document types fits — the command figures it out.
+
+## The eight commands
+
+| Command                 | What it does                                                                       |
+| ----------------------- | ---------------------------------------------------------------------------------- |
+| `/archcore:capture`     | Document a module, component, or API — routes to adr, spec, doc, or guide.         |
+| `/archcore:plan`        | Plan a feature end-to-end — routes to product-track or a single plan.              |
+| `/archcore:decide`      | Record a finalized decision — creates an ADR, offers rule + guide follow-up.       |
+| `/archcore:standard`    | Establish a team standard — drives standard-track (adr → rule → guide).            |
+| `/archcore:review`      | Documentation health review — gaps, staleness, orphaned docs, missing relations.   |
+| `/archcore:status`      | Dashboard — counts by category, type, status, relation coverage, and tags.         |
+| `/archcore:actualize`   | Detect stale docs via code drift, cascade analysis, and temporal staleness.        |
+| `/archcore:help`        | Navigate the system — discover skills, types, and workflows.                       |
+
+## When to use each
+
+### `/archcore:capture [topic]`
+
+"I have this thing in the codebase and it isn't documented yet."
+
+```
+/archcore:capture webhook delivery pipeline
+```
+
+The skill picks: `adr` if it's a decision, `spec` if it's a contract, `doc` if it's reference material, `guide` if it's a how-to. You approve before anything is written.
+
+### `/archcore:plan [feature]`
+
+"We're about to build something and I want it scoped."
+
+```
+/archcore:plan auth redesign
+```
+
+Small ask → single `plan` document. Bigger ask → routes to `product-track` (idea → prd → plan).
+
+### `/archcore:decide [topic]`
+
+"We've decided X, record it."
+
+```
+/archcore:decide use PostgreSQL as the primary database
+```
+
+Creates an ADR. Offers a rule + guide follow-up when the decision implies a standard.
+
+### `/archcore:standard [topic]`
+
+"This is going to be mandatory across the team."
+
+```
+/archcore:standard migration format
+```
+
+Triggers the [standard-track](/plugin/tracks/): `adr` (decision) → `rule` (standard) → `guide` (how to follow it). All relations wired automatically.
+
+### `/archcore:review [scope]`
+
+"Audit the docs."
+
+```
+/archcore:review knowledge
+/archcore:review tag:auth
+```
+
+Runs the `archcore-auditor` agent over the chosen slice. Reports gaps, orphans, staleness, missing relations.
+
+### `/archcore:status`
+
+"Show me where we are."
+
+```
+/archcore:status
+```
+
+Returns a one-screen dashboard: counts by layer, type, status, relation coverage, tag distribution, and any doctor issues.
+
+### `/archcore:actualize [scope]`
+
+"What's out of date?"
+
+```
+/archcore:actualize
+/archcore:actualize auth/
+```
+
+Looks for staleness signals: code drift (document references source that changed), cascade drift (a dependency updated without the dependent being reviewed), and temporal drift (a document hasn't been touched in a long time).
+
+### `/archcore:help`
+
+When you forget what's available.
+
+```
+/archcore:help
+```
+
+## Next steps
+
+- [Tracks](/plugin/tracks/) — multi-step flows that intent commands often delegate to.
+- [Built-in agents](/plugin/agents/) — `/archcore:review` runs `archcore-auditor`.
+- [Document types](/concepts/document-types/) — the 18 types intent commands route to.

@@ -1,11 +1,15 @@
 ---
-title: What Is Archcore?
-description: Git-native context for AI coding agents. Context engineering for repositories.
+title: What is Archcore?
+description: Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions. Typed documents that agents discover, read, and follow automatically across every session.
 ---
 
-Archcore is **git-native context for AI coding agents**. It turns scattered project knowledge — decisions, rules, patterns, plans — into structured documents that agents discover, read, and follow automatically.
+import PathBadge from '../../../components/PathBadge.astro';
 
-## The Problem
+<PathBadge scope="shared" />
+
+Archcore turns your repository into **structured, machine-readable context** — so AI agents understand your architecture, rules, and decisions. It takes scattered project knowledge — decisions, rules, patterns, plans — and stores it as typed, git-native documents that agents discover, read, and follow automatically.
+
+## The problem
 
 AI coding agents start every session from scratch. They don't remember yesterday's decisions, last week's architecture review, or the coding standards your team agreed on months ago.
 
@@ -18,7 +22,7 @@ Teams work around this with flat instruction files:
 
 These workarounds stop scaling as projects grow.
 
-## How Archcore Solves This
+## How Archcore solves this
 
 Archcore adds a `.archcore/` directory to your repository. Inside it, every piece of project knowledge becomes a **typed document** — an architecture decision, a coding rule, a how-to guide, an implementation plan.
 
@@ -37,9 +41,9 @@ your-project/
 
 Each file suffix (`.adr.md`, `.guide.md`, `.task-type.md`) indicates its [document type](/concepts/document-types/).
 
-When an agent starts a session, Archcore's [MCP server](/agents/mcp-server/) makes all documents available. The agent can query, read, create, and link documents without leaving the conversation.
+When an agent starts a session, Archcore's [MCP server](/cli/mcp-server/) makes all documents available. The agent can query, read, create, and link documents without leaving the conversation.
 
-## Why Not Just Flat Instruction Files?
+## Why not just flat instruction files?
 
 | Feature | Flat files | Archcore |
 |---|---|---|
@@ -50,11 +54,11 @@ When an agent starts a session, Archcore's [MCP server](/agents/mcp-server/) mak
 | **Lifecycle** | No versioning beyond git diff | Draft → accepted → rejected status |
 | **Connections** | No links between concepts | Explicit relations between documents |
 
-[Read the full comparison →](/start/vs-flat-files/)
+[Read the full comparison →](/concepts/vs-flat-files/)
 
-## What You Get After Setup
+## What you get after setup
 
-After running [`archcore init`](/start/quick-start/), your agents can:
+After running `archcore init`, your agents can:
 
 - **Find relevant context** — query decisions, rules, and patterns by type or topic
 - **Follow team standards** — read coding rules and how-to guides automatically
@@ -62,8 +66,15 @@ After running [`archcore init`](/start/quick-start/), your agents can:
 - **Link related concepts** — connect a plan to the PRD it implements, or a rule to the decision that produced it
 - **Work consistently** — the same knowledge base works across Claude Code, Cursor, Copilot, Gemini CLI, and more
 
-## Next Steps
+## Two ways to use Archcore
 
-- **[Quick Start](/start/quick-start/)** — install and set up in 2 minutes
-- **[Flat Files vs Archcore](/start/vs-flat-files/)** — detailed comparison with CLAUDE.md, .cursorrules, and other approaches
-- **[Use Cases](/concepts/use-cases/)** — the most common starting points for teams
+- The **[Plugin](/plugin/overview/)** gives you the highest-level experience in Claude Code and Cursor — skills like `/archcore:adr`, multi-step tracks, built-in agents, and guardrails.
+- The **[CLI](/cli/overview/)** is the core — one binary, eight MCP tools, and session hooks that work with all eight supported agents.
+
+Both paths use the same `.archcore/` directory. See [Mental Model](/concepts/mental-model/) for how they fit together.
+
+## Next steps
+
+- [Mental Model](/concepts/mental-model/) — CLI as compiler, plugin as runtime.
+- [Document Types](/concepts/document-types/) — the 18 types you can create.
+- [Use Cases](/concepts/use-cases/) — the most common starting points for teams.

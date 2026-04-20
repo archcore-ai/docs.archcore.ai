@@ -1,0 +1,57 @@
+---
+title: Install the CLI
+description: Install the Archcore CLI on macOS, Linux, Windows, or WSL. One-line install scripts plus how to verify and update.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="cli" />
+
+The CLI is a single binary. Install it with one command for your platform.
+
+## Install
+
+<Tabs>
+	<TabItem label="macOS / Linux">
+		```bash
+		curl -fsSL https://archcore.ai/install.sh | bash
+		```
+	</TabItem>
+	<TabItem label="Windows">
+		```powershell
+		irm https://archcore.ai/install.ps1 | iex
+		```
+
+		Installs `archcore.exe` under `%LOCALAPPDATA%\Programs\archcore` and adds it to your user `PATH`. Open a new PowerShell window after install so the `PATH` change is picked up. Requires PowerShell 5.1+ (ships by default on Windows 10/11).
+	</TabItem>
+	<TabItem label="Windows (WSL)">
+		If you prefer a Linux environment on Windows, install <a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank">WSL</a> and run inside it:
+
+		```bash
+		curl -fsSL https://archcore.ai/install.sh | bash
+		```
+	</TabItem>
+</Tabs>
+
+## Verify
+
+```bash
+archcore --version
+```
+
+You should see a version string. If the binary isn't on your `PATH`, see [troubleshooting](/cli/troubleshooting/).
+
+## Update
+
+```bash
+archcore update
+```
+
+This queries the GitHub release feed, downloads the binary for your OS and architecture, verifies the checksum, and updates in place.
+
+## Next steps
+
+- [Quick start](/cli/quick-start/) — initialize a project and create your first document.
+- [`archcore init`](/cli/init/) — a deep dive into what initialization does.
+- [Commands](/cli/commands/) — the full command reference.

@@ -1,0 +1,108 @@
+---
+title: Install the Plugin
+description: Install the Archcore Plugin into Claude Code or Cursor — via marketplace or local dev. Requires the Archcore CLI.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import PathBadge from '../../../components/PathBadge.astro';
+
+<PathBadge scope="plugin" />
+
+The plugin runs inside your coding agent (Claude Code or Cursor). It reuses the MCP server provided by the Archcore CLI, so you install the CLI first, then the plugin on top.
+
+## Prerequisite: install the CLI
+
+The plugin depends on `archcore mcp` being on your `PATH`. If you don't have the CLI yet, see the [CLI install guide](/cli/install/).
+
+Quick check:
+
+```bash
+archcore --version
+```
+
+If this prints a version, you're good.
+
+## Install the plugin
+
+<Tabs>
+	<TabItem label="Claude Code">
+		From your shell:
+
+		```bash
+		claude plugin marketplace add archcore-ai/archcore-plugin
+		claude plugin install archcore@archcore-plugins
+		```
+
+		Or, from within Claude Code:
+
+		```bash
+		/plugin marketplace add archcore-ai/archcore-plugin
+		/plugin install archcore@archcore-plugins
+		```
+	</TabItem>
+	<TabItem label="Cursor">
+		Install from the Cursor plugin marketplace, or locally:
+
+		```bash
+		cursor --plugin-dir ./archcore-plugin
+		```
+
+		Cursor support is implemented but has a slightly different hooks API — see [Supported Hosts](/plugin/supported-hosts/).
+	</TabItem>
+	<TabItem label="Local development (any host)">
+		Clone the plugin repo and point your host at it directly:
+
+		```bash
+		git clone https://github.com/archcore-ai/archcore-plugin
+		claude --plugin-dir ./archcore-plugin    # Claude Code
+		cursor --plugin-dir ./archcore-plugin    # Cursor
+		```
+
+		Local mode is useful when hacking on skills or hooks.
+	</TabItem>
+</Tabs>
+
+## Initialize your project
+
+The plugin expects `.archcore/` to exist. If you haven't run `archcore init` yet:
+
+```bash
+cd your-project
+archcore init
+```
+
+## Verify
+
+1. Restart your coding agent so the session-start hook can run.
+2. In a fresh conversation, run:
+
+	```
+	/archcore:help
+	```
+
+	You should see a list of available skills and intent commands.
+3. Try an intent command on a real decision:
+
+	```
+	/archcore:adr choose PostgreSQL as primary database
+	```
+
+	The agent should create a draft ADR in `.archcore/` via MCP — not via direct file writes.
+
+If `/archcore:*` commands don't appear, check [Troubleshooting](/plugin/troubleshooting/).
+
+## Uninstall
+
+**Claude Code:**
+
+```bash
+/plugin uninstall archcore@archcore-plugins
+```
+
+**Cursor:** remove Archcore from plugin settings.
+
+## Next steps
+
+- [Supported hosts](/plugin/supported-hosts/) — confirm your host supports the features you need.
+- [Intent commands](/plugin/intent-commands/) — the 8 commands you'll use most.
+- [Tracks](/plugin/tracks/) — multi-step workflows for product, architecture, standards.

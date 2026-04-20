@@ -1,0 +1,69 @@
+---
+title: Plugin Overview
+description: Smart AI plugin powered by Archcore CLI — uses repository context to guide code generation. Skills, tracks, built-in agents, and MCP-only guardrails for Claude Code and Cursor.
+---
+
+import PathBadge from '../../../components/PathBadge.astro';
+import CrossLinkCallout from '../../../components/CrossLinkCallout.astro';
+
+<PathBadge scope="plugin" />
+
+The **Archcore Plugin** is a smart AI plugin powered by the [Archcore CLI](/cli/overview/) — it uses your repository's context to guide code generation. It installs on top of the CLI and gives you skills, multi-step tracks, built-in agents, and guardrails, all working against the same `.archcore/` directory the CLI manages.
+
+## When to use the plugin
+
+Use the plugin when you want the highest-quality experience inside your coding agent:
+
+- You work in **Claude Code** or **Cursor** day-to-day.
+- You want to type `/archcore:adr` and get a guided ADR flow, instead of explaining the document type to the agent.
+- You want **multi-document tracks** (PRD → plan, ADR → rule → guide, ISO 29148 cascades) to execute end-to-end.
+- You want the agent to refuse direct writes to `.archcore/` and go through MCP every time.
+
+If you want a minimal, direct integration — say, in a headless CI agent or an editor the plugin doesn't support yet — start with the [CLI](/cli/overview/) instead.
+
+## How it fits with the CLI
+
+Keep this analogy in your head:
+
+- **Archcore CLI — the compiler.** Reads `.archcore/`, builds the context graph, exposes it over MCP.
+- **Archcore Plugin — the runtime.** Applies that context inside your AI agent — skills, guardrails, workflows.
+
+The plugin does not ship its own MCP server. It reuses the one from `archcore mcp`. This avoids duplicate-server conflicts in repos that already register `archcore` in `.mcp.json` or via `claude mcp add`.
+
+<CrossLinkCallout
+	to="/concepts/mental-model/"
+	label="Read the mental model"
+	direction="plugin-to-cli"
+>
+	Want a deeper explanation of why the CLI is the compiler and the plugin is the runtime?
+</CrossLinkCallout>
+
+## What ships in the box
+
+- **32 Skills** — 18 document types, 8 intent commands, 6 multi-step tracks.
+- **2 Agents** — a universal assistant (`archcore-assistant`) and a read-only auditor (`archcore-auditor`).
+- **Hooks** — session-start context loading, MCP-only write enforcement, post-mutation validation, and cascade staleness detection.
+- **Rules** — baseline guardrails that apply to every `.archcore/` file interaction.
+
+## Without vs. with the plugin
+
+Without the plugin, ask for "a new service" and the agent:
+
+- guesses the folder structure
+- ignores conventions it has never been told about
+- produces code that drifts from decisions buried in docs
+- rediscovers patterns you've already written down
+
+With the plugin, the same ask and the agent:
+
+- places files where your architecture says they belong
+- follows rules defined in `.archcore/`
+- respects ADRs and existing specs
+- reuses patterns (`cpat`) you've already captured
+
+## Next steps
+
+- [Install the plugin](/plugin/install/) — Claude Code or Cursor, production path or local dev.
+- [Supported hosts](/plugin/supported-hosts/) — feature parity, status, and install method per host.
+- [How plugin works](/plugin/how-it-works/) — hooks, MCP-only principle, validation, cascade detection.
+- [Skills](/plugin/skills/) — the 32-skill system at a glance.
