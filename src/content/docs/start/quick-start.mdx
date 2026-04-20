@@ -16,14 +16,14 @@ Archcore gives your AI coding agents git-native context — structured documents
     ```
   </TabItem>
   <TabItem label="Windows">
-    Download `archcore.exe` from the <a href="https://github.com/archcore-ai/cli/releases/latest" target="_blank">latest release</a> and add it to your `PATH`.
-
     ```powershell
-    Move-Item archcore.exe C:\Users\$env:USERNAME\.local\bin\
+    irm https://archcore.ai/install.ps1 | iex
     ```
+
+    Installs `archcore.exe` under `%LOCALAPPDATA%\Programs\archcore` and adds it to your user `PATH`. Open a new PowerShell window after install so the `PATH` change is picked up. Requires PowerShell 5.1+ (ships by default on Windows 10/11).
   </TabItem>
   <TabItem label="Windows (WSL)">
-    Install <a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank">WSL</a>, then run inside it:
+    If you prefer a Linux environment on Windows, install <a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank">WSL</a> and run inside it:
 
     ```bash
     curl -fsSL https://archcore.ai/install.sh | bash

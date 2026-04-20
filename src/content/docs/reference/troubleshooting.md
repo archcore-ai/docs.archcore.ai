@@ -99,9 +99,12 @@ which archcore
 
 If this returns nothing, the binary isn't in your PATH.
 
-**Fix:** Add the directory containing `archcore` to your PATH. The exact location depends on how you installed it. If you used the install script, the binary is typically at `~/.local/bin/archcore` or `/usr/local/bin/archcore`.
+**Fix:** Add the directory containing `archcore` to your PATH. The exact location depends on how you installed it:
 
-Add it to your shell profile (`~/.bashrc`, `~/.zshrc`, or equivalent), then verify:
+- **macOS / Linux (install.sh):** typically `~/.local/bin/archcore` or `/usr/local/bin/archcore`. Add to your shell profile (`~/.bashrc`, `~/.zshrc`, or equivalent).
+- **Windows (install.ps1):** typically `%LOCALAPPDATA%\Programs\archcore\archcore.exe`. The installer adds this directory to your user `PATH` automatically — if it's missing, open a new PowerShell window or re-run the installer.
+
+Then verify:
 
 ```bash
 archcore --version
