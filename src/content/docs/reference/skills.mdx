@@ -1,6 +1,6 @@
 ---
 title: Plugin Skills Reference
-description: One-page reference of all 32 Archcore Plugin skills — 8 intent commands, 18 document-type skills, 6 tracks.
+description: One-page reference of all 33 Archcore Plugin skills — 9 intent commands, 17 document-type skills, 6 tracks, 1 utility.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -9,7 +9,7 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 A flat reference of every skill shipped with the Archcore Plugin. For grouped, annotated coverage see [Intent commands](/plugin/intent-commands/), [Tracks](/plugin/tracks/), and [Skills](/plugin/skills/).
 
-## Intent commands (8)
+## Intent commands (9)
 
 The primary routing commands — describe an intent, the skill picks the right document type.
 
@@ -22,26 +22,26 @@ The primary routing commands — describe an intent, the skill picks the right d
 | `/archcore:review`      | Documentation health review — gaps, staleness, orphans, missing relations.     |
 | `/archcore:status`      | Dashboard — counts by category, type, status, relation coverage, tags.         |
 | `/archcore:actualize`   | Detect stale docs via code drift, cascade analysis, and temporal staleness.    |
+| `/archcore:graph`       | Render the document relation graph as a Mermaid flowchart.                     |
 | `/archcore:help`        | Navigate the system — discover skills, types, and workflows.                   |
 
-## Document-type skills (18)
+## Document-type skills (17)
 
-Each skill creates and links one document type.
+Each skill creates and links one document type. Niche types (mrd, brd, urd, brs, strs, syrs, srs) are hidden from `/` autocomplete and reached programmatically via `sources-track` or `iso-track`. The `plan` document type is created via the `/archcore:plan` intent skill, not a standalone type skill.
 
 ### Vision
 
-| Command              | Type   | What it captures                                     |
-| -------------------- | ------ | ---------------------------------------------------- |
-| `/archcore:prd`      | prd    | Product requirements — goals, scope, success metrics |
-| `/archcore:idea`     | idea   | Low-commitment concepts and explorations             |
-| `/archcore:plan`     | plan   | Phased implementation with tasks and dependencies    |
-| `/archcore:mrd`      | mrd    | Market landscape, TAM/SAM/SOM, competition           |
-| `/archcore:brd`      | brd    | Business objectives, stakeholders, ROI               |
-| `/archcore:urd`      | urd    | User personas, journeys, usability requirements      |
-| `/archcore:brs`      | brs    | Formal business requirements spec (ISO 29148)        |
-| `/archcore:strs`     | strs   | Formal stakeholder requirements spec (ISO 29148)     |
-| `/archcore:syrs`     | syrs   | System boundary and interface spec (ISO 29148)       |
-| `/archcore:srs`      | srs    | Software functional/non-functional spec (ISO 29148)  |
+| Command              | Type   | Visibility | What it captures                                     |
+| -------------------- | ------ | ---------- | ---------------------------------------------------- |
+| `/archcore:prd`      | prd    | mainstream | Product requirements — goals, scope, success metrics |
+| `/archcore:idea`     | idea   | mainstream | Low-commitment concepts and explorations             |
+| `/archcore:mrd`      | mrd    | niche      | Market landscape, TAM/SAM/SOM, competition           |
+| `/archcore:brd`      | brd    | niche      | Business objectives, stakeholders, ROI               |
+| `/archcore:urd`      | urd    | niche      | User personas, journeys, usability requirements      |
+| `/archcore:brs`      | brs    | niche      | Formal business requirements spec (ISO 29148)        |
+| `/archcore:strs`     | strs   | niche      | Formal stakeholder requirements spec (ISO 29148)     |
+| `/archcore:syrs`     | syrs   | niche      | System boundary and interface spec (ISO 29148)       |
+| `/archcore:srs`      | srs    | niche      | Software functional/non-functional spec (ISO 29148)  |
 
 ### Knowledge
 

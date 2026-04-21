@@ -1,6 +1,6 @@
 ---
 title: Skills
-description: The 32-skill system of the Archcore Plugin — 18 document types, 8 intent commands, and 6 multi-step tracks invoked via /archcore:* commands.
+description: The 33-skill system of the Archcore Plugin — 17 document-type skills, 9 intent commands, 6 multi-step tracks, and 1 utility, invoked via /archcore:* commands.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -9,15 +9,16 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 A **skill** is a slash-command-backed unit of expertise that the agent loads on demand. Each one carries focused knowledge — when to use a document type, required sections, typical relations, common mistakes — so you describe intent instead of schema.
 
-The plugin ships **32 skills** in three families:
+The plugin ships **33 skills** in four families:
 
 | Family               | Count | What it does                                                    | Invoke via                  |
 | -------------------- | ----- | --------------------------------------------------------------- | --------------------------- |
-| Intent commands      | 8     | Route a fuzzy intent to the right document type or workflow     | `/archcore:capture`, `/archcore:plan`, …         |
-| Document-type skills | 18    | Create and link one document type with the right template       | `/archcore:adr`, `/archcore:prd`, …              |
+| Intent commands      | 9     | Route a fuzzy intent to the right document type or workflow     | `/archcore:capture`, `/archcore:plan`, `/archcore:graph`, … |
+| Document-type skills | 17    | Create and link one document type with the right template       | `/archcore:adr`, `/archcore:prd`, …              |
 | Tracks               | 6     | Orchestrate multi-document flows with automatic relation wiring | `/archcore:product-track`, `/archcore:iso-track`, … |
+| Utility              | 1     | Plugin integrity checks (tests, lint, config audit)             | `/archcore:verify`          |
 
-Plus one utility: `/archcore:verify` for plugin integrity checks.
+Of the 17 document-type skills, 10 are mainstream (visible in `/` autocomplete) and 7 are niche (hidden from `/`, reached programmatically via `sources-track` or `iso-track`). The 7 niche types are: `mrd`, `brd`, `urd`, `brs`, `strs`, `syrs`, `srs`. The `plan` document type does not have a standalone type skill — it's served by the `/archcore:plan` intent skill.
 
 ## How skills activate
 
@@ -38,9 +39,9 @@ Every skill ultimately resolves to **MCP tool calls**. The plugin never writes t
 
 See the dedicated pages for each family:
 
-- [Intent commands](/plugin/intent-commands/) — the 8 routing commands.
+- [Intent commands](/plugin/intent-commands/) — the 9 routing commands.
 - [Tracks](/plugin/tracks/) — the 6 multi-step workflows.
-- [Document types](/concepts/document-types/) — the 18 types each `/archcore:<type>` skill creates.
+- [Document types](/concepts/document-types/) — the 18 Archcore document types (the plugin ships 17 type skills; `plan` is served by the `/archcore:plan` intent skill).
 
 For a single-page summary of everything, see the [Plugin Skills Reference](/reference/skills/).
 

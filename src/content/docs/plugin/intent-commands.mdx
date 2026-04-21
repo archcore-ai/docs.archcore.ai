@@ -1,6 +1,6 @@
 ---
 title: Intent Commands
-description: The 8 Archcore Plugin intent commands — /archcore:capture, plan, decide, standard, review, status, actualize, help. Describe what you want and the skill routes to the right type or flow.
+description: The 9 Archcore Plugin intent commands — /archcore:capture, plan, decide, standard, review, status, actualize, graph, help. Describe what you want and the skill routes to the right type or flow.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -11,7 +11,7 @@ Intent commands are the primary user interface of the plugin. You describe what 
 
 Use these when you don't want to think about which of the 18 document types fits — the command figures it out.
 
-## The eight commands
+## The nine commands
 
 | Command                 | What it does                                                                       |
 | ----------------------- | ---------------------------------------------------------------------------------- |
@@ -22,6 +22,7 @@ Use these when you don't want to think about which of the 18 document types fits
 | `/archcore:review`      | Documentation health review — gaps, staleness, orphaned docs, missing relations.   |
 | `/archcore:status`      | Dashboard — counts by category, type, status, relation coverage, and tags.         |
 | `/archcore:actualize`   | Detect stale docs via code drift, cascade analysis, and temporal staleness.        |
+| `/archcore:graph`       | Render the document relation graph as a Mermaid flowchart.                         |
 | `/archcore:help`        | Navigate the system — discover skills, types, and workflows.                       |
 
 ## When to use each
@@ -97,6 +98,17 @@ Returns a one-screen dashboard: counts by layer, type, status, relation coverage
 ```
 
 Looks for staleness signals: code drift (document references source that changed), cascade drift (a dependency updated without the dependent being reviewed), and temporal drift (a document hasn't been touched in a long time).
+
+### `/archcore:graph [filter]`
+
+"Show me how the docs connect."
+
+```
+/archcore:graph
+/archcore:graph tag:auth
+```
+
+Renders the document relation graph as a Mermaid flowchart, grouped by category with styled edges per relation type. Useful for spotting orphans, dense clusters, and unexpected dependencies. Optional filter scopes the graph by tag, type, category, or document slug.
 
 ### `/archcore:help`
 
