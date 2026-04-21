@@ -28,7 +28,9 @@ Keep this analogy in your head:
 - **Archcore CLI — the compiler.** Reads `.archcore/`, builds the context graph, exposes it over MCP.
 - **Archcore Plugin — the runtime.** Applies that context inside your AI agent — skills, guardrails, workflows.
 
-The plugin does not ship its own MCP server. It reuses the one from `archcore mcp`. This avoids duplicate-server conflicts in repos that already register `archcore` in `.mcp.json` or via `claude mcp add`.
+The plugin ships a cross-platform launcher that resolves the Archcore CLI (`archcore mcp`) on demand. For Claude Code, the plugin also ships `.mcp.json` that auto-registers the MCP server against that launcher — no `claude mcp add` step, no manual CLI install. The launcher defers to any existing global `archcore` on `PATH`, so repos that already register `archcore` in a user or project config see no conflict; the resolved binary is the same.
+
+Cursor users still register MCP themselves (Cursor does not auto-register plugin-provided MCP), pointing at the same bundled launcher.
 
 <CrossLinkCallout
 	to="/concepts/mental-model/"

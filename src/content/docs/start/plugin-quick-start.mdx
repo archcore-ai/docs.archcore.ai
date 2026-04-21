@@ -1,6 +1,6 @@
 ---
 title: Plugin Quick Start
-description: Install the Archcore Plugin in Claude Code or Cursor, initialize your project, and run your first intent command in under three minutes.
+description: Install the Archcore Plugin in Claude Code or Cursor, open your project, and run your first intent command in under three minutes. Zero setup for Claude Code.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -10,41 +10,11 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 Get the full Archcore experience inside Claude Code or Cursor. Skills, tracks, built-in agents, and guardrails — all on top of your repo.
 
-## 1. Install the CLI
+For **Claude Code**, no prerequisites — the plugin bundles a launcher that auto-resolves the CLI on first use and registers MCP automatically.
 
-The plugin reuses the MCP server provided by the CLI. Install it first:
+For **Cursor**, the plugin still works, but you register MCP yourself (Cursor does not auto-register plugin-provided MCP). If you don't already have the CLI on `PATH`, install it first with the [CLI install guide](/cli/install/).
 
-<Tabs>
-	<TabItem label="macOS / Linux">
-		```bash
-		curl -fsSL https://archcore.ai/install.sh | bash
-		```
-	</TabItem>
-	<TabItem label="Windows">
-		```powershell
-		irm https://archcore.ai/install.ps1 | iex
-		```
-	</TabItem>
-</Tabs>
-
-Verify:
-
-```bash
-archcore --version
-```
-
-See the full [CLI install guide](/cli/install/) if you hit any issues.
-
-## 2. Initialize your project
-
-```bash
-cd your-project
-archcore init
-```
-
-This creates `.archcore/` and wires MCP configs and session hooks for every agent it detects.
-
-## 3. Install the plugin
+## 1. Install the plugin
 
 <Tabs>
 	<TabItem label="Claude Code">
@@ -66,14 +36,16 @@ This creates `.archcore/` and wires MCP configs and session hooks for every agen
 		```bash
 		cursor --plugin-dir ./archcore-plugin
 		```
+
+		Then register MCP in Cursor's MCP settings, pointing `command` at `${CURSOR_PLUGIN_ROOT}/bin/archcore` (or an absolute path to a locally-cloned `bin/archcore`), with `args: ["mcp"]`. See [Install the plugin](/plugin/install/) for the exact snippet.
 	</TabItem>
 </Tabs>
 
 **Restart your host** so the session-start hook can run.
 
-## 4. Verify
+## 2. Verify
 
-Open a fresh conversation and run:
+Open your project in a fresh conversation and run:
 
 ```
 /archcore:help
@@ -81,13 +53,15 @@ Open a fresh conversation and run:
 
 You should see a list of available skills grouped by family (intent commands, document types, tracks). If not, see [plugin troubleshooting](/plugin/troubleshooting/).
 
-## 5. Create your first decision
+## 3. Create your first decision
 
 Use the intent command to record a real decision:
 
 ```
 /archcore:decide use PostgreSQL as our primary database
 ```
+
+On Claude Code, the first Archcore tool call downloads the CLI (~5s, one-time, cached between sessions) and — if `.archcore/` doesn't exist yet — initializes it through MCP. No `archcore init` needed.
 
 The plugin routes to the `adr` skill, creates a draft ADR through MCP, and offers a rule + guide follow-up. Accept it:
 
@@ -101,12 +75,11 @@ Check the result:
 
 ```bash
 ls .archcore/
-archcore status
 ```
 
 You should see three linked documents, all validated.
 
-## 6. Try a multi-step track
+## 4. Try a multi-step track
 
 For something bigger:
 
@@ -121,6 +94,10 @@ The plugin walks you through an ADR, a spec, and a plan — one document per ste
 - **Skills** — 32 slash commands covering 18 document types, 8 intent commands, and 6 tracks.
 - **Built-in agents** — `archcore-assistant` for multi-document flows, `archcore-auditor` for reviews.
 - **Guardrails** — direct `.archcore/*.md` writes are blocked; every mutation is validated; cascade staleness is flagged.
+
+## Already have the CLI installed?
+
+The bundled launcher defers to any `archcore` on `PATH`. If you've previously installed the CLI via `curl | bash`, `go install`, or a package manager, the plugin picks up that binary — no duplicate cache, no conflict. The only time the plugin downloads anything is when neither `$ARCHCORE_BIN` nor a PATH `archcore` is available and the cache is empty.
 
 ## Next steps
 

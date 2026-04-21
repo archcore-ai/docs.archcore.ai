@@ -11,12 +11,12 @@ The plugin targets AI coding agents that implement both Agent Skills and MCP as 
 
 ## Support matrix
 
-| Host             | Status       | Install                        | Hooks API                                               |
-| ---------------- | ------------ | ------------------------------ | ------------------------------------------------------- |
-| **Claude Code**  | Production   | Plugin marketplace             | `SessionStart`, `PreToolUse`, `PostToolUse`             |
-| **Cursor**       | Implemented  | Plugin marketplace / local dir | `sessionStart`, `preToolUse`, `postToolUse`, `afterMCPExecution` |
-| GitHub Copilot   | Planned      | —                              | —                                                       |
-| Codex CLI        | Planned      | —                              | —                                                       |
+| Host             | Status       | Install                        | MCP wiring                                    | Hooks API                                               |
+| ---------------- | ------------ | ------------------------------ | --------------------------------------------- | ------------------------------------------------------- |
+| **Claude Code**  | Production   | Plugin marketplace             | Auto — plugin ships `.mcp.json` + launcher    | `SessionStart`, `PreToolUse`, `PostToolUse`             |
+| **Cursor**       | Implemented  | Plugin marketplace / local dir | User-registered (points at plugin's launcher) | `sessionStart`, `preToolUse`, `postToolUse`, `afterMCPExecution` |
+| GitHub Copilot   | Planned      | —                              | —                                             | —                                                       |
+| Codex CLI        | Planned      | —                              | —                                             | —                                                       |
 
 **Production** means the plugin is deployed and used day-to-day; bug fixes and new skills ship through the marketplace.
 
@@ -32,6 +32,15 @@ The plugin keeps skills, agents, and MCP tools identical across hosts. The diffe
 | ---------------- | -------------------------------------- | ---------------------------------------- |
 | Manifest file    | `.claude-plugin/plugin.json` (minimal) | `.cursor-plugin/plugin.json` (explicit)  |
 | Field pointers   | Convention-based                       | Explicit `skills`, `agents`, `hooks`     |
+
+### MCP server registration
+
+| Aspect              | Claude Code                                       | Cursor                                                  |
+| ------------------- | ------------------------------------------------- | ------------------------------------------------------- |
+| Who registers MCP   | The plugin, via `.mcp.json` at plugin root        | The user, via Cursor MCP settings or project `mcp.json` |
+| Command points at   | `${CLAUDE_PLUGIN_ROOT}/bin/archcore mcp`          | Same launcher, or a globally-installed `archcore`       |
+| CLI install step    | None — launcher auto-downloads on first use       | Either via the launcher path, or install CLI globally   |
+| Duplicate handling  | Launcher defers to any global `archcore` on PATH  | N/A — user controls the registration                    |
 
 ### Hook files
 

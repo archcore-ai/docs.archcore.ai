@@ -49,27 +49,60 @@ claude plugin install archcore@archcore-plugins
 
 For local dev installs, ensure `bin/*` scripts are executable (`chmod +x bin/*`).
 
-## MCP server not found
+## MCP server not found (Claude Code)
 
 **Symptom:** Commands run but the agent reports "MCP tool not available" or "server not connected".
 
-The plugin does **not** ship its own MCP server — it reuses the CLI's. So this is almost always a CLI-side issue.
+The plugin ships `.mcp.json` at its root pointing at `${CLAUDE_PLUGIN_ROOT}/bin/archcore mcp`. If MCP is unreachable, one of these is usually the cause:
+
+1. **Plugin didn't load cleanly.** Run `/plugin` — `archcore` should be listed. If not, reinstall:
+	```bash
+	claude plugin uninstall archcore@archcore-plugins
+	claude plugin install archcore@archcore-plugins
+	```
+2. **Launcher can't resolve a CLI.** From a shell at the plugin root:
+	```bash
+	bin/archcore --version
+	```
+	Expected: prints a version. Errors indicate one of:
+	- No network on first run (the launcher downloads the CLI once, ~5s). Retry with network, or set `ARCHCORE_BIN=/abs/path/to/archcore` to bypass the download.
+	- Checksum mismatch — delete the cache and retry:
+		```bash
+		rm -rf "$CLAUDE_PLUGIN_DATA/archcore"
+		```
+	- Missing `bin/CLI_VERSION` — restore the plugin install.
+3. **Duplicate-server warning in `/plugin` UI.** If `/plugin` shows "Errors (1)" with an `archcore` MCP message, a user- or project-registered `archcore` has the same command. Benign — the resolved binary is the same binary the plugin would run. To silence it, remove the redundant user registration (`claude mcp remove archcore`) or the project `.mcp.json` entry.
 
 <CrossLinkCallout
 	to="/cli/troubleshooting/"
-	label="Open CLI troubleshooting"
+	label="CLI-level MCP troubleshooting"
 	direction="plugin-to-cli"
 >
-	Start there — if the CLI's MCP server isn't reachable, no amount of plugin debugging will help.
+	For issues that are clearly CLI-side (`.archcore/` validation, `archcore doctor` errors) rather than launcher-side.
 </CrossLinkCallout>
 
-Quick sanity checks:
+## MCP server not found (Cursor)
+
+Cursor does not auto-register plugin-provided MCP. You must register `archcore` yourself in Cursor's MCP settings (or a project `mcp.json`):
+
+```json
+{
+	"mcpServers": {
+		"archcore": {
+			"command": "/abs/path/to/archcore-plugin/bin/archcore",
+			"args": ["mcp"]
+		}
+	}
+}
+```
+
+Alternatively, install the CLI globally and point `command` at `archcore`. Verify the launcher resolves:
 
 ```bash
-archcore --version           # CLI on PATH?
-archcore status              # .archcore/ valid?
-which archcore               # which binary?
+bin/archcore --version
 ```
+
+from the plugin root.
 
 ## Writes blocked unexpectedly
 

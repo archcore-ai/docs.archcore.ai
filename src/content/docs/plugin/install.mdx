@@ -1,6 +1,6 @@
 ---
 title: Install the Plugin
-description: Install the Archcore Plugin into Claude Code or Cursor — via marketplace or local dev. Requires the Archcore CLI.
+description: Install the Archcore Plugin into Claude Code or Cursor. Zero prerequisites for Claude Code — the plugin bundles a launcher that auto-downloads the CLI on first use.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -8,19 +8,9 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-The plugin runs inside your coding agent (Claude Code or Cursor). It reuses the MCP server provided by the Archcore CLI, so you install the CLI first, then the plugin on top.
+The plugin runs inside your coding agent (Claude Code or Cursor). For Claude Code, no prerequisites — the plugin bundles a launcher that resolves the Archcore CLI on first use (from an existing global install, a plugin-managed cache, or a checksum-verified download). MCP is registered automatically.
 
-## Prerequisite: install the CLI
-
-The plugin depends on `archcore mcp` being on your `PATH`. If you don't have the CLI yet, see the [CLI install guide](/cli/install/).
-
-Quick check:
-
-```bash
-archcore --version
-```
-
-If this prints a version, you're good.
+For Cursor, you register MCP yourself — see the Cursor tab below.
 
 ## Install the plugin
 
@@ -39,13 +29,32 @@ If this prints a version, you're good.
 		/plugin marketplace add archcore-ai/archcore-plugin
 		/plugin install archcore@archcore-plugins
 		```
+
+		That's it. Open your project and run `/archcore:help` — the first Archcore tool call triggers a one-time CLI download (~5s, cached between sessions), and initializes `.archcore/` through MCP if missing.
+
+		**Already have `archcore` on `PATH`?** The bundled launcher defers to any global install — your existing binary is used, no duplicate cache, no conflict.
 	</TabItem>
 	<TabItem label="Cursor">
-		Install from the Cursor plugin marketplace, or locally:
+		Install the plugin:
 
 		```bash
 		cursor --plugin-dir ./archcore-plugin
 		```
+
+		Then register MCP in Cursor's MCP settings (or a project `mcp.json`). Point the `command` at the plugin's bundled launcher:
+
+		```json
+		{
+			"mcpServers": {
+				"archcore": {
+					"command": "/abs/path/to/archcore-plugin/bin/archcore",
+					"args": ["mcp"]
+				}
+			}
+		}
+		```
+
+		Alternatively, install the CLI globally and point `command` at `archcore`. Either way, the resolved binary is the same.
 
 		Cursor support is implemented but has a slightly different hooks API — see [Supported Hosts](/plugin/supported-hosts/).
 	</TabItem>
@@ -58,18 +67,17 @@ If this prints a version, you're good.
 		cursor --plugin-dir ./archcore-plugin    # Cursor
 		```
 
-		Local mode is useful when hacking on skills or hooks.
+		Local mode is useful when hacking on skills or hooks. The launcher still auto-resolves the CLI — set `ARCHCORE_BIN=/abs/path/to/your/archcore` if you want to test against a locally-built CLI binary.
 	</TabItem>
 </Tabs>
 
-## Initialize your project
+## Offline / enterprise / BYO CLI
 
-The plugin expects `.archcore/` to exist. If you haven't run `archcore init` yet:
+If you already have the Archcore CLI installed globally, the launcher respects it — the `archcore` on `PATH` always wins over the plugin-managed cache.
 
-```bash
-cd your-project
-archcore init
-```
+For fully offline environments, set `ARCHCORE_SKIP_DOWNLOAD=1` to disable the launcher's auto-download. The launcher then falls through to `ARCHCORE_BIN` or `PATH` only. Alternatively, pin an explicit binary with `ARCHCORE_BIN=/abs/path/to/archcore`.
+
+See the [CLI install guide](/cli/install/) for ways to install the CLI manually (curl, PowerShell, `go install`, from source).
 
 ## Verify
 
@@ -87,7 +95,7 @@ archcore init
 	/archcore:adr choose PostgreSQL as primary database
 	```
 
-	The agent should create a draft ADR in `.archcore/` via MCP — not via direct file writes.
+	The agent creates a draft ADR in `.archcore/` via MCP — not via direct file writes. On a fresh machine, the first MCP call downloads the CLI (~5s) before proceeding.
 
 If `/archcore:*` commands don't appear, check [Troubleshooting](/plugin/troubleshooting/).
 
@@ -99,7 +107,15 @@ If `/archcore:*` commands don't appear, check [Troubleshooting](/plugin/troubles
 /plugin uninstall archcore@archcore-plugins
 ```
 
-**Cursor:** remove Archcore from plugin settings.
+To also clear the cached CLI binary:
+
+```bash
+rm -rf "$CLAUDE_PLUGIN_DATA/archcore"
+# or, if CLAUDE_PLUGIN_DATA is unset:
+rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}/archcore-plugin"
+```
+
+**Cursor:** remove Archcore from plugin settings, and remove the `archcore` entry from your Cursor MCP config.
 
 ## Next steps
 
