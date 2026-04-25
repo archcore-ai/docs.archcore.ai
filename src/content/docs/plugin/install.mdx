@@ -92,6 +92,14 @@ If you already have the Archcore CLI installed globally, the launcher respects i
 
 For fully offline environments, set `ARCHCORE_SKIP_DOWNLOAD=1` to disable the launcher's auto-download. The launcher then falls through to `ARCHCORE_BIN` or `PATH` only. Alternatively, pin an explicit binary with `ARCHCORE_BIN=/abs/path/to/archcore`.
 
+### Plugin environment variables
+
+| Variable                     | Effect                                                                       |
+| ---------------------------- | ---------------------------------------------------------------------------- |
+| `ARCHCORE_BIN`               | Pin an explicit `archcore` binary; wins over PATH and the cache.             |
+| `ARCHCORE_SKIP_DOWNLOAD`     | `=1` disables the launcher's auto-download (offline mode).                   |
+| `ARCHCORE_DISABLE_INJECTION` | `=1` turns off the pre-edit context injection hook globally.                 |
+
 See the [CLI install guide](/cli/install/) for ways to install the CLI manually (curl, PowerShell, `go install`, from source).
 
 ## Verify
@@ -107,10 +115,10 @@ See the [CLI install guide](/cli/install/) for ways to install the CLI manually 
 3. Try an intent command on a real decision:
 
 	```
-	/archcore:adr choose PostgreSQL as primary database
+	/archcore:decide use PostgreSQL as the primary database
 	```
 
-	The agent creates a draft ADR in `.archcore/` via MCP — not via direct file writes. On a fresh machine, the first MCP call downloads the CLI (~5s) before proceeding.
+	The agent picks the right document type (an ADR), creates a draft in `.archcore/` via MCP — not via direct file writes — and offers a rule + guide follow-up. On a fresh machine, the first MCP call downloads the CLI (~5s) before proceeding.
 
 If `/archcore:*` commands don't appear, check [Troubleshooting](/plugin/troubleshooting/).
 
@@ -135,5 +143,5 @@ rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}/archcore-plugin"
 ## Next steps
 
 - [Supported hosts](/plugin/supported-hosts/) — confirm your host supports the features you need.
-- [Intent commands](/plugin/intent-commands/) — the 8 commands you'll use most.
+- [Intent commands](/plugin/intent-commands/) — the 11 commands you'll use day-to-day.
 - [Tracks](/plugin/tracks/) — multi-step workflows for product, architecture, standards.

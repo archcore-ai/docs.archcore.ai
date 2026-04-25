@@ -1,84 +1,62 @@
 ---
 title: Plugin Skills Reference
-description: One-page reference of all 33 Archcore Plugin skills — 9 intent commands, 17 document-type skills, 6 tracks, 1 utility.
+description: One-page reference of all 18 Archcore Plugin skills — 11 intent commands, 6 tracks, 1 utility.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-A flat reference of every skill shipped with the Archcore Plugin. For grouped, annotated coverage see [Intent commands](/plugin/intent-commands/), [Tracks](/plugin/tracks/), and [Skills](/plugin/skills/).
+Quick lookup of every skill shipped with the Archcore Plugin — one page, no clicks. For grouped, annotated coverage with examples see [Intent commands](/plugin/intent-commands/) and [Tracks](/plugin/tracks/). For the document types these skills produce, see [Document types](/concepts/document-types/).
 
-## Intent commands (9)
+## Intent commands (11)
 
-The primary routing commands — describe an intent, the skill picks the right document type.
+The primary routing commands — describe an intent, the skill picks the right document type or multi-step flow.
 
 | Command                 | Purpose                                                                         |
 | ----------------------- | ------------------------------------------------------------------------------- |
+| `/archcore:context`     | Load the rules, ADRs, specs, and patterns that apply to a code area before changing it. |
+| `/archcore:bootstrap`   | First-time onboarding — scale-aware seeding for an empty `.archcore/`.         |
 | `/archcore:capture`     | Document a module, component, or API — routes to adr, spec, doc, or guide.     |
-| `/archcore:plan`        | Plan a feature end-to-end — routes to `product-track` or a single plan.        |
+| `/archcore:plan`        | Plan a feature — routes to `product-track` or a single plan.                   |
 | `/archcore:decide`      | Record a finalized decision — creates ADR, offers rule + guide follow-up.      |
-| `/archcore:standard`    | Establish a team standard — drives `standard-track` (adr → rule → guide).       |
-| `/archcore:review`      | Documentation health review — gaps, staleness, orphans, missing relations.     |
-| `/archcore:status`      | Dashboard — counts by category, type, status, relation coverage, tags.         |
-| `/archcore:actualize`   | Detect stale docs via code drift, cascade analysis, and temporal staleness.    |
+| `/archcore:standard`    | Establish a team standard — drives `standard-track`.                           |
+| `/archcore:review`      | Documentation health audit — gaps, staleness, orphans, missing relations.      |
+| `/archcore:status`      | Counts dashboard — by category, type, status, relation coverage.               |
+| `/archcore:actualize`   | Detect stale docs via code drift, cascade analysis, temporal signals.          |
 | `/archcore:graph`       | Render the document relation graph as a Mermaid flowchart.                     |
-| `/archcore:help`        | Navigate the system — discover skills, types, and workflows.                   |
-
-## Document-type skills (17)
-
-Each skill creates and links one document type. Niche types (mrd, brd, urd, brs, strs, syrs, srs) are hidden from `/` autocomplete and reached programmatically via `sources-track` or `iso-track`. The `plan` document type is created via the `/archcore:plan` intent skill, not a standalone type skill.
-
-### Vision
-
-| Command              | Type   | Visibility | What it captures                                     |
-| -------------------- | ------ | ---------- | ---------------------------------------------------- |
-| `/archcore:prd`      | prd    | mainstream | Product requirements — goals, scope, success metrics |
-| `/archcore:idea`     | idea   | mainstream | Low-commitment concepts and explorations             |
-| `/archcore:mrd`      | mrd    | niche      | Market landscape, TAM/SAM/SOM, competition           |
-| `/archcore:brd`      | brd    | niche      | Business objectives, stakeholders, ROI               |
-| `/archcore:urd`      | urd    | niche      | User personas, journeys, usability requirements      |
-| `/archcore:brs`      | brs    | niche      | Formal business requirements spec (ISO 29148)        |
-| `/archcore:strs`     | strs   | niche      | Formal stakeholder requirements spec (ISO 29148)     |
-| `/archcore:syrs`     | syrs   | niche      | System boundary and interface spec (ISO 29148)       |
-| `/archcore:srs`      | srs    | niche      | Software functional/non-functional spec (ISO 29148)  |
-
-### Knowledge
-
-| Command              | Type   | What it captures                                     |
-| -------------------- | ------ | ---------------------------------------------------- |
-| `/archcore:adr`      | adr    | Architecture decisions with context and consequences |
-| `/archcore:rfc`      | rfc    | Proposals open for review and feedback               |
-| `/archcore:rule`     | rule   | Mandatory team standards with rationale              |
-| `/archcore:guide`    | guide  | Step-by-step how-to instructions                     |
-| `/archcore:doc`      | doc    | Reference material — registries, glossaries, lookups |
-| `/archcore:spec`     | spec   | Technical contracts for systems and components       |
-
-### Experience
-
-| Command              | Type        | What it captures                                |
-| -------------------- | ----------- | ----------------------------------------------- |
-| `/archcore:task-type` | task-type  | Recurring task patterns with proven workflows   |
-| `/archcore:cpat`     | cpat        | Before/after code pattern changes with scope    |
+| `/archcore:help`        | List every skill grouped by family.                                            |
 
 ## Tracks (6)
 
 Multi-step workflows — each orchestrates several documents and wires relations automatically.
 
-| Command                         | Flow                                         | Use when                                                     |
-| ------------------------------- | -------------------------------------------- | ------------------------------------------------------------ |
-| `/archcore:product-track`       | idea → prd → plan                            | Lightweight product flow — simple and fast.                  |
-| `/archcore:sources-track`       | mrd → brd → urd                              | Discovery-focused — market, business, user inputs.           |
-| `/archcore:iso-track`           | brs → strs → syrs → srs                      | Formal ISO 29148 cascade with traceability.                  |
-| `/archcore:architecture-track`  | adr → spec → plan                            | Design decisions flowing into implementation.                |
-| `/archcore:standard-track`      | adr → rule → guide                           | Decision → codified standard → how-to.                       |
-| `/archcore:feature-track`       | prd → spec → plan → task-type                | Full feature lifecycle.                                      |
+| Command                         | Flow                                       | Use when                                                     |
+| ------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
+| `/archcore:product-track`       | idea → prd → plan                          | Lightweight product flow — simple and fast.                  |
+| `/archcore:sources-track`       | mrd → brd → urd                            | Discovery-focused — market, business, user inputs.           |
+| `/archcore:iso-track`           | brs → strs → syrs → srs                    | Formal ISO 29148 cascade with traceability.                  |
+| `/archcore:architecture-track`  | adr → spec → plan                          | Design decisions flowing into implementation.                |
+| `/archcore:standard-track`      | adr → (optional cpat) → rule → guide       | Decision → codified standard → how-to.                       |
+| `/archcore:feature-track`       | prd → spec → plan → task-type              | Full feature lifecycle.                                      |
 
 ## Utility
 
-| Command               | Purpose                                                   |
-| --------------------- | --------------------------------------------------------- |
-| `/archcore:verify`    | Plugin integrity check — validates configs, skills, hooks. |
+| Command               | Purpose                                                                        |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `/archcore:verify`    | Plugin integrity check — validates configs, scripts, skills, hooks, and runs the test suite. |
+
+## Document types
+
+The 18 document types no longer have dedicated slash commands. Use intent commands and tracks above, or call `mcp__archcore__create_document` directly when you need a specific type without a routing skill.
+
+| Layer      | Types                                                              |
+| ---------- | ------------------------------------------------------------------ |
+| Vision     | `prd`, `idea`, `mrd`, `brd`, `urd`, `brs`, `strs`, `syrs`, `srs`, `plan` |
+| Knowledge  | `adr`, `rfc`, `rule`, `guide`, `doc`, `spec`                       |
+| Experience | `task-type`, `cpat`                                                |
+
+Full descriptions and required sections for each type: [Document types](/concepts/document-types/).
 
 ## See also
 

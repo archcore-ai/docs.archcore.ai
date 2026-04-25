@@ -1,20 +1,22 @@
 ---
 title: Intent Commands
-description: The 9 Archcore Plugin intent commands — /archcore:capture, plan, decide, standard, review, status, actualize, graph, help. Describe what you want and the skill routes to the right type or flow.
+description: The 11 Archcore Plugin intent commands — context, capture, decide, plan, and more. Describe what you want and the skill routes to the right document type or multi-step flow.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-Intent commands are the primary user interface of the plugin. You describe what you want, the command routes to the right document types and the right multi-step flow.
+Intent commands are the primary user interface of the plugin. You describe what you want, the command routes to the right document type and the right multi-step flow.
 
 Use these when you don't want to think about which of the 18 document types fits — the command figures it out.
 
-## The nine commands
+## The eleven intent commands
 
 | Command                 | What it does                                                                       |
 | ----------------------- | ---------------------------------------------------------------------------------- |
+| `/archcore:context`     | Load the rules, ADRs, specs, and patterns that apply to a code area before changing it. |
+| `/archcore:bootstrap`   | First-time onboarding — scale-aware seeding for an empty `.archcore/`. |
 | `/archcore:capture`     | Document a module, component, or API — routes to adr, spec, doc, or guide.         |
 | `/archcore:plan`        | Plan a feature end-to-end — routes to product-track or a single plan.              |
 | `/archcore:decide`      | Record a finalized decision — creates an ADR, offers rule + guide follow-up.       |
@@ -26,6 +28,33 @@ Use these when you don't want to think about which of the 18 document types fits
 | `/archcore:help`        | Navigate the system — discover skills, types, and workflows.                       |
 
 ## When to use each
+
+### `/archcore:context [path or topic]`
+
+"Before I touch this code, what's already decided?"
+
+```
+/archcore:context src/auth/
+/archcore:context payment retries
+```
+
+Loads the rules, ADRs, specs, and patterns tied to that path or topic — grouped by type, ranked by specificity — so the agent edits inside the lines your team has already drawn. Also useful for picking up work: `/archcore:context where am I on the auth redesign?`.
+
+The same context is _also_ injected automatically before any source-file edit (see [How it works](/plugin/how-it-works/)). Run the command explicitly when you want to see the full set, not just the top 3.
+
+### `/archcore:bootstrap`
+
+"Empty repo. What goes in `.archcore/` first?"
+
+```
+/archcore:bootstrap
+```
+
+Detects repo scale (small / medium / large) and seeds scale-appropriate documents: a stack rule, a run-the-app guide, an entry-point inventory (medium+), a top-level domain map (large), and a list of hotspot capture candidates.
+
+If you already have agent-instruction files — `CLAUDE.md`, `AGENTS.md`, `.cursorrules` — bootstrap also offers to import them, so you don't lose existing context.
+
+Run this once per project. After that, `/archcore:capture` and `/archcore:decide` take over.
 
 ### `/archcore:capture [topic]`
 
@@ -45,7 +74,7 @@ The skill picks: `adr` if it's a decision, `spec` if it's a contract, `doc` if i
 /archcore:plan auth redesign
 ```
 
-Small ask → single `plan` document. Bigger ask → routes to `product-track` (idea → prd → plan).
+Small ask: single `plan` document. Bigger ask: routes to `product-track` (idea → prd → plan).
 
 ### `/archcore:decide [topic]`
 
@@ -112,11 +141,13 @@ Renders the document relation graph as a Mermaid flowchart, grouped by category 
 
 ### `/archcore:help`
 
-When you forget what's available.
+"What commands are even available?"
 
 ```
 /archcore:help
 ```
+
+Lists every skill grouped by family (intent commands, tracks, utility) with one-line descriptions.
 
 ## Next steps
 

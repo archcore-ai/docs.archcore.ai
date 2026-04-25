@@ -122,6 +122,25 @@ If you genuinely need to edit `settings.json` or `.sync-state.json`, those paths
 2. Common causes: slug with uppercase letters, missing `title`/`status` frontmatter, tag with forbidden characters.
 3. Skills should handle all three; if they don't, file a bug on the plugin repo.
 
+## Automatic context injection didn't fire
+
+**Symptom:** You expected the agent to see relevant rules / ADRs before editing `src/...`, but it didn't, and no context summary was printed.
+
+The `check-code-alignment` hook (`PreToolUse` on `Write|Edit`) runs the injection. It exits silently when:
+
+- The edit target lives under `.archcore/` (the sister hook `check-archcore-write` handles that case).
+- The path is outside your configured source roots. Defaults: `src`, `lib`, `app`, `pkg`, `cmd`, `internal`, `apps`, `packages`, `modules`, `components`. Override via `.archcore/settings.json` → `codeAlignment.sourceRoots` (JSON array of directory names).
+- No `.archcore/` documents reference that path.
+- The env var `ARCHCORE_DISABLE_INJECTION=1` is set.
+
+To verify it's enabled, unset the env var and ensure the edited file is under one of the configured roots. To turn it off temporarily:
+
+```bash
+export ARCHCORE_DISABLE_INJECTION=1
+```
+
+The hook is non-blocking by design — if it errors, it exits silently rather than holding up the edit. So absence of output ≠ broken hook; it usually means "nothing relevant to inject."
+
 ## Cascade warnings overwhelm the output
 
 **Symptom:** Every mutation dumps a long "cascade dependents may need review" block.

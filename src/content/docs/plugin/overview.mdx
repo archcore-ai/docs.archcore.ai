@@ -8,14 +8,38 @@ import CrossLinkCallout from '../../../components/CrossLinkCallout.astro';
 
 <PathBadge scope="plugin" />
 
-The **Archcore Plugin** is a smart AI plugin powered by the [Archcore CLI](/cli/overview/) — it uses your repository's context to guide code generation. It installs on top of the CLI and gives you skills, multi-step tracks, built-in agents, and guardrails, all working against the same `.archcore/` directory the CLI manages.
+The **Archcore Plugin** makes your AI code like it already knows your repo. It runs on top of the [Archcore CLI](/cli/overview/) and gives your coding agent the architecture, rules, and past decisions of this project — so new changes land in the right place and follow team conventions.
+
+## Try these first
+
+After [installing the plugin](/plugin/install/), open your project and try one of these prompts. Each shows a different side of what your agent can now do.
+
+> _Empty repo? Run `/archcore:bootstrap` first to seed a stack rule, a run-the-app guide, and (optionally) imports from your existing `CLAUDE.md` / `AGENTS.md` / `.cursorrules`._
+
+**1. "Before I change anything in `src/auth/`, what rules and prior decisions apply here?"**
+Archcore loads the rules, ADRs, specs, and patterns tied to that path — grouped by type, ranked by specificity — before the agent edits code. Works the same way for a file, a directory, or a topic. (See [`/archcore:context`](/plugin/intent-commands/) — it also runs automatically before each source-file edit.)
+
+**2. "Add a new API handler and follow this repo's conventions."**
+Archcore surfaces the relevant rule (e.g., "handlers live in `src/api/handlers/`") and injects it into context before the write. The agent places code where your architecture says it belongs, instead of guessing.
+
+**3. "We picked PostgreSQL — record it as a team standard so future database changes respect it."**
+Archcore records the decision as an ADR, codifies the constraint as a rule, and drafts a guide. Next time an agent edits database code, that rule is auto-injected — decision becomes an enforced constraint, not history buried in docs.
+
+## What works automatically
+
+You don't have to remember to load context. Two things run on their own:
+
+- **Session start** — the plugin loads your `.archcore/` index and relations into the conversation before you type anything.
+- **Before each source edit** — when the agent edits a file like `src/auth/handlers.ts`, the plugin greps `.archcore/` for documents that reference that path and injects the top matches (rules, ADRs, specs, cpats) into context. The same lookup is also available on demand via [`/archcore:context`](/plugin/intent-commands/).
+
+This is the part that makes the agent _feel_ like it knows your repo. Skills and tracks are how you teach it new things; context injection is how it remembers them at the right moment.
 
 ## When to use the plugin
 
 Use the plugin when you want the highest-quality experience inside your coding agent:
 
 - You work in **Claude Code** or **Cursor** day-to-day.
-- You want to type `/archcore:adr` and get a guided ADR flow, instead of explaining the document type to the agent.
+- You want to type `/archcore:bootstrap`, `/archcore:decide`, or `/archcore:context` and get a guided flow, instead of explaining document types to the agent.
 - You want **multi-document tracks** (PRD → plan, ADR → rule → guide, ISO 29148 cascades) to execute end-to-end.
 - You want the agent to refuse direct writes to `.archcore/` and go through MCP every time.
 
@@ -42,10 +66,9 @@ Cursor users still register MCP themselves (Cursor does not auto-register plugin
 
 ## What ships in the box
 
-- **33 Skills** — 17 document-type skills, 9 intent commands, 6 multi-step tracks, 1 utility (`verify`).
+- **18 Skills** — 11 intent commands, 6 multi-step tracks, 1 utility (`verify`).
 - **2 Agents** — a universal assistant (`archcore-assistant`) and a read-only auditor (`archcore-auditor`).
-- **Hooks** — session-start context loading, MCP-only write enforcement, post-mutation validation, and cascade staleness detection.
-- **Rules** — baseline guardrails that apply to every `.archcore/` file interaction.
+- **Hooks** — session-start context loading, automatic context injection before source edits, MCP-only write enforcement, post-mutation validation, and cascade staleness detection.
 
 ## Without vs. with the plugin
 
@@ -67,5 +90,5 @@ With the plugin, the same ask and the agent:
 
 - [Install the plugin](/plugin/install/) — Claude Code or Cursor, production path or local dev.
 - [Supported hosts](/plugin/supported-hosts/) — feature parity, status, and install method per host.
-- [How plugin works](/plugin/how-it-works/) — hooks, MCP-only principle, validation, cascade detection.
-- [Skills](/plugin/skills/) — the 33-skill system at a glance.
+- [How plugin works](/plugin/how-it-works/) — hooks, context injection, MCP-only principle, validation, cascade detection.
+- [Skills](/plugin/skills/) — the 18 skills at a glance.

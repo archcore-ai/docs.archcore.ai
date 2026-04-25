@@ -19,8 +19,10 @@ Use a track when one document is not enough — when a decision needs a rule and
 | `sources-track`      | mrd → brd → urd                              | Discovery-focused — market, business, then user inputs. |
 | `iso-track`          | brs → strs → syrs → srs                      | Formal ISO 29148 cascade with traceability.            |
 | `architecture-track` | adr → spec → plan                            | Design decisions flowing into implementation.          |
-| `standard-track`     | adr → rule → guide                           | Decision → codified standard → how-to.                 |
+| `standard-track`     | adr → rule → guide¹                          | Decision → codified standard → how-to.                 |
 | `feature-track`      | prd → spec → plan → task-type                | Full feature lifecycle.                                |
+
+¹ `standard-track` accepts an optional `cpat` step between `adr` and `rule` when the standard is best taught by example. See the [Standard track](#standard-track) section below.
 
 Invoke any track:
 
@@ -77,9 +79,9 @@ Design decisions flowing into implementation.
 
 Decision codified as a mandatory practice.
 
-**Flow:** `adr → rule → guide`
-**Relations created:** `rule implements adr`, `guide related rule`.
-**Use when:** the decision implies a team standard that needs enforcement and instructions. The classic chain for "we decided X, now everyone needs to follow it".
+**Flow:** `adr → (optional cpat) → rule → guide`
+**Relations created:** `rule implements adr`, `guide related rule`. When a `cpat` is added, it captures the before/after pattern, with `cpat related rule` wiring it to the standard.
+**Use when:** the decision implies a team standard that needs enforcement and instructions. The classic chain for "we decided X, now everyone needs to follow it". Add a `cpat` step when the standard is best taught by example (e.g., "old way vs. new way").
 
 ### Feature track
 
@@ -111,5 +113,5 @@ Often a single ADR benefits from both.
 ## Next steps
 
 - [Intent commands](/plugin/intent-commands/) — `/archcore:standard` and `/archcore:plan` often delegate to tracks.
-- [Skills](/plugin/skills/) — tracks sit alongside intent commands and document-type skills.
+- [Skills](/plugin/skills/) — see how tracks fit alongside intent commands.
 - [Track reference](/reference/tracks/) — one-page summary of all 6 tracks.

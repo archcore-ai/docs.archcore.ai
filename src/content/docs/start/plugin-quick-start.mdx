@@ -53,11 +53,23 @@ Open your project in a fresh conversation and run:
 /archcore:help
 ```
 
-You should see a list of available skills grouped by family (intent commands, document types, tracks). If not, see [plugin troubleshooting](/plugin/troubleshooting/).
+You should see a list of available skills grouped by family (intent commands, tracks, utility). If not, see [plugin troubleshooting](/plugin/troubleshooting/).
 
-## 3. Create your first decision
+## 3. Bootstrap an empty repo (optional)
 
-Use the intent command to record a real decision:
+If `.archcore/` doesn't exist yet, the fastest way to get something useful in there is:
+
+```
+/archcore:bootstrap
+```
+
+The skill detects repo scale (small / medium / large) and seeds scale-appropriate documents: a stack rule, a run-the-app guide, an entry-point inventory (medium+), a top-level domain map (large), and a list of hotspot capture candidates. It also offers to import existing `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` if you have any. Run this once per project.
+
+Already have an `.archcore/` directory? Skip ahead to step 4.
+
+## 4. Run your first command (downloads the CLI on first use)
+
+Use an intent command to record a real decision:
 
 ```
 /archcore:decide use PostgreSQL as our primary database
@@ -81,7 +93,17 @@ ls .archcore/
 
 You should see three linked documents, all validated.
 
-## 4. Try a multi-step track
+## 5. See the context the agent now has
+
+Before touching some code, ask Archcore what already applies:
+
+```
+/archcore:context src/db/
+```
+
+The skill loads the rules, ADRs, and patterns tied to `src/db/` — so the agent edits inside the lines your team has already drawn. The same context is also injected automatically before each source-file edit; this command shows you the full set on demand.
+
+## 6. Try a multi-step track
 
 For something bigger:
 
@@ -93,7 +115,8 @@ The plugin walks you through an ADR, a spec, and a plan — one document per ste
 
 ## What you get
 
-- **Skills** — 33 slash commands covering 17 document-type skills, 9 intent commands, 6 tracks, and 1 utility (`verify`).
+- **18 skills** — 11 intent commands, 6 tracks, and 1 utility (`verify`). The agent picks the right document type for you.
+- **Automatic context injection** — before any source-file edit, the plugin greps `.archcore/` for relevant rules, ADRs, specs, and patterns and injects them into context.
 - **Built-in agents** — `archcore-assistant` for multi-document flows, `archcore-auditor` for reviews.
 - **Guardrails** — direct `.archcore/*.md` writes are blocked; every mutation is validated; cascade staleness is flagged.
 
@@ -104,6 +127,6 @@ The bundled launcher defers to any `archcore` on `PATH`. If you've previously in
 ## Next steps
 
 - [Plugin overview](/plugin/overview/) — what ships in the box.
-- [Intent commands](/plugin/intent-commands/) — the 9 routing commands.
+- [Intent commands](/plugin/intent-commands/) — the 11 routing commands.
 - [Tracks](/plugin/tracks/) — the 6 multi-step workflows.
 - [Document types](/concepts/document-types/) — the vocabulary you're using.
