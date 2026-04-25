@@ -24,8 +24,8 @@ A universal read/write agent for complex multi-document tasks.
 
 ### When skills call it
 
-- [ISO track](/plugin/tracks/) — building the full BRS → StRS → SyRS → SRS cascade.
-- [Architecture track](/plugin/tracks/) — wiring ADR → spec → plan with the right relations.
+- [ISO track](/plugin/skills/#iso-track) — building the full BRS → StRS → SyRS → SRS cascade.
+- [Architecture track](/plugin/skills/#architecture-track) — wiring ADR → spec → plan with the right relations.
 - Large-scope refactors of `.archcore/` across many files.
 
 ### What it's good at
@@ -47,9 +47,9 @@ A read-only auditor for documentation health reviews.
 
 ### When skills call it
 
-- [`/archcore:review`](/plugin/intent-commands/) — audit docs by category, type, or tag.
-- [`/archcore:actualize`](/plugin/intent-commands/) — find stale documents.
-- [`/archcore:status`](/plugin/intent-commands/) — some of the dashboard numbers come from auditor queries.
+- [`/archcore:review`](/plugin/skills/#archcorereview) — audit docs by category, type, or tag.
+- [`/archcore:actualize`](/plugin/skills/#archcoreactualize) — find stale documents.
+- [`/archcore:status`](/plugin/skills/#archcorestatus) — some of the dashboard numbers come from auditor queries.
 
 ### What it's good at
 
@@ -63,6 +63,6 @@ Separating the write-capable agent from the read-only one is a deliberate safety
 
 ## Next steps
 
-- [Intent commands](/plugin/intent-commands/) — the user-facing commands that call these agents.
-- [Tracks](/plugin/tracks/) — multi-step flows that use `archcore-assistant`.
+- [Intent commands](/plugin/skills/#intent-commands) — the user-facing commands that call these agents.
+- [Tracks](/plugin/skills/#tracks) — multi-step flows that use `archcore-assistant`.
 - [Troubleshooting](/plugin/troubleshooting/) — issues you might see with agent invocations.

@@ -38,6 +38,10 @@ export default defineConfig({
 		// CLI-specific reference pages moved under /cli/
 		'/reference/configuration/': '/cli/configuration/',
 		'/reference/troubleshooting/': '/cli/troubleshooting/',
+
+		// Plugin Skills consolidation — Intent Commands and Tracks merged into Skills
+		'/plugin/intent-commands/': '/plugin/skills/#intent-commands',
+		'/plugin/tracks/': '/plugin/skills/#tracks',
 	},
 	integrations: [
 		starlight({
@@ -109,8 +113,6 @@ export default defineConfig({
 						{ label: 'Supported Hosts', slug: 'plugin/supported-hosts' },
 						{ label: 'How Plugin Works', slug: 'plugin/how-it-works' },
 						{ label: 'Skills', slug: 'plugin/skills' },
-						{ label: 'Intent Commands', slug: 'plugin/intent-commands' },
-						{ label: 'Tracks', slug: 'plugin/tracks' },
 						{ label: 'Built-in Agents', slug: 'plugin/agents' },
 						{ label: 'Troubleshooting', slug: 'plugin/troubleshooting' },
 					],

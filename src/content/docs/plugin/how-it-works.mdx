@@ -46,7 +46,7 @@ Ranking is specificity-first: the longest matching directory prefix wins, with a
 
 Source roots default to a sensible set: `src`, `lib`, `app`, `pkg`, `cmd`, `internal`, `apps`, `packages`, `modules`, `components`. Override via `.archcore/settings.json` → `codeAlignment.sourceRoots`.
 
-This is the automatic version of [`/archcore:context`](/plugin/intent-commands/) — instead of asking "what applies before I touch `src/auth/`", the relevant rules and decisions are already in the agent's working context the moment it starts editing.
+This is the automatic version of [`/archcore:context`](/plugin/skills/#archcorecontext) — instead of asking "what applies before I touch `src/auth/`", the relevant rules and decisions are already in the agent's working context the moment it starts editing.
 
 Non-blocking by design: any error or empty result exits silently. To turn it off globally, set `ARCHCORE_DISABLE_INJECTION=1`.
 

@@ -1,6 +1,6 @@
 # Archcore Documentation
 
-<https://docs.archcore.ai>
+<https://docs.archcore.ai/cli/overview/>
 
 Documentation for [Archcore](https://archcore.ai) — System Context Platform that keeps humans and AI in sync with your system.
 

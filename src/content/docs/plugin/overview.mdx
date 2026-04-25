@@ -17,7 +17,7 @@ After [installing the plugin](/plugin/install/), open your project and try one o
 > _Empty repo? Run `/archcore:bootstrap` first to seed a stack rule, a run-the-app guide, and (optionally) imports from your existing `CLAUDE.md` / `AGENTS.md` / `.cursorrules`._
 
 **1. "Before I change anything in `src/auth/`, what rules and prior decisions apply here?"**
-Archcore loads the rules, ADRs, specs, and patterns tied to that path — grouped by type, ranked by specificity — before the agent edits code. Works the same way for a file, a directory, or a topic. (See [`/archcore:context`](/plugin/intent-commands/) — it also runs automatically before each source-file edit.)
+Archcore loads the rules, ADRs, specs, and patterns tied to that path — grouped by type, ranked by specificity — before the agent edits code. Works the same way for a file, a directory, or a topic. (See [`/archcore:context`](/plugin/skills/#archcorecontext) — it also runs automatically before each source-file edit.)
 
 **2. "Add a new API handler and follow this repo's conventions."**
 Archcore surfaces the relevant rule (e.g., "handlers live in `src/api/handlers/`") and injects it into context before the write. The agent places code where your architecture says it belongs, instead of guessing.
@@ -30,7 +30,7 @@ Archcore records the decision as an ADR, codifies the constraint as a rule, and 
 You don't have to remember to load context. Two things run on their own:
 
 - **Session start** — the plugin loads your `.archcore/` index and relations into the conversation before you type anything.
-- **Before each source edit** — when the agent edits a file like `src/auth/handlers.ts`, the plugin greps `.archcore/` for documents that reference that path and injects the top matches (rules, ADRs, specs, cpats) into context. The same lookup is also available on demand via [`/archcore:context`](/plugin/intent-commands/).
+- **Before each source edit** — when the agent edits a file like `src/auth/handlers.ts`, the plugin greps `.archcore/` for documents that reference that path and injects the top matches (rules, ADRs, specs, cpats) into context. The same lookup is also available on demand via [`/archcore:context`](/plugin/skills/#archcorecontext).
 
 This is the part that makes the agent _feel_ like it knows your repo. Skills and tracks are how you teach it new things; context injection is how it remembers them at the right moment.
 
