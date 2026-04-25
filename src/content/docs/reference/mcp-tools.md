@@ -1,9 +1,9 @@
 ---
 title: MCP Tools Reference
-description: Complete reference for all 8 Model Context Protocol tools — list_documents, get_document, create_document, update_document, and more.
+description: Complete reference for all 10 Model Context Protocol tools — list_documents, search_documents, get_document, create_document, init_project, and more.
 ---
 
-The Archcore MCP server exposes 8 tools that AI agents use to interact with your `.archcore/` documents.
+The Archcore MCP server exposes 10 tools that AI agents use to interact with your `.archcore/` documents.
 
 ## list_documents
 
@@ -30,6 +30,56 @@ List documents with optional filters.
   - auth/jwt-strategy.adr.md — "Use JWT for Authentication" (accepted)
   - auth/auth-rules.rule.md — "Authentication Rules" (accepted)
   - api/rest-guide.guide.md — "REST API Setup Guide" (draft)
+```
+
+---
+
+## search_documents
+
+Search documents by path reference, content substring, or metadata. Unlike `list_documents`, this tool scans document bodies and returns per-match evidence (excerpts, specificity, ranking). Read-only.
+
+**Parameters:**
+
+| Name          | Type     | Required    | Description                                                                                                                  |
+| ------------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `path_ref`    | string   | conditional | Path reference to match in document bodies. Matches both `@path` notation and qualified bare paths. Leading `@` is optional. |
+| `content`     | string   | conditional | Case-insensitive substring matched against title + body. No stemming or fuzzy matching.                                      |
+| `types`       | string[] | conditional | Filter by document types (e.g., `["adr", "rule"]`).                                                                          |
+| `status`      | string   | conditional | Filter by status: `draft`, `accepted`, or `rejected`.                                                                        |
+| `mtime_after` | string   | No          | Only include documents modified after this time. Accepts RFC3339 timestamps or relative durations (`24h`, `30d`, `90d`).     |
+| `sort`        | string   | No          | Result ordering: `relevance` (default) or `mtime`.                                                                           |
+| `limit`       | number   | No          | Maximum number of results. Default 50, max 200. Values above 200 are clamped.                                                |
+
+At least one of `path_ref`, `content`, `types`, or `status` must be provided. Filters combine with AND semantics.
+
+**Sort modes:**
+
+- `relevance` — orders by max match specificity DESC, then type priority (`rule` > `adr` > `spec` > ...), then mtime DESC.
+- `mtime` — orders purely by modification time, newest first.
+
+**Returns:** Array of matched documents. Each result has:
+
+- `path`, `title`, `type`, `status`, `mtime`, `tags` — document metadata.
+- `matches` — per-match evidence array. Each entry has `kind` (`path_ref_explicit`, `path_ref_mention`, or `content`), `ref` (the matched token), `specificity` (integer), and `excerpt` (~120-char window). Empty array for pure-metadata queries.
+- `incoming_relations`, `outgoing_relations` — manifest edges involving this document.
+
+**Example — find rules and ADRs that reference a code path:**
+
+```
+search_documents({
+  path_ref: "src/payments/",
+  types: ["rule", "adr"]
+})
+```
+
+**Example — content search across all documents:**
+
+```
+search_documents({
+  content: "money rounding",
+  status: "accepted",
+  limit: 20
+})
 ```
 
 ---
@@ -166,3 +216,31 @@ List all relations, optionally filtered by document.
 | `path` | string | No       | Filter relations involving this document |
 
 **Returns:** All relations (or relations for the specified document) showing source, target, and type.
+
+---
+
+## init_project
+
+Initialize the `.archcore/` knowledge base for the current project. Idempotent — safe to call on an already-initialized project (existing settings are preserved and returned).
+
+**Parameters:**
+
+| Name           | Type   | Required    | Description                                                                                          |
+| -------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------- |
+| `language`     | string | No          | BCP-47 language code for generated document content (e.g., `en`, `ru`, `ja`). Defaults to `en`.      |
+| `sync_mode`    | string | No          | Sync mode: `none` (default, local only), `cloud`, or `on-prem`.                                      |
+| `archcore_url` | string | conditional | Required only when `sync_mode="on-prem"`. URL of the on-prem Archcore server.                        |
+
+**Returns:** JSON with `initialized: true`, the resulting `settings` object, and `already_initialized: bool`.
+
+**When agents call this:** the MCP server starts even in repos without `.archcore/`. When `list_documents` reports an empty result on a fresh repo and the user asks to create a document, an agent should call `init_project` once to bootstrap the directory, then proceed. Subsequent calls are no-ops.
+
+This tool does **not** install hooks or MCP configs for other agents and does **not** register the MCP server itself — those still require `archcore hooks install` and `archcore mcp install` from the shell.
+
+---
+
+## MCP prompts
+
+Beyond tools, the MCP server also exposes 5 **prompts** that orchestrate multi-document workflows in a single call (PRD + plan, ADR + spec + plan, ISO 29148 cascade, etc.). Most MCP-aware clients surface them as slash commands.
+
+See [MCP prompts](/reference/mcp-prompts/) for the complete prompt catalog and arguments.

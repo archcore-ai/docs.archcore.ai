@@ -1,0 +1,156 @@
+---
+title: MCP Prompts Reference
+description: The 5 multi-document MCP prompts the Archcore CLI exposes — product, architecture, standard, sources, and ISO 29148 tracks — with arguments and chains.
+---
+
+The Archcore MCP server exposes 5 **prompts** in addition to its [tools](/reference/mcp-tools/). Each prompt orchestrates a full document cascade in a single call — the agent creates and links every document in the chain for you, with a confirmation gate between phases.
+
+Most MCP-aware clients surface prompts as slash commands. The exact prefix depends on the client (e.g. `/product_track` in some hosts, `archcore.product_track` in others).
+
+## MCP prompts vs plugin track skills
+
+These MCP prompts are **different** from the plugin's `/archcore:product-track` skill commands.
+
+| | MCP prompts | Plugin track skills |
+| --- | --- | --- |
+| Where they live | Archcore CLI's MCP server | Archcore Plugin (Claude Code, Cursor) |
+| Invocation | Slash command in any MCP-aware client (host-namespaced) | `/archcore:<track-name>` (plugin-scoped) |
+| Available in | Any MCP client — Gemini CLI, Copilot, Codex, OpenCode, Roo Code, Cursor, Claude Code, ... | Claude Code and Cursor only |
+| Tracks shipped | 5 (`product`, `architecture`, `standard`, `sources`, `iso`) | 6 — adds `feature-track` |
+
+Both exist by design. Use plugin tracks when you're on a plugin host and want the richer skill experience. Use MCP prompts when you're on a host the plugin doesn't support yet, or when you want a host-agnostic way to drive cascades.
+
+See [Plugin tracks reference](/reference/tracks/) for the plugin-side equivalents.
+
+## Prompt catalog
+
+| Prompt                | Chain                              | Relations created                                                                |
+| --------------------- | ---------------------------------- | -------------------------------------------------------------------------------- |
+| `product_track`       | PRD → Plan                         | `plan implements prd`                                                            |
+| `architecture_track`  | ADR → Spec → Plan                  | `spec implements adr`, `plan implements spec`                                    |
+| `standard_track`      | ADR → Rule → Guide                 | `rule implements adr`, `guide related rule`                                      |
+| `sources_track`       | MRD → BRD → URD                    | `brd related mrd`, `urd related brd`                                             |
+| `iso_track`           | BRS → StRS → SyRS → SRS            | `strs implements brs`, `syrs implements strs`, `srs implements syrs`             |
+
+Each prompt's last phase is followed by a verification step that lists every document and the wired relations.
+
+## How a prompt runs
+
+1. The prompt frames the cascade with a short context message.
+2. For each phase, the agent calls `create_document` (and `add_relation` for non-root phases).
+3. Every phase ends with a confirmation gate (`ok to continue?`) — you review the document before the next is generated.
+4. After the final phase, the agent verifies the chain and reports the full set of documents.
+
+You can stop at any gate. Documents already created stay; nothing is rolled back.
+
+## product_track
+
+Lightweight feature flow. PRD captures the requirements; Plan turns them into phased work.
+
+**Arguments:**
+
+| Name           | Required | Description                                       |
+| -------------- | -------- | ------------------------------------------------- |
+| `feature_name` | Yes      | Short name of the feature being specified.        |
+| `scope`        | No       | One-line scope statement.                         |
+
+**Chain:** `PRD → Plan` (`plan implements prd`).
+
+**Use when:** an individual feature needs requirements and a delivery plan, but no formal architecture work.
+
+**Example:**
+
+```text
+/product_track feature_name="user notifications"
+```
+
+## architecture_track
+
+Technical design followed by implementation. ADR records the decision; Spec defines the contract; Plan delivers it.
+
+**Arguments:**
+
+| Name             | Required | Description                                                |
+| ---------------- | -------- | ---------------------------------------------------------- |
+| `feature_name`   | Yes      | Short name of the feature being specified.                 |
+| `scope`          | No       | One-line scope statement.                                  |
+| `component_name` | No       | Specific component the architecture targets.               |
+
+**Chain:** `ADR → Spec → Plan` (`spec implements adr`, `plan implements spec`).
+
+**Use when:** a significant technical decision needs a normative spec and a delivery plan.
+
+**Example:**
+
+```text
+/architecture_track feature_name="event-driven orders" component_name="order-service"
+```
+
+## standard_track
+
+Codify a team standard. ADR captures the decision; Rule is the imperative version teams follow; Guide is the how-to.
+
+**Arguments:**
+
+| Name           | Required | Description                                                       |
+| -------------- | -------- | ----------------------------------------------------------------- |
+| `feature_name` | Yes      | Short name of the standard topic (e.g. `logging-conventions`).    |
+| `scope`        | No       | One-line scope statement.                                         |
+
+**Chain:** `ADR → Rule → Guide` (`rule implements adr`, `guide related rule`).
+
+**Use when:** turning a one-off decision into a repeatable team practice with documented examples.
+
+**Example:**
+
+```text
+/standard_track feature_name="logging-conventions"
+```
+
+## sources_track
+
+Discovery cascade for requirements that need explicit sources. MRD captures market context, BRD captures business intent, URD captures user requirements.
+
+**Arguments:**
+
+| Name           | Required | Description                                  |
+| -------------- | -------- | -------------------------------------------- |
+| `feature_name` | Yes      | Short name of the feature being discovered.  |
+| `scope`        | No       | One-line scope statement.                    |
+
+**Chain:** `MRD → BRD → URD` (linked via `related`, since sources are peers — not implementations of each other).
+
+**Use when:** a feature needs structured requirement discovery — market analysis, business objectives, user research — before product specs are written.
+
+**Example:**
+
+```text
+/sources_track feature_name="payments expansion"
+```
+
+## iso_track
+
+Formal ISO/IEC/IEEE 29148:2018 cascade. Each level decomposes the one above it.
+
+**Arguments:**
+
+| Name           | Required | Description                                  |
+| -------------- | -------- | -------------------------------------------- |
+| `feature_name` | Yes      | Short name of the feature being specified.   |
+| `scope`        | No       | One-line scope statement.                    |
+
+**Chain:** `BRS → StRS → SyRS → SRS` (each linked via `implements`).
+
+**Use when:** regulated systems, multi-team programs, or any domain that needs formal traceability between business, stakeholder, system, and software requirements.
+
+**Example:**
+
+```text
+/iso_track feature_name="payment gateway compliance"
+```
+
+## See also
+
+- [MCP tools](/reference/mcp-tools/) — the underlying tool API each prompt drives.
+- [MCP server](/cli/mcp-server/) — how the CLI exposes prompts to agents.
+- [Plugin tracks](/reference/tracks/) — the plugin-side equivalents (host-scoped under `/archcore:`).

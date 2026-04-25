@@ -45,6 +45,10 @@ archcore init
 
 4. **Installs session hooks** for agents that support them (Claude Code, Cursor, Copilot, Gemini CLI). Hooks inject a summary of your `.archcore/` documents into the agent's context at session start.
 
+### Bootstrapping from inside an agent
+
+From inside an MCP-aware agent, you can also bootstrap a project mid-session by asking the agent — it calls the [`init_project`](/reference/mcp-tools/#init_project) MCP tool, which creates `.archcore/` and writes default settings without leaving the conversation. The CLI command remains the recommended entry point for fresh repos because it also installs hooks and MCP configs for every detected agent — `init_project` only sets up `.archcore/` itself.
+
 ## After `init`
 
 Your project looks like this:

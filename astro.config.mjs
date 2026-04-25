@@ -148,6 +148,7 @@ export default defineConfig({
 					items: [
 						{ label: 'Document Format', slug: 'reference/document-format' },
 						{ label: 'MCP Tools', slug: 'reference/mcp-tools' },
+						{ label: 'MCP Prompts', slug: 'reference/mcp-prompts' },
 						{ label: 'Plugin Skills', slug: 'reference/skills' },
 						{ label: 'Tracks', slug: 'reference/tracks' },
 					],

@@ -1,32 +1,66 @@
 ---
 title: MCP Server
-description: How the Archcore MCP server connects AI coding agents to .archcore/, the 8 tools it exposes, and how session hooks inject context at the start of every conversation.
+description: How the Archcore MCP server connects AI coding agents to .archcore/, the 10 tools and 5 prompts it exposes, and how session hooks inject context at the start of every conversation.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="cli" />
 
-The MCP server is how your agent accesses `.archcore/`. It gives agents tools to list, read, create, update, and link documents — all within the conversation.
+The MCP server is how your agent accesses `.archcore/`. It gives agents tools to list, search, read, create, update, and link documents — and prompts that orchestrate full multi-document cascades — all within the conversation.
 
 You usually don't need to think about MCP directly. `archcore init` sets it up automatically. This page explains what happens under the hood and how to configure it manually if needed.
 
 ## What agents can do
 
-Once MCP is configured, agents interact with your documents through 8 tools:
+Once MCP is configured, agents interact with your documents through 10 tools:
 
-| Action        | Tool              | Description                                            |
-| ------------- | ----------------- | ------------------------------------------------------ |
-| Browse        | `list_documents`  | List documents filtered by type, layer, or status      |
-| Read          | `get_document`    | Get full document content with relations               |
-| Create        | `create_document` | Create new documents from templates                    |
-| Update        | `update_document` | Modify title, status, or content                       |
-| Delete        | `remove_document` | Remove a document permanently                          |
-| Link          | `add_relation`    | Create a relation between two documents                |
-| Unlink        | `remove_relation` | Remove a relation                                      |
-| Browse links  | `list_relations`  | View all relations or filter by document               |
+| Action        | Tool                | Description                                            |
+| ------------- | ------------------- | ------------------------------------------------------ |
+| Browse        | `list_documents`    | List documents filtered by type, layer, or status      |
+| Search        | `search_documents`  | Full-text and path-reference search across bodies      |
+| Read          | `get_document`      | Get full document content with relations               |
+| Create        | `create_document`   | Create new documents from templates                    |
+| Update        | `update_document`   | Modify title, status, or content                       |
+| Delete        | `remove_document`   | Remove a document permanently                          |
+| Link          | `add_relation`      | Create a relation between two documents                |
+| Unlink        | `remove_relation`   | Remove a relation                                      |
+| Browse links  | `list_relations`    | View all relations or filter by document               |
+| Bootstrap     | `init_project`      | Initialize `.archcore/` from inside a session          |
 
 See [MCP tools reference](/reference/mcp-tools/) for the complete API with parameters and examples.
+
+## Bootstrapping in an empty repo
+
+The MCP server starts even when `.archcore/` doesn't exist yet. From inside a fresh repo, an agent can call the `init_project` tool to create the directory and write a default `settings.json` — no shell command required. The tool is idempotent: calling it on an already-initialized project just returns the existing settings.
+
+`init_project` only sets up `.archcore/`. To install hooks or register the MCP server with other coding agents, run `archcore hooks install` and `archcore mcp install` from the shell.
+
+## MCP prompts
+
+The server also exposes 5 **prompts** — pre-orchestrated multi-document cascades that an agent runs end-to-end with a confirmation gate between phases. Most MCP-aware clients surface them as slash commands.
+
+| Prompt                | What it does                                              |
+| --------------------- | --------------------------------------------------------- |
+| `product_track`       | PRD → Plan (lightweight feature flow)                     |
+| `architecture_track`  | ADR → Spec → Plan (technical design + implementation)     |
+| `standard_track`      | ADR → Rule → Guide (codify a team standard)               |
+| `sources_track`       | MRD → BRD → URD (market / business / user discovery)      |
+| `iso_track`           | BRS → StRS → SyRS → SRS (formal ISO 29148 cascade)        |
+
+**Example.** In your agent, run:
+
+```text
+/product_track feature_name="user notifications"
+```
+
+The agent drafts the PRD, asks you to confirm, then derives a Plan and links it back with `plan implements prd`. You can stop at any gate.
+
+See [MCP prompts reference](/reference/mcp-prompts/) for arguments and full chain details.
+
+:::note
+These MCP prompts are **different** from the plugin's `/archcore:product-track` slash commands. MCP prompts ship in the CLI's MCP server and work in any MCP-aware client (Gemini CLI, Copilot, Codex, OpenCode, ...). Plugin tracks are skills that ship with the [Archcore Plugin](/plugin/tracks/) and are scoped to plugin hosts.
+:::
 
 ## Built-in agent instructions
 
@@ -37,6 +71,7 @@ The MCP server doesn't just expose tools — it teaches agents how to use them. 
 - When to create vs. update documents
 - How to use relations properly
 - Status lifecycle (`draft` -> `accepted` -> `rejected`)
+- When to call `init_project` (empty repo + user wants to create a document)
 
 These instructions are sent automatically. You don't need to explain Archcore conventions to your agent.
 
@@ -158,3 +193,4 @@ The MCP server runs as a subprocess launched by your coding agent. When the agen
 - [Agent integrations](/cli/agent-integrations/) — per-agent support matrix and config paths.
 - [Hooks](/cli/hooks/) — the session-start hook and what it outputs.
 - [MCP tools reference](/reference/mcp-tools/) — full API spec.
+- [MCP prompts reference](/reference/mcp-prompts/) — track cascades available as prompts.
