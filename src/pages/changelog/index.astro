@@ -1,22 +1,42 @@
 ---
 import { getCollection } from 'astro:content';
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 import ChangelogEntry from '../../components/ChangelogEntry.astro';
 
-const entries = (await getCollection('changelog')).sort(
+const all = (await getCollection('changelog')).sort(
 	(a, b) => b.data.date.getTime() - a.data.date.getTime()
 );
+
+const plugin = all.filter((entry) => entry.data.product === 'plugin');
+const cli = all.filter((entry) => entry.data.product === 'cli');
 ---
 
 <StarlightPage
 	frontmatter={{
 		title: 'Changelog',
 		description: 'All notable changes to Archcore.',
+		tableOfContents: false,
 	}}
 >
-	<div class="changelog-list">
-		{entries.map((entry) => (
-			<ChangelogEntry entry={entry} />
-		))}
-	</div>
+	<Tabs>
+		<TabItem label="Plugin">
+			<div class="changelog-list">
+				{plugin.length === 0 ? (
+					<p class="changelog-empty">No plugin releases yet.</p>
+				) : (
+					plugin.map((entry) => <ChangelogEntry entry={entry} />)
+				)}
+			</div>
+		</TabItem>
+		<TabItem label="CLI">
+			<div class="changelog-list">
+				{cli.length === 0 ? (
+					<p class="changelog-empty">No CLI releases yet.</p>
+				) : (
+					cli.map((entry) => <ChangelogEntry entry={entry} />)
+				)}
+			</div>
+		</TabItem>
+	</Tabs>
 </StarlightPage>

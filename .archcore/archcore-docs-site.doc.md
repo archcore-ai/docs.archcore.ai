@@ -5,9 +5,9 @@ status: accepted
 
 ## Overview
 
-Documentation site for the [Archcore CLI](https://github.com/archcore-ai/cli), deployed at **docs.archcore.ai**.
+Documentation site for [Archcore](https://github.com/archcore-ai), deployed at **docs.archcore.ai**.
 
-Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions. It helps teams structure decisions, rules, plans, and guides inside the repository so agents can work with stronger project context. This site provides getting-started guides, concept explanations, agent setup docs, and CLI/MCP reference.
+Archcore turns your repository into structured, machine-readable context — so AI coding agents understand your architecture, rules, and decisions. The project ships in two flavors: a **Plugin** for AI coding hosts (Claude Code, Cursor) and a standalone **CLI**. This site provides path-based onboarding, plugin and CLI references, shared concept material, and lookup tables (MCP tools, prompts, skills, tracks).
 
 ## Architecture
 
@@ -18,18 +18,21 @@ Archcore turns your repository into structured, machine-readable context — so 
 
 ## Sections
 
-The site is organized into 4 sidebar sections (15 pages total):
+The sidebar has 5 groups (~34 pages total):
 
-| Section | Directory | Purpose | Pages |
-|---------|-----------|---------|-------|
-| Get Started | `start/` + root | Onboarding flow | Introduction, Quick Start, Flat Files vs Archcore |
-| Concepts | `concepts/` | Mental model and use cases | How It Works, Document Types, Documents & Layout, Relations, Use Cases |
-| Agents & Tools | `agents/` | Agent connectivity and CLI | Supported Agents, MCP Server, CLI Commands |
-| Reference | `reference/` | Lookup material | MCP Tools, Configuration, Document Format, Troubleshooting |
+| Section | Directory | Purpose | Example pages |
+|---------|-----------|---------|----------------|
+| Start Here | `start/` + root | Orient and pick a path | Overview (`index.mdx`), Choose Plugin or CLI, Plugin Quick Start, CLI Quick Start (links to `cli/quick-start`), Migrate from Flat Files |
+| Plugin | `plugin/` | Plugin product surface | Overview, Install, Supported Hosts, How Plugin Works, Skills, Built-in Agents, Troubleshooting |
+| CLI | `cli/` | CLI product surface | Overview, Install, Quick Start, `archcore init`, Commands, MCP Server, Hooks, Agent Integrations, Configuration, Troubleshooting |
+| Concepts | `concepts/` | Shared mental model | What Is Archcore, Mental Model, How It Works, Document Types, Documents & Layout, Relations, Flat Files vs Archcore, Use Cases |
+| Reference | `reference/` | Cross-cutting lookup | Document Format, MCP Tools, MCP Prompts, Plugin Skills, Tracks |
+
+The `agents/` directory from the previous IA is gone; legacy paths (`/agents/*`, `/getting-started/*`, `/use-cases/*`, etc.) are preserved as redirects in `astro.config.mjs`.
 
 ### Changelog
 
-The changelog lives outside the 4-section sidebar structure as a standalone content collection (`src/content/changelog/`). It is accessed via the "Changelog" link in the site header. Changelog pages use Starlight's standard docs template (sidebar and TOC visible) but entries are not listed in the sidebar. See the `adding-changelog-entry` guide and `changelog-content-structure` rule for details.
+The changelog lives outside the sidebar as a standalone content collection (`src/content/changelog/`). It is accessed via the "Changelog" link in the site header. Entries are split by product (Plugin / CLI) into tabs on the listing page; each entry has a required `product` frontmatter field. Changelog pages use Starlight's standard docs template (sidebar and TOC visible) but entries are not registered in the main sidebar. See the `adding-changelog-entry` guide and `changelog-content-structure` rule for details.
 
 ## Key Files
 

@@ -141,6 +141,13 @@ a.changelog-version:hover {
 	text-decoration: underline;
 }
 
+/* Changelog — empty state */
+.changelog-empty {
+	color: var(--sl-color-gray-3);
+	padding: 2rem 0;
+	text-align: center;
+}
+
 /* Changelog — body content */
 .changelog-body h2 {
 	font-size: 1.125rem;

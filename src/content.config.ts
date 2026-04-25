@@ -13,6 +13,7 @@ export const collections = {
 			date: z.coerce.date(),
 			title: z.string(),
 			description: z.string().optional(),
+			product: z.enum(['plugin', 'cli']),
 		}),
 	}),
 };
