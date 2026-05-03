@@ -1,6 +1,6 @@
 ---
 title: Skills
-description: All 18 Archcore Plugin skills — 11 intent commands, 6 tracks, and 1 utility — invoked via /archcore:* slash commands.
+description: All 16 Archcore Plugin skills — 9 intent commands, 6 tracks, and 1 utility — invoked via /archcore:* slash commands.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -9,11 +9,11 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 A **skill** is a unit of expertise the agent loads on demand. Each one carries focused knowledge — when to use a document type, required sections, typical relations, common mistakes — so you describe intent instead of schema. You invoke a skill via a `/archcore:*` slash command, or by simply describing what you want.
 
-The plugin ships **18 skills**: 11 intent commands, 6 tracks, and 1 utility.
+The plugin ships **16 skills**: 9 intent commands, 6 tracks, and 1 utility.
 
 There is no per-document-type skill. The 18 [document types](/concepts/document-types/) (`adr`, `prd`, `rule`, `guide`, `spec`, …) are produced by intent commands and tracks, or — when you need a niche type without a routing skill — by calling `mcp__archcore__create_document` from the agent.
 
-## All 18 skills at a glance
+## All 16 skills at a glance
 
 | Skill                            | Family   | What it does                                                            |
 | -------------------------------- | -------- | ----------------------------------------------------------------------- |
@@ -23,10 +23,8 @@ There is no per-document-type skill. The 18 [document types](/concepts/document-
 | `/archcore:plan`                 | intent   | Plan a feature — routes to `product-track` or a single plan.            |
 | `/archcore:decide`               | intent   | Record a finalized decision — creates ADR, offers rule + guide follow-up. |
 | `/archcore:standard`             | intent   | Establish a team standard — drives `standard-track`.                    |
-| `/archcore:review`               | intent   | Documentation health audit — gaps, staleness, orphans, missing relations. |
-| `/archcore:status`               | intent   | Counts dashboard — by category, type, status, relation coverage.        |
+| `/archcore:review`               | intent   | Documentation health — counts dashboard by default, full audit (gaps, staleness, orphans) with `--deep`. |
 | `/archcore:actualize`            | intent   | Detect stale docs via code drift, cascade analysis, temporal signals.   |
-| `/archcore:graph`                | intent   | Render the document relation graph as a Mermaid flowchart.              |
 | `/archcore:help`                 | intent   | List every skill grouped by family.                                     |
 | `/archcore:product-track`        | track    | idea → prd → plan.                                                      |
 | `/archcore:sources-track`        | track    | mrd → brd → urd.                                                        |
@@ -126,24 +124,18 @@ Triggers the [standard-track](#standard-track): `adr` (decision) → `rule` (sta
 
 ### `/archcore:review`
 
-"Audit the docs."
+"Show me where we are." or "Audit the docs."
 
 ```
-/archcore:review knowledge
-/archcore:review tag:auth
+/archcore:review                  # default short mode — counts dashboard
+/archcore:review --deep           # full audit, project-wide
+/archcore:review --deep tag:auth  # full audit, scoped to a tag
+/archcore:review knowledge        # any non-flag filter implies --deep
 ```
 
-Runs the `archcore-auditor` agent over the chosen slice. Reports gaps, orphans, staleness, missing relations.
+Default mode returns a one-screen dashboard: counts by category, status, type, relation coverage, and a one-line issues summary. Add `--deep` (or any filter) to switch to the full audit — gaps, staleness, orphans, missing relations, and prioritized recommendations.
 
-### `/archcore:status`
-
-"Show me where we are."
-
-```
-/archcore:status
-```
-
-Returns a one-screen dashboard: counts by layer, type, status, relation coverage, tag distribution, and any doctor issues.
+The dashboard is project-wide by design and does not take filters. Pass a filter when you want analysis of that scope.
 
 ### `/archcore:actualize`
 
@@ -155,17 +147,6 @@ Returns a one-screen dashboard: counts by layer, type, status, relation coverage
 ```
 
 Looks for staleness signals: code drift (document references source that changed), cascade drift (a dependency updated without the dependent being reviewed), and temporal drift (a document hasn't been touched in a long time).
-
-### `/archcore:graph`
-
-"Show me how the docs connect."
-
-```
-/archcore:graph
-/archcore:graph tag:auth
-```
-
-Renders the document relation graph as a Mermaid flowchart, grouped by category with styled edges per relation type. Useful for spotting orphans, dense clusters, and unexpected dependencies. Optional filter scopes the graph by tag, type, category, or document slug.
 
 ### `/archcore:help`
 

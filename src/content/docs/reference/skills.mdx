@@ -1,6 +1,6 @@
 ---
 title: Plugin Skills Reference
-description: One-page reference of all 18 Archcore Plugin skills — 11 intent commands, 6 tracks, 1 utility.
+description: One-page reference of all 16 Archcore Plugin skills — 9 intent commands, 6 tracks, 1 utility.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -9,7 +9,7 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 Quick lookup of every skill shipped with the Archcore Plugin — one page, no clicks. For grouped, annotated coverage with examples see [Skills](/plugin/skills/). For the document types these skills produce, see [Document types](/concepts/document-types/).
 
-## Intent commands (11)
+## Intent commands (9)
 
 The primary routing commands — describe an intent, the skill picks the right document type or multi-step flow.
 
@@ -21,10 +21,8 @@ The primary routing commands — describe an intent, the skill picks the right d
 | `/archcore:plan`        | Plan a feature — routes to `product-track` or a single plan.                   |
 | `/archcore:decide`      | Record a finalized decision — creates ADR, offers rule + guide follow-up.      |
 | `/archcore:standard`    | Establish a team standard — drives `standard-track`.                           |
-| `/archcore:review`      | Documentation health audit — gaps, staleness, orphans, missing relations.      |
-| `/archcore:status`      | Counts dashboard — by category, type, status, relation coverage.               |
+| `/archcore:review`      | Documentation health — counts dashboard by default; full audit (gaps, staleness, orphans, missing relations) with `--deep`. |
 | `/archcore:actualize`   | Detect stale docs via code drift, cascade analysis, temporal signals.          |
-| `/archcore:graph`       | Render the document relation graph as a Mermaid flowchart.                     |
 | `/archcore:help`        | List every skill grouped by family.                                            |
 
 ## Tracks (6)
@@ -61,6 +59,6 @@ Full descriptions and required sections for each type: [Document types](/concept
 ## See also
 
 - [Skills](/plugin/skills/) — full descriptions with examples for every intent command and track.
-- [Intent commands](/plugin/skills/#intent-commands) — annotated coverage of the 11 routing commands.
+- [Intent commands](/plugin/skills/#intent-commands) — annotated coverage of the 9 routing commands.
 - [Tracks](/plugin/skills/#tracks) — flow diagrams and relation wiring per track.
 - [Document types](/concepts/document-types/) — required sections per type.
