@@ -31,13 +31,7 @@ For **Cursor**, the plugin still works, but you register MCP yourself (Cursor do
 		```
 	</TabItem>
 	<TabItem label="Cursor">
-		Requires Cursor 2.5+. Archcore isn't on the official Cursor Marketplace yet, so install it straight from GitHub — open a new Agent chat and run:
-
-		```
-		/add-plugin archcore@https://github.com/archcore-ai/plugin
-		```
-
-		Type the full command — `/add-plugin` doesn't appear in autocomplete.
+		Requires Cursor 2.5+. Open Cursor → **Plugins**, paste `https://github.com/archcore-ai/plugin` into the **Search or paste link** field, and click **Add Plugin**. Cursor reads the repo's `marketplace.json` and installs Archcore.
 
 		Then register MCP in Cursor's MCP settings, pointing `command` at `${CURSOR_PLUGIN_ROOT}/bin/archcore` (or an absolute path to a locally-cloned `bin/archcore`), with `args: ["mcp"]`. See [Install the plugin](/plugin/install/) for the exact snippet.
 	</TabItem>

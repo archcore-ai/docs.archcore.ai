@@ -35,13 +35,13 @@ For Cursor, you register MCP yourself — see the Cursor tab below.
 		**Already have `archcore` on `PATH`?** The bundled launcher defers to any global install — your existing binary is used, no duplicate cache, no conflict.
 	</TabItem>
 	<TabItem label="Cursor">
-		Requires Cursor 2.5+. Archcore isn't on the official Cursor Marketplace yet, so install it straight from GitHub — open a new Agent chat and run:
+		Requires Cursor 2.5+. Archcore isn't on the official Cursor Marketplace yet, so install from GitHub via the Plugins panel:
 
-		```
-		/add-plugin archcore@https://github.com/archcore-ai/plugin
-		```
+		1. Open Cursor → **Plugins**
+		2. Paste `https://github.com/archcore-ai/plugin` into the **Search or paste link** field
+		3. Click **Add Plugin**
 
-		Type the full command — `/add-plugin` doesn't appear in autocomplete. For team rollouts, paste the same GitHub URL under Dashboard → Settings → Plugins → Team Marketplaces → Import.
+		Cursor reads the repo's `marketplace.json`, shows the plugin, and installs it. For team rollouts, paste the same URL under Dashboard → Settings → Plugins → Team Marketplaces → Import.
 
 		Then register MCP in Cursor's MCP settings (or a project `mcp.json`). Point the `command` at the plugin's bundled launcher:
 
