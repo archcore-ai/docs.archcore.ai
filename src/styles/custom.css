@@ -205,22 +205,12 @@
 }
 
 /* =========================================================================
-   Global canvas — paper background with a subtle 32px structural grid.
-   The grid is decorative-but-functional; suppressed in dark mode so the
-   warm-charcoal palette stays calm.
+   Global canvas — flat paper background.
    ========================================================================= */
 
 body {
 	background-color: var(--color-page);
-	background-image:
-		linear-gradient(rgba(17, 16, 14, 0.035) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(17, 16, 14, 0.035) 1px, transparent 1px);
-	background-size: 32px 32px;
 	color: var(--color-text);
-}
-
-:root[data-theme='dark'] body {
-	background-image: none;
 }
 
 :focus-visible {

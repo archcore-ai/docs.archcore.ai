@@ -42,6 +42,9 @@ export default defineConfig({
 		// Plugin Skills consolidation — Intent Commands and Tracks merged into Skills
 		'/plugin/intent-commands/': '/plugin/skills/#intent-commands',
 		'/plugin/tracks/': '/plugin/skills/#tracks',
+
+		// `archcore init` deep-dive folded into CLI Quick Start
+		'/cli/init/': '/cli/quick-start/',
 	},
 	integrations: [
 		starlight({
@@ -147,7 +150,6 @@ export default defineConfig({
 						{ label: 'Overview', slug: 'cli/overview' },
 						{ label: 'Install', slug: 'cli/install' },
 						{ label: 'Quick Start', slug: 'cli/quick-start' },
-						{ label: 'archcore init', slug: 'cli/init' },
 						{ label: 'Commands', slug: 'cli/commands' },
 						{ label: 'MCP Server', slug: 'cli/mcp-server' },
 						{ label: 'Hooks', slug: 'cli/hooks' },
