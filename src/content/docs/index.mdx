@@ -1,47 +1,58 @@
 ---
-title: Use Archcore your way
-description: Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions. Pick the plugin for the full UX in Claude Code and Cursor, or the CLI for direct integrations with every other agent.
-template: splash
-hero:
-  tagline: Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions.
-  actions:
-    - text: Plugin quick start
-      link: /start/plugin-quick-start/
-      icon: right-arrow
-      variant: primary
-    - text: CLI quick start
-      link: /cli/quick-start/
-      icon: right-arrow
+title: Archcore
+description: Git-native context for AI coding agents. Turn your repository into structured, machine-readable context — so AI agents follow your architecture, rules, and decisions instead of guessing.
 ---
 
-import PathChooser from '../../components/PathChooser.astro';
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-Archcore turns your repository into structured, machine-readable context. Typed documents — decisions, rules, guides, plans — that every AI coding agent discovers automatically through MCP.
+Archcore turns your repository into structured, machine-readable context. AI coding agents read your architecture, rules, and decisions through MCP — instead of guessing from flat Markdown files.
 
-There are two ways to use it. Both read and write the same `.archcore/` directory.
+## Start here
 
-<PathChooser />
+<CardGrid>
+	<LinkCard
+		title="Choose Plugin or CLI"
+		href="/start/choose/"
+		description="Two entry points into the same .archcore/ — pick the one that fits your agent."
+	/>
+	<LinkCard
+		title="Plugin Quick Start"
+		href="/start/plugin-quick-start/"
+		description="Install the plugin in Claude Code or Cursor and run your first track."
+	/>
+	<LinkCard
+		title="CLI Quick Start"
+		href="/cli/quick-start/"
+		description="Install the binary and create your first document from any agent."
+	/>
+	<LinkCard
+		title="Migrate from Flat Files"
+		href="/start/migrate-from-flat-files/"
+		description="Move from CLAUDE.md / .cursorrules / AGENTS.md to a typed, linked graph."
+	/>
+</CardGrid>
 
-## What changes when you install it
+## Browse by section
 
-Without Archcore, asking an AI for "a new service" means the agent:
+<CardGrid>
+	<Card title="Plugin" icon="puzzle">
+		Slash commands, tracks, and built-in agents for Claude Code and Cursor.
 
-- guesses the folder structure
-- ignores conventions it has never been told about
-- produces code that drifts from decisions buried in docs
-- rediscovers patterns you've already written down
+		[Plugin overview →](/plugin/overview/)
+	</Card>
+	<Card title="CLI" icon="seti:powershell">
+		The single binary that reads `.archcore/`, builds the graph, and speaks MCP.
 
-With Archcore, the same ask and the agent:
+		[CLI overview →](/cli/overview/)
+	</Card>
+	<Card title="Concepts" icon="open-book">
+		What Archcore is, how it works, document types, and the mental model.
 
-- places files where your architecture says they belong
-- follows rules defined in `.archcore/`
-- respects ADRs and existing specs
-- reuses patterns (`cpat`) you've already captured
+		[What is Archcore? →](/concepts/what-is-archcore/)
+	</Card>
+	<Card title="Reference" icon="document">
+		Document format, MCP tools and prompts, plugin skills, and tracks.
 
-## Explore
-
-- [What is Archcore?](/concepts/what-is-archcore/) — the problem, the solution, and the shape of the system.
-- [Mental Model](/concepts/mental-model/) — CLI as compiler, plugin as runtime.
-- [Document Types](/concepts/document-types/) — the 18 types your agent will create.
-- [Use Cases](/concepts/use-cases/) — how teams use Archcore in practice.
-- [Changelog](/changelog/) — recent releases.
+		[Document format →](/reference/document-format/)
+	</Card>
+</CardGrid>

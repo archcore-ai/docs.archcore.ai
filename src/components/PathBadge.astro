@@ -1,5 +1,5 @@
 ---
-type Scope = 'plugin' | 'cli' | 'shared';
+type Scope = 'plugin' | 'cli' | 'shared' | 'dark';
 
 interface Props {
 	scope: Scope;
@@ -12,6 +12,7 @@ const defaults: Record<Scope, string> = {
 	plugin: 'Plugin',
 	cli: 'CLI',
 	shared: 'Shared',
+	dark: 'Recommended',
 };
 
 const text = label ?? defaults[scope];
@@ -23,32 +24,39 @@ const text = label ?? defaults[scope];
 	.path-badge {
 		display: inline-flex;
 		align-items: center;
-		padding: 0.15rem 0.55rem;
-		border-radius: 9999px;
-		font-size: 0.75rem;
+		padding: 3px 8px;
+		border-radius: var(--radius-pill);
+		font-size: 10px;
 		font-weight: 600;
-		line-height: 1.5;
-		letter-spacing: 0.02em;
+		line-height: 1;
+		letter-spacing: -0.01em;
 		text-transform: uppercase;
-		border: 1px solid transparent;
-		background: var(--sl-color-accent-low);
-		color: var(--sl-color-accent-high);
+		border: 1px solid var(--color-border);
+		background: var(--color-surface-muted);
+		color: var(--color-text-secondary);
 	}
 
 	.path-badge--plugin {
-		background: color-mix(in oklch, var(--ac-path-plugin) 18%, transparent);
+		background: color-mix(in oklch, var(--ac-path-plugin) 14%, var(--color-surface));
 		color: var(--ac-path-plugin);
-		border-color: color-mix(in oklch, var(--ac-path-plugin) 40%, transparent);
+		border-color: color-mix(in oklch, var(--ac-path-plugin) 35%, var(--color-border));
 	}
 
 	.path-badge--cli {
-		background: color-mix(in oklch, var(--ac-path-cli) 15%, transparent);
+		background: color-mix(in oklch, var(--ac-path-cli) 12%, var(--color-surface));
 		color: var(--ac-path-cli);
-		border-color: color-mix(in oklch, var(--ac-path-cli) 35%, transparent);
+		border-color: color-mix(in oklch, var(--ac-path-cli) 30%, var(--color-border));
 	}
 
 	.path-badge--shared {
-		background: var(--sl-color-accent-low);
-		color: var(--sl-color-accent-high);
+		background: var(--color-surface-muted);
+		color: var(--color-text-secondary);
+		border-color: var(--color-border);
+	}
+
+	.path-badge--dark {
+		background: var(--color-action);
+		color: var(--color-text-inverse);
+		border-color: var(--color-action);
 	}
 </style>

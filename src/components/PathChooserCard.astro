@@ -8,12 +8,16 @@ interface Props {
 	description: string;
 	href: string;
 	cta?: string;
+	emphasized?: boolean;
 }
 
-const { scope, title, audience, description, href, cta = 'Open' } = Astro.props;
+const { scope, title, audience, description, href, cta = 'Open', emphasized = false } = Astro.props;
 ---
 
-<a href={href} class={`path-card path-card--${scope}`}>
+<a
+	href={href}
+	class={`path-card path-card--${scope}${emphasized ? ' path-card--emphasized' : ''}`}
+>
 	<div class="path-card__audience">{audience}</div>
 	<div class="path-card__title">{title}</div>
 	<p class="path-card__description">{description}</p>
@@ -28,39 +32,35 @@ const { scope, title, audience, description, href, cta = 'Open' } = Astro.props;
 		flex-direction: column;
 		gap: 0.75rem;
 		padding: 1.5rem;
-		border-radius: 0.75rem;
-		border: 1px solid var(--sl-color-gray-5);
-		background: var(--sl-color-bg-nav);
+		border-radius: var(--radius-card);
+		border: 1px solid var(--color-border);
+		background: var(--color-surface);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			border-color 0.15s ease,
-			transform 0.15s ease;
+		box-shadow: 0 1px 0 rgba(17, 16, 14, 0.04);
+		transition: border-color 0.15s ease, background-color 0.15s ease;
 	}
 
 	.path-card:hover {
-		transform: translateY(-2px);
+		border-color: var(--color-border-strong);
+	}
+
+	.path-card--emphasized {
+		background: var(--color-elevated);
+		border-color: var(--color-border-strong);
+		box-shadow: 0 8px 24px rgba(17, 16, 14, 0.06);
 	}
 
 	.path-card--plugin {
 		border-top: 3px solid var(--ac-path-plugin);
 	}
-	.path-card--plugin:hover {
-		border-color: var(--ac-path-plugin);
-	}
 
 	.path-card--cli {
 		border-top: 3px solid var(--ac-path-cli);
 	}
-	.path-card--cli:hover {
-		border-color: var(--ac-path-cli);
-	}
 
 	.path-card--shared {
-		border-top: 3px solid var(--sl-color-accent);
-	}
-	.path-card--shared:hover {
-		border-color: var(--sl-color-accent);
+		border-top: 3px solid var(--ac-path-shared);
 	}
 
 	.path-card__audience {
@@ -68,19 +68,20 @@ const { scope, title, audience, description, href, cta = 'Open' } = Astro.props;
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
-		color: var(--sl-color-gray-3);
+		color: var(--color-text-muted);
 	}
 
 	.path-card__title {
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: var(--sl-color-white);
+		color: var(--color-text);
 		line-height: 1.2;
+		letter-spacing: -0.02em;
 	}
 
 	.path-card__description {
 		margin: 0;
-		color: var(--sl-color-gray-2);
+		color: var(--color-text-secondary);
 		line-height: 1.55;
 		font-size: 0.95rem;
 	}
@@ -89,7 +90,7 @@ const { scope, title, audience, description, href, cta = 'Open' } = Astro.props;
 		margin-top: auto;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: var(--sl-color-text-accent);
+		color: var(--color-action);
 	}
 
 	.path-card--plugin .path-card__cta {

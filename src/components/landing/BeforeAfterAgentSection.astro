@@ -1,0 +1,227 @@
+---
+import PathBadge from '../PathBadge.astro';
+
+const without = [
+	'guesses folder structure',
+	'ignores conventions',
+	'misses ADRs',
+	're-creates old patterns',
+];
+
+const withArchcore = [
+	'places files where architecture says they belong',
+	'follows team rules',
+	'respects ADRs and specs',
+	'reuses known patterns',
+];
+---
+
+<section class="section before-after">
+	<div class="container-narrow before-after__intro">
+		<h2 class="before-after__headline">The moment the agent starts understanding your repo.</h2>
+		<p class="before-after__lead">
+			Same prompt. Same codebase. The difference is whether the agent has structured project context.
+		</p>
+	</div>
+
+	<div class="container">
+		<div class="before-after__prompt">
+			<span class="before-after__prompt-label">Prompt</span>
+			<code class="before-after__prompt-code">Add a new user notifications service.</code>
+		</div>
+
+		<div class="before-after__cards">
+			<article class="ba-card ba-card--without">
+				<header class="ba-card__header">
+					<h3 class="ba-card__title">Without Archcore</h3>
+				</header>
+				<ul class="ba-card__list">
+					{without.map((item) => (
+						<li class="ba-card__item ba-card__item--x">
+							<span class="ba-card__icon ba-card__icon--x" aria-hidden="true">
+								<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+									<path d="M4 4l8 8M12 4l-8 8" />
+								</svg>
+							</span>
+							<span>{item}</span>
+						</li>
+					))}
+				</ul>
+			</article>
+
+			<article class="ba-card ba-card--with">
+				<header class="ba-card__header">
+					<h3 class="ba-card__title">With Archcore</h3>
+					<PathBadge scope="dark" label="Recommended" />
+				</header>
+				<ul class="ba-card__list">
+					{withArchcore.map((item) => (
+						<li class="ba-card__item ba-card__item--check">
+							<span class="ba-card__icon ba-card__icon--check" aria-hidden="true">
+								<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M3 8.5l3.5 3.5L13 5" />
+								</svg>
+							</span>
+							<span>{item}</span>
+						</li>
+					))}
+				</ul>
+			</article>
+		</div>
+	</div>
+</section>
+
+<style>
+	.before-after__intro {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		text-align: center;
+		align-items: center;
+		margin-bottom: 3rem;
+	}
+
+	.before-after__headline {
+		margin: 0;
+		font-size: 28px;
+		line-height: 1.08;
+		font-weight: 700;
+		letter-spacing: -0.035em;
+		color: var(--color-text);
+	}
+
+	@media (min-width: 50rem) {
+		.before-after__headline {
+			font-size: 34px;
+			line-height: 1.05;
+		}
+	}
+
+	.before-after__lead {
+		margin: 0;
+		max-width: 600px;
+		color: var(--color-text-secondary);
+		line-height: 1.55;
+	}
+
+	.before-after__prompt {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
+		padding: 1rem 1.25rem;
+		background: var(--color-code-bg);
+		border: 1px solid var(--color-border);
+		border-radius: 12px;
+	}
+
+	.before-after__prompt-label {
+		font-size: 10px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--color-text-muted);
+	}
+
+	.before-after__prompt-code {
+		font-family: var(--sl-font-mono);
+		font-size: 14px;
+		color: var(--color-text);
+		background: transparent;
+		padding: 0;
+		border: 0;
+	}
+
+	.before-after__cards {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1fr;
+	}
+
+	@media (min-width: 50rem) {
+		.before-after__cards {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1.25rem;
+		}
+	}
+
+	.ba-card {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		padding: 1.5rem;
+		border-radius: var(--radius-card);
+		border: 1px solid var(--color-border);
+		background: var(--color-surface);
+		box-shadow: 0 1px 0 rgba(17, 16, 14, 0.04);
+	}
+
+	.ba-card--without {
+		opacity: 0.95;
+		border-color: var(--color-border-subtle);
+		background: var(--color-surface-muted);
+	}
+
+	.ba-card--with {
+		background: var(--color-elevated);
+		border-color: var(--color-border-strong);
+		box-shadow: 0 8px 24px rgba(17, 16, 14, 0.06);
+	}
+
+	.ba-card__header {
+		display: flex;
+		align-items: center;
+		gap: 0.625rem;
+	}
+
+	.ba-card__title {
+		margin: 0;
+		font-size: 18px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		color: var(--color-text);
+	}
+
+	.ba-card__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0.625rem;
+	}
+
+	.ba-card__item {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.625rem;
+		font-size: 15px;
+		line-height: 1.5;
+	}
+
+	.ba-card__item--x {
+		color: var(--color-text-secondary);
+	}
+
+	.ba-card__item--check {
+		color: var(--color-text);
+	}
+
+	.ba-card__icon {
+		flex-shrink: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 18px;
+		height: 18px;
+		margin-top: 2px;
+	}
+
+	.ba-card__icon--x {
+		color: var(--color-text-muted);
+	}
+
+	.ba-card__icon--check {
+		color: var(--color-success);
+	}
+</style>

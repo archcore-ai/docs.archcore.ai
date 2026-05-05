@@ -49,6 +49,8 @@ export default defineConfig({
 			components: {
 				SocialIcons: './src/components/HeaderLinks.astro',
 				Head: './src/components/Head.astro',
+				Hero: './src/components/SplashHeroOverride.astro',
+				PageTitle: './src/components/PageTitleOverride.astro',
 			},
 			favicon: '/favicon.ico',
 			logo: {
@@ -58,6 +60,28 @@ export default defineConfig({
 			},
 			description: 'Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions.',
 			head: [
+				// Preload critical variable fonts so the browser fetches them
+				// in parallel with CSS instead of waiting for @font-face discovery.
+				{
+					tag: 'link',
+					attrs: {
+						rel: 'preload',
+						href: '/fonts/inter-latin-wght-normal.woff2',
+						as: 'font',
+						type: 'font/woff2',
+						crossorigin: 'anonymous',
+					},
+				},
+				{
+					tag: 'link',
+					attrs: {
+						rel: 'preload',
+						href: '/fonts/jetbrains-mono-latin-wght-normal.woff2',
+						as: 'font',
+						type: 'font/woff2',
+						crossorigin: 'anonymous',
+					},
+				},
 				{
 					tag: 'meta',
 					attrs: { property: 'og:locale', content: 'en_US' },

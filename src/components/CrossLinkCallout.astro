@@ -26,28 +26,29 @@ const scope = direction.endsWith('-to-plugin') ? 'plugin' : 'cli';
 		gap: 0.5rem;
 		margin: 1.5rem 0;
 		padding: 1rem 1.25rem;
-		border-radius: 0.5rem;
-		border-left: 3px solid var(--sl-color-accent);
-		background: var(--sl-color-accent-low);
+		border-radius: 12px;
+		border-left: 3px solid var(--color-action);
+		background: var(--color-surface);
 		font-size: 0.95rem;
 		line-height: 1.55;
+		color: var(--color-text);
 	}
 
 	.cross-link--plugin {
 		border-left-color: var(--ac-path-plugin);
-		background: color-mix(in oklch, var(--ac-path-plugin) 10%, transparent);
+		background: color-mix(in oklch, var(--ac-path-plugin) 8%, var(--color-surface));
 	}
 
 	.cross-link--cli {
 		border-left-color: var(--ac-path-cli);
-		background: color-mix(in oklch, var(--ac-path-cli) 8%, transparent);
+		background: color-mix(in oklch, var(--ac-path-cli) 6%, var(--color-surface));
 	}
 
 	.cross-link__link {
 		align-self: flex-start;
 		font-weight: 600;
 		text-decoration: none;
-		color: var(--sl-color-text-accent);
+		color: var(--color-action);
 	}
 
 	.cross-link--plugin .cross-link__link {

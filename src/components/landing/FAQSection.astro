@@ -1,0 +1,144 @@
+---
+const items = [
+	{
+		q: 'Do I need both the plugin and the CLI?',
+		a: 'No. The plugin includes the CLI under the hood. Install the plugin if you use Claude Code or Cursor; install the CLI on its own for direct integrations, scripting, or unsupported hosts.',
+	},
+	{
+		q: 'Which path should I start with?',
+		a: 'Plugin if you primarily code in Claude Code or Cursor. CLI if you want to wire Archcore into a custom host, CI, or another agent over MCP.',
+	},
+	{
+		q: 'Which AI agents are supported?',
+		a: 'Claude Code, Cursor, GitHub Copilot, Gemini CLI, Codex CLI, OpenCode, Roo Code, and Cline. Any agent that speaks MCP can read .archcore/.',
+	},
+	{
+		q: 'What does Archcore write into my repo?',
+		a: 'A .archcore/ directory of typed Markdown documents (decisions, rules, guides, plans, specs) and a sync manifest that stores relations between them. Everything is plain text and lives in git.',
+	},
+	{
+		q: 'How do hooks and MCP work together?',
+		a: 'MCP gives the agent on-demand access to typed documents and relations. Session hooks inject the right context at the right moment — e.g. before a file edit — so the agent does not have to ask.',
+	},
+	{
+		q: 'Do I need any external services?',
+		a: 'No. Archcore runs entirely from your repo. No accounts, no SaaS, no telemetry. The plugin and CLI are open source.',
+	},
+	{
+		q: 'How is this different from CLAUDE.md or AGENTS.md?',
+		a: 'Instruction files are flat memory the agent reads each turn. Archcore is a structured graph of typed documents the agent queries through MCP. Decisions, rules, specs, and workflows have their own document types and relate to each other.',
+	},
+	{
+		q: 'How do I keep the CLI updated?',
+		a: 'Use your package manager (npm, brew, scoop) or run archcore self-update. Releases are tracked in the changelog.',
+	},
+];
+---
+
+<section class="section faq">
+	<div class="container-narrow faq__intro">
+		<h2 class="faq__headline">Common questions.</h2>
+	</div>
+
+	<div class="container-narrow">
+		<div class="faq__list">
+			{items.map((item) => (
+				<details class="faq-item">
+					<summary class="faq-item__summary">
+						<span class="faq-item__question">{item.q}</span>
+						<span class="faq-item__chevron" aria-hidden="true">
+							<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M4 6l4 4 4-4" />
+							</svg>
+						</span>
+					</summary>
+					<div class="faq-item__answer">
+						<p>{item.a}</p>
+					</div>
+				</details>
+			))}
+		</div>
+	</div>
+</section>
+
+<style>
+	.faq__intro {
+		margin-bottom: 2rem;
+		text-align: center;
+	}
+
+	.faq__headline {
+		margin: 0;
+		font-size: 28px;
+		line-height: 1.08;
+		font-weight: 700;
+		letter-spacing: -0.035em;
+		color: var(--color-text);
+	}
+
+	@media (min-width: 50rem) {
+		.faq__headline {
+			font-size: 34px;
+			line-height: 1.05;
+		}
+	}
+
+	.faq__list {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.faq-item {
+		border-top: 1px solid var(--color-border-subtle);
+	}
+
+	.faq-item:last-child {
+		border-bottom: 1px solid var(--color-border-subtle);
+	}
+
+	.faq-item__summary {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 1rem 0;
+		cursor: pointer;
+		list-style: none;
+	}
+
+	.faq-item__summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.faq-item__summary:hover {
+		background: color-mix(in srgb, var(--color-surface-muted) 60%, transparent);
+	}
+
+	.faq-item__question {
+		font-size: 15px;
+		font-weight: 600;
+		color: var(--color-text);
+	}
+
+	.faq-item__chevron {
+		flex-shrink: 0;
+		color: var(--color-text-muted);
+		transition: transform 0.2s ease;
+	}
+
+	.faq-item[open] .faq-item__chevron {
+		transform: rotate(180deg);
+	}
+
+	.faq-item__answer {
+		padding: 0 0 1rem;
+	}
+
+	.faq-item__answer p {
+		margin: 0;
+		font-size: 14px;
+		line-height: 1.6;
+		color: var(--color-text-secondary);
+		max-width: 640px;
+	}
+</style>

@@ -1,67 +1,400 @@
+/* =========================================================================
+   Variable fonts — Inter (sans), JetBrains Mono (mono).
+   Self-hosted from /public/fonts so they ship without an @import round-trip
+   and can be <link rel="preload">-ed from the document head. Latin subset
+   only — site content is English-only.
+   ========================================================================= */
+@font-face {
+	font-family: 'Inter Variable';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 100 900;
+	src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: 'Inter Variable';
+	font-style: italic;
+	font-display: swap;
+	font-weight: 100 900;
+	src: url('/fonts/inter-latin-wght-italic.woff2') format('woff2-variations');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: 'JetBrains Mono Variable';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 100 800;
+	src: url('/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: 'JetBrains Mono Variable';
+	font-style: italic;
+	font-display: swap;
+	font-weight: 100 800;
+	src: url('/fonts/jetbrains-mono-latin-wght-italic.woff2') format('woff2-variations');
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Metric-matched fallbacks — render with system fonts but with Inter/JBM
+   x-height, ascent, descent and advance width so swap is invisible. Values
+   are the ones Next.js / fontpie use against Arial (sans) and Menlo (mono). */
+@font-face {
+	font-family: 'Inter Fallback';
+	src: local('Arial');
+	size-adjust: 107.4%;
+	ascent-override: 90.2%;
+	descent-override: 22.48%;
+	line-gap-override: 0%;
+}
+@font-face {
+	font-family: 'JetBrains Mono Fallback';
+	src: local('Menlo'), local('Consolas'), local('Courier New');
+	size-adjust: 99%;
+	ascent-override: 102%;
+	descent-override: 25%;
+	line-gap-override: 0%;
+}
+
+/* =========================================================================
+   DESIGN.md tokens — warm cream + black + JetBrains Mono on a paper canvas.
+   Light is primary; dark is a warm-charcoal complement (not in DESIGN.md
+   but preserved to avoid regressing UX).
+   ========================================================================= */
+
 :root {
-	--sl-font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	/* Surfaces */
+	--color-page: #f8f1e8;
+	--color-page-alt: #f3ede1;
+	--color-surface: #fbf7ee;
+	--color-surface-muted: #f1ebdd;
+	--color-elevated: #fffdf7;
 
-	/* Path tokens — Plugin (warmer), CLI (cooler/technical), Shared (brand accent) */
-	--ac-path-plugin: oklch(0.72 0.14 65);
-	--ac-path-cli: oklch(0.68 0.06 235);
-	--ac-path-shared: var(--sl-color-accent);
+	/* Text */
+	--color-text: #11100e;
+	--color-text-secondary: #5f5a50;
+	--color-text-muted: #8a8377;
+	--color-text-inverse: #ffffff;
+
+	/* Borders */
+	--color-border-subtle: #e3d8c8;
+	--color-border: #d5c8b6;
+	--color-border-strong: #191714;
+
+	/* Action */
+	--color-action: #11100e;
+	--color-action-hover: #2a2722;
+
+	/* Status */
+	--color-success: #2e6b45;
+	--color-warning: #8a6426;
+	--color-danger: #8a2e2e;
+
+	/* Radii */
+	--radius-card: 16px;
+	--radius-control: 10px;
+	--radius-pill: 999px;
+
+	/* Containers */
+	--container-max: 1040px;
+	--container-narrow: 760px;
+
+	/* Code-block surface — warm paper terminal */
+	--color-code-bg: #f5eee1;
+
+	/* Path tokens — desaturated for the warm palette.
+	   Plugin = warm amber (sits next to cream without clashing).
+	   CLI    = quiet slate (cool but low chroma).
+	   Shared = brand action color. */
+	--ac-path-plugin: oklch(0.55 0.12 55);
+	--ac-path-cli: oklch(0.45 0.05 235);
+	--ac-path-shared: var(--color-action);
+
+	/* Font stacks — metric-matched fallback sits between the variable font
+	   and the system stack so the swap is visually seamless. */
+	--sl-font: 'Inter Variable', 'Inter Fallback', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--sl-font-mono: 'JetBrains Mono Variable', 'JetBrains Mono Fallback', 'JetBrains Mono', SFMono-Regular, Consolas, 'Liberation Mono', monospace;
 }
 
-:root[data-theme='light'] {
-	--ac-path-plugin: oklch(0.58 0.16 55);
-	--ac-path-cli: oklch(0.5 0.08 235);
+/* =========================================================================
+   Map DESIGN.md tokens onto Starlight's --sl-color-* so existing components
+   inherit correctly without rewriting every selector.
+   ========================================================================= */
+
+:root[data-theme='light'],
+:root:not([data-theme='dark']) {
+	--sl-color-bg: var(--color-page);
+	--sl-color-bg-nav: var(--color-page);
+	--sl-color-bg-sidebar: var(--color-page);
+	--sl-color-bg-inline-code: var(--color-surface-muted);
+
+	/* In Starlight, --sl-color-white is the strongest text token (and inverts
+	   in light mode). We point it at our primary text. */
+	--sl-color-white: var(--color-text);
+	--sl-color-gray-1: var(--color-text);
+	--sl-color-gray-2: var(--color-text-secondary);
+	--sl-color-gray-3: var(--color-text-muted);
+	--sl-color-gray-4: var(--color-border);
+	--sl-color-gray-5: var(--color-border-subtle);
+	--sl-color-gray-6: var(--color-surface-muted);
+	--sl-color-gray-7: var(--color-surface);
+	--sl-color-black: var(--color-page);
+
+	--sl-color-accent-low: var(--color-surface-muted);
+	--sl-color-accent: var(--color-action);
+	--sl-color-accent-high: var(--color-text);
+	--sl-color-text: var(--color-text);
+	--sl-color-text-accent: var(--color-action);
+	--sl-color-text-invert: var(--color-text-inverse);
+	--sl-color-hairline: var(--color-border-subtle);
+	--sl-color-hairline-light: var(--color-border-subtle);
+	--sl-color-hairline-shade: var(--color-border);
 }
 
-/* Match production logo sizing */
+/* Warm-charcoal dark mode (DESIGN.md doesn't specify; this is a complement). */
+:root[data-theme='dark'] {
+	--color-page: #1a1814;
+	--color-page-alt: #211e19;
+	--color-surface: #211e19;
+	--color-surface-muted: #2a2620;
+	--color-elevated: #2f2a23;
+
+	--color-text: #f3ecde;
+	--color-text-secondary: #b3aa97;
+	--color-text-muted: #807868;
+	--color-text-inverse: #11100e;
+
+	--color-border-subtle: #3a3429;
+	--color-border: #4a4338;
+	--color-border-strong: #f3ecde;
+
+	--color-action: #f3ecde;
+	--color-action-hover: #ffffff;
+
+	--color-code-bg: #211e19;
+
+	--ac-path-plugin: oklch(0.78 0.13 65);
+	--ac-path-cli: oklch(0.72 0.06 235);
+	--ac-path-shared: var(--color-action);
+
+	--sl-color-bg: var(--color-page);
+	--sl-color-bg-nav: var(--color-page);
+	--sl-color-bg-sidebar: var(--color-page);
+	--sl-color-bg-inline-code: var(--color-surface-muted);
+
+	--sl-color-white: var(--color-text);
+	--sl-color-gray-1: var(--color-text);
+	--sl-color-gray-2: var(--color-text-secondary);
+	--sl-color-gray-3: var(--color-text-muted);
+	--sl-color-gray-4: var(--color-border);
+	--sl-color-gray-5: var(--color-border-subtle);
+	--sl-color-gray-6: var(--color-surface-muted);
+	--sl-color-gray-7: var(--color-surface);
+	--sl-color-black: var(--color-page);
+
+	--sl-color-accent-low: var(--color-surface-muted);
+	--sl-color-accent: var(--color-action);
+	--sl-color-accent-high: var(--color-text);
+	--sl-color-text: var(--color-text);
+	--sl-color-text-accent: var(--color-action);
+	--sl-color-text-invert: var(--color-text-inverse);
+	--sl-color-hairline: var(--color-border-subtle);
+	--sl-color-hairline-light: var(--color-border-subtle);
+	--sl-color-hairline-shade: var(--color-border);
+}
+
+/* =========================================================================
+   Global canvas — paper background with a subtle 32px structural grid.
+   The grid is decorative-but-functional; suppressed in dark mode so the
+   warm-charcoal palette stays calm.
+   ========================================================================= */
+
+body {
+	background-color: var(--color-page);
+	background-image:
+		linear-gradient(rgba(17, 16, 14, 0.035) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(17, 16, 14, 0.035) 1px, transparent 1px);
+	background-size: 32px 32px;
+	color: var(--color-text);
+}
+
+:root[data-theme='dark'] body {
+	background-image: none;
+}
+
+:focus-visible {
+	outline: 2px solid var(--color-action);
+	outline-offset: 3px;
+}
+
+/* =========================================================================
+   Site title (left of the nav).
+   ========================================================================= */
+
 .site-title {
 	gap: 0.5rem;
 	font-size: 1.125rem;
 	font-weight: 600;
 	letter-spacing: -0.025em;
-	color: var(--sl-color-white);
+	color: var(--color-text);
 }
 
 .site-title img {
 	height: 24px;
 }
 
-/* Dark mode: light text on dark backgrounds */
-:root[data-theme='dark'] {
-	--sl-color-white: oklch(0.985 0 0);
-	--sl-color-gray-1: oklch(0.93 0.02 95);
-	--sl-color-gray-2: oklch(0.9 0.03 95);
-	--sl-color-gray-3: oklch(0.65 0.04 95);
-	--sl-color-gray-4: oklch(0.556 0 0);
-	--sl-color-gray-5: oklch(0.32 0.035 95);
-	--sl-color-gray-6: oklch(0.26 0.03 95);
-	--sl-color-black: oklch(0.145 0 0);
-	--sl-color-accent-low: oklch(0.205 0 0);
-	--sl-color-accent: oklch(0.45 0.03 95);
-	--sl-color-accent-high: oklch(0.94 0.025 95);
-	--sl-color-bg: oklch(0.16 0.02 95);
-	--sl-color-bg-nav: oklch(0.16 0.02 95);
-	--sl-color-bg-sidebar: oklch(0.16 0.02 95);
+/* =========================================================================
+   Layout utilities for marketing/landing sections.
+
+   On splash pages, Starlight wraps MDX content in `.content-panel > .sl-container`
+   which adds horizontal padding and a max-width. Our landing sections handle
+   their own padding via `.container` / `.container-narrow`, so we strip both
+   wrappers' constraints when any `.section` is inside. Doc pages (no `.section`)
+   keep the default Starlight layout.
+   ========================================================================= */
+
+.content-panel:has(.section) {
+	padding-inline: 0;
+	padding-block: 0;
 }
 
-/* Light mode: inverted gray scale — dark text on light backgrounds */
-:root[data-theme='light'] {
-	--sl-color-white: oklch(0.145 0 0);
-	--sl-color-gray-1: oklch(0.26 0.03 95);
-	--sl-color-gray-2: oklch(0.32 0.035 95);
-	--sl-color-gray-3: oklch(0.556 0 0);
-	--sl-color-gray-4: oklch(0.65 0.04 95);
-	--sl-color-gray-5: oklch(0.9 0.03 95);
-	--sl-color-gray-6: oklch(0.93 0.02 95);
-	--sl-color-black: oklch(0.985 0 0);
-	--sl-color-accent-low: oklch(0.94 0.025 95);
-	--sl-color-accent: oklch(0.45 0.03 95);
-	--sl-color-accent-high: oklch(0.205 0 0);
-	--sl-color-bg: oklch(0.971 0.015 95);
-	--sl-color-bg-nav: oklch(0.971 0.015 95);
-	--sl-color-bg-sidebar: oklch(0.971 0.015 95);
+.content-panel:has(.section) > .sl-container {
+	max-width: none;
+	margin: 0;
+	padding: 0;
 }
 
-/* Changelog — layout */
+/* Splash pages: prevent any wide child from forcing the page wider than
+   the viewport. `clip` is preferred over `hidden` because it doesn't create
+   a scroll container that captures focus. */
+.content-panel:has(.section) {
+	overflow-x: clip;
+}
+
+.section {
+	padding-block: 72px;
+	min-width: 0;
+}
+
+.section,
+.section * {
+	min-width: 0;
+}
+
+.container,
+.container-narrow {
+	min-width: 0;
+}
+
+@media (min-width: 50rem) {
+	.section {
+		padding-block: 112px;
+	}
+}
+
+.container {
+	max-width: var(--container-max);
+	margin-inline: auto;
+	padding-inline: 20px;
+}
+
+@media (min-width: 50rem) {
+	.container {
+		padding-inline: 32px;
+	}
+}
+
+.container-narrow {
+	max-width: var(--container-narrow);
+	margin-inline: auto;
+	padding-inline: 20px;
+}
+
+@media (min-width: 50rem) {
+	.container-narrow {
+		padding-inline: 24px;
+	}
+}
+
+/* =========================================================================
+   Buttons — black pill primary, transparent outlined secondary.
+   Maps onto Starlight's homepage hero <a class="action primary"> markup.
+   ========================================================================= */
+
+.sl-link-button,
+.action {
+	border-radius: var(--radius-control);
+	height: 38px;
+	padding-inline: 18px;
+	font-size: 13px;
+	font-weight: 600;
+	font-family: var(--sl-font);
+	letter-spacing: -0.005em;
+	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.sl-link-button.primary,
+.action.primary {
+	background: var(--color-action);
+	color: var(--color-text-inverse);
+	border: 1px solid var(--color-action);
+}
+
+.sl-link-button.primary:hover,
+.action.primary:hover {
+	background: var(--color-action-hover);
+	border-color: var(--color-action-hover);
+}
+
+.sl-link-button.secondary,
+.sl-link-button.minimal,
+.action.secondary,
+.action.minimal {
+	background: transparent;
+	color: var(--color-text);
+	border: 1px solid var(--color-border);
+}
+
+.sl-link-button.secondary:hover,
+.sl-link-button.minimal:hover,
+.action.secondary:hover,
+.action.minimal:hover {
+	border-color: var(--color-border-strong);
+	color: var(--color-text);
+}
+
+/* =========================================================================
+   Code blocks — warm paper terminal feel.
+   Targets Astro's prose pre/code AND Starlight's Expressive Code surfaces.
+   ========================================================================= */
+
+:not(pre) > code {
+	background: var(--color-surface-muted);
+	border: 1px solid var(--color-border-subtle);
+	border-radius: 6px;
+	padding: 1px 6px;
+	font-family: var(--sl-font-mono);
+	font-size: 0.9em;
+	color: var(--color-text);
+}
+
+.expressive-code .frame,
+.expressive-code pre {
+	border-radius: 12px !important;
+	border: 1px solid var(--color-border) !important;
+	background: var(--color-code-bg) !important;
+	box-shadow: none !important;
+}
+
+.expressive-code pre > code {
+	color: var(--color-text);
+}
+
+/* =========================================================================
+   Changelog — keep existing layout, repointed at new tokens.
+   ========================================================================= */
+
 .changelog-list {
 	display: flex;
 	flex-direction: column;
@@ -70,7 +403,7 @@
 
 .changelog-entry {
 	padding-bottom: 4rem;
-	border-bottom: 1px solid var(--sl-color-gray-5);
+	border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .changelog-entry:last-child {
@@ -78,7 +411,6 @@
 	padding-bottom: 0;
 }
 
-/* Changelog — header (version pill + date) */
 .changelog-header {
 	display: flex;
 	align-items: center;
@@ -89,12 +421,12 @@
 .changelog-version {
 	display: inline-block;
 	padding: 0.15rem 0.6rem;
-	border-radius: 9999px;
+	border-radius: var(--radius-pill);
 	font-size: 0.8125rem;
 	font-weight: 600;
 	line-height: 1.5;
-	background: var(--sl-color-accent-low);
-	color: var(--sl-color-accent-high);
+	background: var(--color-action);
+	color: var(--color-text-inverse);
 	text-decoration: none;
 }
 
@@ -104,14 +436,14 @@ a.changelog-version:hover {
 
 .changelog-date {
 	font-size: 0.8125rem;
-	color: var(--sl-color-gray-3);
+	color: var(--color-text-muted);
 }
 
-/* Changelog — title */
 .changelog-title {
 	font-size: 1.75rem;
 	font-weight: 700;
 	margin: 0 0 1rem;
+	letter-spacing: -0.025em;
 }
 
 .changelog-title a {
@@ -123,48 +455,46 @@ a.changelog-version:hover {
 	text-decoration: underline;
 }
 
-/* Changelog — description preview */
 .changelog-description {
 	margin: 0 0 0.75rem;
-	color: var(--sl-color-gray-2);
+	color: var(--color-text-secondary);
 	line-height: 1.6;
 }
 
 .changelog-read-more {
-	color: var(--sl-color-text-accent);
+	color: var(--color-action);
 	text-decoration: none;
 	font-size: 0.875rem;
-	font-weight: 500;
+	font-weight: 600;
 }
 
 .changelog-read-more:hover {
 	text-decoration: underline;
 }
 
-/* Changelog — empty state */
 .changelog-empty {
-	color: var(--sl-color-gray-3);
+	color: var(--color-text-muted);
 	padding: 2rem 0;
 	text-align: center;
 }
 
-/* Changelog — body content */
 .changelog-body h2 {
 	font-size: 1.125rem;
 	font-weight: 700;
-	color: var(--sl-color-white);
+	color: var(--color-text);
 	margin: 1.75rem 0 0.75rem;
+	letter-spacing: -0.015em;
 }
 
 .changelog-body img {
 	width: 100%;
-	border-radius: 0.75rem;
-	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 12px;
+	border: 1px solid var(--color-border);
 	margin: 1.5rem 0;
 }
 
 .changelog-body a {
-	color: var(--sl-color-text-accent);
+	color: var(--color-action);
 	text-decoration: none;
 }
 
@@ -172,9 +502,8 @@ a.changelog-version:hover {
 	text-decoration: underline;
 }
 
-/* Changelog — header nav link */
 .header-changelog-link {
-	color: var(--sl-color-text-accent);
+	color: var(--color-text-secondary);
 	font-size: 0.875rem;
 	font-weight: 500;
 	text-decoration: none;
@@ -183,5 +512,5 @@ a.changelog-version:hover {
 }
 
 .header-changelog-link:hover {
-	color: var(--sl-color-white);
+	color: var(--color-text);
 }

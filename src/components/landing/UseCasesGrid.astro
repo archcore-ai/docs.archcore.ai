@@ -1,0 +1,117 @@
+---
+const useCases = [
+	{
+		title: 'Add a new service',
+		description:
+			'The agent reads architecture docs first, places files where they belong, and follows the patterns already in the repo.',
+	},
+	{
+		title: 'Follow team rules',
+		description:
+			'Coding rules and standards stay attached to typed rule documents. The agent reads them on every session.',
+	},
+	{
+		title: 'Reuse prior decisions',
+		description:
+			'ADRs and CPATs surface to the agent before it writes code. No more rediscovering the same trade-offs.',
+	},
+	{
+		title: 'Run multi-step workflows',
+		description:
+			'Tracks and task-types let the agent execute repeatable, multi-document flows — design → spec → plan → ship.',
+	},
+];
+---
+
+<section class="section use-cases">
+	<div class="container-narrow use-cases__intro">
+		<h2 class="use-cases__headline">What gets better once your agent knows your system.</h2>
+		<p class="use-cases__lead">
+			Concrete behavior changes — not abstract productivity claims.
+		</p>
+	</div>
+
+	<div class="container">
+		<div class="use-cases__grid">
+			{useCases.map((uc) => (
+				<article class="uc-card">
+					<h3 class="uc-card__title">{uc.title}</h3>
+					<p class="uc-card__description">{uc.description}</p>
+				</article>
+			))}
+		</div>
+	</div>
+</section>
+
+<style>
+	.use-cases__intro {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		text-align: center;
+		align-items: center;
+		margin-bottom: 2.5rem;
+	}
+
+	.use-cases__headline {
+		margin: 0;
+		font-size: 28px;
+		line-height: 1.08;
+		font-weight: 700;
+		letter-spacing: -0.035em;
+		color: var(--color-text);
+	}
+
+	@media (min-width: 50rem) {
+		.use-cases__headline {
+			font-size: 34px;
+			line-height: 1.05;
+		}
+	}
+
+	.use-cases__lead {
+		margin: 0;
+		max-width: 540px;
+		color: var(--color-text-secondary);
+		line-height: 1.55;
+	}
+
+	.use-cases__grid {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1fr;
+	}
+
+	@media (min-width: 50rem) {
+		.use-cases__grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1.25rem;
+		}
+	}
+
+	.uc-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding: 1.5rem;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-card);
+		box-shadow: 0 1px 0 rgba(17, 16, 14, 0.04);
+	}
+
+	.uc-card__title {
+		margin: 0;
+		font-size: 18px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		color: var(--color-text);
+	}
+
+	.uc-card__description {
+		margin: 0;
+		font-size: 14px;
+		color: var(--color-text-secondary);
+		line-height: 1.55;
+	}
+</style>

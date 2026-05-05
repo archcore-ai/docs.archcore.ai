@@ -1,0 +1,238 @@
+---
+const groups = [
+	{
+		label: 'Product',
+		links: [
+			{ label: 'Plugin', href: '/plugin/overview/' },
+			{ label: 'CLI', href: '/cli/overview/' },
+			{ label: 'Docs', href: '/concepts/what-is-archcore/' },
+			{ label: 'Changelog', href: '/changelog/' },
+		],
+	},
+	{
+		label: 'Community',
+		links: [
+			{ label: 'GitHub', href: 'https://github.com/archcore-ai', external: true },
+			{ label: 'Discord', href: 'https://discord.gg/5YC8pdjD', external: true },
+			{ label: 'X', href: 'https://x.com/archcore_ai', external: true },
+			{ label: 'Telegram', href: 'https://t.me/archcore_ai', external: true },
+		],
+	},
+];
+---
+
+<footer class="site-footer">
+	<div class="container site-footer__inner">
+		<div class="site-footer__brand">
+			<div class="site-footer__name">archcore</div>
+			<p class="site-footer__tagline">
+				Git-native context for AI coding agents.
+			</p>
+			<form class="site-footer__newsletter" onsubmit="return false;">
+				<label for="footer-email" class="site-footer__newsletter-label">
+					Get release notes by email
+				</label>
+				<div class="site-footer__newsletter-row">
+					<input
+						id="footer-email"
+						type="email"
+						placeholder="you@team.com"
+						class="site-footer__newsletter-input"
+					/>
+					<button type="submit" class="site-footer__newsletter-button">
+						Subscribe
+					</button>
+				</div>
+			</form>
+		</div>
+
+		<div class="site-footer__links">
+			{groups.map((group) => (
+				<div class="site-footer__group">
+					<div class="site-footer__group-label">{group.label}</div>
+					<ul class="site-footer__group-list">
+						{group.links.map((link) => (
+							<li>
+								<a
+									href={link.href}
+									class="site-footer__link"
+									target={'external' in link && link.external ? '_blank' : undefined}
+									rel={'external' in link && link.external ? 'noopener noreferrer' : undefined}
+								>
+									{link.label}
+								</a>
+							</li>
+						))}
+					</ul>
+				</div>
+			))}
+		</div>
+	</div>
+
+	<div class="container site-footer__bottom">
+		<span>© {new Date().getFullYear()} Archcore</span>
+		<a href="/privacy/" class="site-footer__bottom-link">Privacy</a>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		margin-top: 4rem;
+		padding-block: 3rem 2rem;
+		border-top: 1px solid var(--color-border-subtle);
+		background: var(--color-page-alt);
+	}
+
+	.site-footer__inner {
+		display: grid;
+		gap: 2rem;
+		grid-template-columns: 1fr;
+	}
+
+	@media (min-width: 50rem) {
+		.site-footer__inner {
+			grid-template-columns: 1.2fr 2fr;
+			gap: 3rem;
+		}
+	}
+
+	.site-footer__brand {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.site-footer__name {
+		font-size: 16px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		color: var(--color-text);
+	}
+
+	.site-footer__tagline {
+		margin: 0;
+		font-size: 13px;
+		color: var(--color-text-secondary);
+		max-width: 280px;
+	}
+
+	.site-footer__newsletter {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin-top: 0.5rem;
+	}
+
+	.site-footer__newsletter-label {
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--color-text-muted);
+	}
+
+	.site-footer__newsletter-row {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.site-footer__newsletter-input {
+		flex: 1;
+		padding: 8px 12px;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-control);
+		background: var(--color-surface);
+		font-size: 13px;
+		font-family: var(--sl-font);
+		color: var(--color-text);
+		min-width: 0;
+	}
+
+	.site-footer__newsletter-input::placeholder {
+		color: var(--color-text-muted);
+	}
+
+	.site-footer__newsletter-button {
+		padding: 8px 16px;
+		border: 1px solid var(--color-action);
+		border-radius: var(--radius-control);
+		background: var(--color-action);
+		color: var(--color-text-inverse);
+		font-size: 13px;
+		font-weight: 600;
+		font-family: var(--sl-font);
+		cursor: pointer;
+	}
+
+	.site-footer__newsletter-button:hover {
+		background: var(--color-action-hover);
+		border-color: var(--color-action-hover);
+	}
+
+	.site-footer__links {
+		display: grid;
+		gap: 1.5rem;
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	@media (min-width: 36rem) {
+		.site-footer__links {
+			grid-template-columns: repeat(2, max-content);
+			gap: 3rem;
+			justify-content: end;
+		}
+	}
+
+	.site-footer__group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.site-footer__group-label {
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--color-text-muted);
+	}
+
+	.site-footer__group-list {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin: 0;
+		padding: 0;
+	}
+
+	.site-footer__link {
+		font-size: 14px;
+		color: var(--color-text-secondary);
+		text-decoration: none;
+	}
+
+	.site-footer__link:hover {
+		color: var(--color-text);
+	}
+
+	.site-footer__bottom {
+		display: flex;
+		gap: 1rem;
+		justify-content: space-between;
+		margin-top: 2rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--color-border-subtle);
+		font-size: 12px;
+		color: var(--color-text-muted);
+	}
+
+	.site-footer__bottom-link {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.site-footer__bottom-link:hover {
+		color: var(--color-text);
+	}
+</style>

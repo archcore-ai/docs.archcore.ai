@@ -1,0 +1,13 @@
+---
+import Default from '@astrojs/starlight/components/PageTitle.astro';
+
+// On splash pages we render our own <h1> inside HeroSection, so the default
+// Starlight PageTitle would create a duplicate h1. For all other pages, fall
+// back to the default rendering.
+const route = Astro.locals?.starlightRoute as
+	| { entry?: { data?: { template?: string } } }
+	| undefined;
+const isSplash = route?.entry?.data?.template === 'splash';
+---
+
+{!isSplash && <Default />}

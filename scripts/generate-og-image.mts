@@ -21,12 +21,12 @@ const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-// Light theme colors (matching the site's Solarized Light palette)
-const BG_COLOR = "#fdf6e3";
-const TEXT_PRIMARY = "#1a1a1a";
-const TEXT_MUTED = "#6b6b6b";
-const TEXT_DIM = "#93a1a1";
-const GRID_COLOR = "rgba(147, 161, 161, 0.08)";
+// DESIGN.md palette — warm cream + black on a paper canvas.
+const BG_COLOR = "#f8f1e8";
+const TEXT_PRIMARY = "#11100e";
+const TEXT_MUTED = "#5f5a50";
+const TEXT_DIM = "#8a8377";
+const GRID_COLOR = "rgba(17, 16, 14, 0.04)";
 
 const SECTION_MAP: Record<string, string> = {
   start: "Get Started",

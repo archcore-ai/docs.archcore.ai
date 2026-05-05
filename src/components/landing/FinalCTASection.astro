@@ -1,0 +1,149 @@
+---
+const cards = [
+	{
+		title: 'Plugin repository',
+		description: 'Source for Claude Code and Cursor.',
+		href: 'https://github.com/archcore-ai/plugin',
+		cta: 'View on GitHub',
+		external: true,
+	},
+	{
+		title: 'CLI repository',
+		description: 'Core context layer, MCP server, hooks.',
+		href: 'https://github.com/archcore-ai/cli',
+		cta: 'View on GitHub',
+		external: true,
+	},
+	{
+		title: 'Documentation',
+		description: 'Concepts, references, install steps.',
+		href: '/concepts/what-is-archcore/',
+		cta: 'Read docs',
+		external: false,
+	},
+	{
+		title: 'GitHub organization',
+		description: 'All repositories and releases.',
+		href: 'https://github.com/archcore-ai',
+		cta: 'View org',
+		external: true,
+	},
+];
+---
+
+<section class="section final-cta">
+	<div class="container-narrow final-cta__intro">
+		<h2 class="final-cta__headline">Two paths. Same context.</h2>
+		<p class="final-cta__lead">Pick where to start.</p>
+	</div>
+
+	<div class="container">
+		<div class="final-cta__grid">
+			{cards.map((c) => (
+				<a
+					href={c.href}
+					class="fc-card"
+					target={c.external ? '_blank' : undefined}
+					rel={c.external ? 'noopener noreferrer' : undefined}
+				>
+					<h3 class="fc-card__title">{c.title}</h3>
+					<p class="fc-card__description">{c.description}</p>
+					<span class="fc-card__cta">
+						{c.cta} <span aria-hidden="true">&rarr;</span>
+					</span>
+				</a>
+			))}
+		</div>
+	</div>
+</section>
+
+<style>
+	.final-cta__intro {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		text-align: center;
+		align-items: center;
+		margin-bottom: 2.5rem;
+	}
+
+	.final-cta__headline {
+		margin: 0;
+		font-size: 28px;
+		line-height: 1.08;
+		font-weight: 700;
+		letter-spacing: -0.035em;
+		color: var(--color-text);
+	}
+
+	@media (min-width: 50rem) {
+		.final-cta__headline {
+			font-size: 34px;
+			line-height: 1.05;
+		}
+	}
+
+	.final-cta__lead {
+		margin: 0;
+		color: var(--color-text-secondary);
+	}
+
+	.final-cta__grid {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1fr;
+	}
+
+	@media (min-width: 36rem) {
+		.final-cta__grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 64rem) {
+		.final-cta__grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+		}
+	}
+
+	.fc-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		padding: 1.25rem;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-card);
+		text-decoration: none;
+		color: inherit;
+		box-shadow: 0 1px 0 rgba(17, 16, 14, 0.04);
+		transition: border-color 0.15s ease;
+	}
+
+	.fc-card:hover {
+		border-color: var(--color-border-strong);
+	}
+
+	.fc-card__title {
+		margin: 0;
+		font-size: 14px;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+		color: var(--color-text);
+	}
+
+	.fc-card__description {
+		margin: 0;
+		font-size: 13px;
+		color: var(--color-text-secondary);
+		line-height: 1.5;
+	}
+
+	.fc-card__cta {
+		margin-top: auto;
+		padding-top: 0.5rem;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--color-action);
+	}
+</style>

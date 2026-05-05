@@ -1,0 +1,174 @@
+---
+import PathBadge from '../PathBadge.astro';
+---
+
+<section class="section choose">
+	<div class="container-narrow choose__intro">
+		<h2 class="choose__headline">How to choose between Plugin and CLI.</h2>
+		<p class="choose__lead">
+			Both read and write the same <code>.archcore/</code> directory. Pick the entry point that fits your agent host.
+		</p>
+	</div>
+
+	<div class="container">
+		<div class="choose__grid">
+			<article class="choose-card choose-card--plugin">
+				<header class="choose-card__header">
+					<PathBadge scope="plugin" />
+					<PathBadge scope="dark" label="Recommended" />
+				</header>
+				<h3 class="choose-card__title">Choose the Plugin</h3>
+				<p class="choose-card__best-for">Best for Claude Code and Cursor.</p>
+				<p class="choose-card__description">
+					Higher-level experience with skills, tracks, built-in agents, and guardrails.
+				</p>
+				<a href="/plugin/overview/" class="choose-card__cta">
+					Use the Plugin <span aria-hidden="true">&rarr;</span>
+				</a>
+			</article>
+
+			<article class="choose-card choose-card--cli">
+				<header class="choose-card__header">
+					<PathBadge scope="cli" />
+				</header>
+				<h3 class="choose-card__title">Choose the CLI</h3>
+				<p class="choose-card__best-for">
+					Best for direct integrations, scripting, CI, and unsupported hosts.
+				</p>
+				<p class="choose-card__description">
+					Core context layer through the CLI, MCP server, and session hooks.
+				</p>
+				<a href="/cli/overview/" class="choose-card__cta">
+					Start with CLI <span aria-hidden="true">&rarr;</span>
+				</a>
+			</article>
+		</div>
+	</div>
+</section>
+
+<style>
+	.choose__intro {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		text-align: center;
+		align-items: center;
+		margin-bottom: 2.5rem;
+	}
+
+	.choose__headline {
+		margin: 0;
+		font-size: 28px;
+		line-height: 1.08;
+		font-weight: 700;
+		letter-spacing: -0.035em;
+		color: var(--color-text);
+	}
+
+	@media (min-width: 50rem) {
+		.choose__headline {
+			font-size: 34px;
+			line-height: 1.05;
+		}
+	}
+
+	.choose__lead {
+		margin: 0;
+		max-width: 540px;
+		color: var(--color-text-secondary);
+		line-height: 1.55;
+	}
+
+	.choose__lead code {
+		font-family: var(--sl-font-mono);
+		font-size: 0.9em;
+		padding: 1px 5px;
+		background: var(--color-surface-muted);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: 4px;
+	}
+
+	.choose__grid {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1fr;
+	}
+
+	@media (min-width: 50rem) {
+		.choose__grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1.25rem;
+		}
+	}
+
+	.choose-card {
+		display: flex;
+		flex-direction: column;
+		gap: 0.625rem;
+		padding: 1.5rem;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-card);
+		box-shadow: 0 1px 0 rgba(17, 16, 14, 0.04);
+	}
+
+	.choose-card--plugin {
+		background: var(--color-elevated);
+		border-color: var(--color-border-strong);
+		border-top: 3px solid var(--ac-path-plugin);
+		box-shadow: 0 8px 24px rgba(17, 16, 14, 0.06);
+	}
+
+	.choose-card--cli {
+		border-top: 3px solid var(--ac-path-cli);
+	}
+
+	.choose-card__header {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		margin-bottom: 0.25rem;
+	}
+
+	.choose-card__title {
+		margin: 0;
+		font-size: 20px;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		color: var(--color-text);
+	}
+
+	.choose-card__best-for {
+		margin: 0;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--color-text);
+	}
+
+	.choose-card__description {
+		margin: 0;
+		font-size: 14px;
+		color: var(--color-text-secondary);
+		line-height: 1.55;
+	}
+
+	.choose-card__cta {
+		margin-top: 0.75rem;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--color-action);
+		text-decoration: none;
+	}
+
+	.choose-card--plugin .choose-card__cta {
+		color: var(--ac-path-plugin);
+	}
+
+	.choose-card--cli .choose-card__cta {
+		color: var(--ac-path-cli);
+	}
+
+	.choose-card__cta:hover {
+		text-decoration: underline;
+	}
+</style>

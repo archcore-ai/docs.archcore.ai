@@ -1,0 +1,286 @@
+---
+import PathBadge from '../PathBadge.astro';
+
+const tabs = [
+	{ id: 'plugin', label: 'Plugin', recommended: true },
+	{ id: 'cli', label: 'CLI', recommended: false },
+];
+
+const steps = {
+	plugin: [
+		{
+			title: 'Install the plugin',
+			description: 'Add the Archcore plugin to your agent host (Claude Code or Cursor).',
+			code: '/plugin install archcore',
+			helper: 'Replace with your host\'s install command.',
+		},
+		{
+			title: 'Run the first intent command',
+			description: 'Bootstrap your repository so the agent has structured context to read.',
+			code: '/archcore:bootstrap',
+			helper: 'Run inside the repo you want the agent to understand.',
+		},
+	],
+	cli: [
+		{
+			title: 'Install the CLI',
+			description: 'Install the binary for your platform.',
+			code: 'npm install -g @archcore/cli',
+			helper: 'Or use brew, scoop, or the GitHub release.',
+		},
+		{
+			title: 'Initialize the repository',
+			description: 'Create the .archcore/ directory and connect the MCP server to your agent.',
+			code: 'archcore init',
+			helper: 'Then point your agent at the MCP server.',
+		},
+	],
+} as const;
+---
+
+<section class="section install">
+	<div class="container-narrow install__intro">
+		<h2 class="install__headline">Install Archcore</h2>
+		<p class="install__lead">
+			Two steps. Pick the path that fits your agent host.
+		</p>
+	</div>
+
+	<div class="container">
+		<div class="install__tabs" role="tablist" aria-label="Install path">
+			{tabs.map((tab, i) => (
+				<button
+					class="install__tab"
+					role="tab"
+					id={`install-tab-${tab.id}`}
+					aria-controls={`install-panel-${tab.id}`}
+					aria-selected={i === 0 ? 'true' : 'false'}
+					data-tab={tab.id}
+					tabindex={i === 0 ? 0 : -1}
+				>
+					<span>{tab.label}</span>
+					{tab.recommended && <PathBadge scope="dark" label="Recommended" />}
+				</button>
+			))}
+		</div>
+
+		{tabs.map((tab, i) => (
+			<div
+				class="install__panel"
+				role="tabpanel"
+				id={`install-panel-${tab.id}`}
+				aria-labelledby={`install-tab-${tab.id}`}
+				data-panel={tab.id}
+				hidden={i !== 0}
+			>
+				<ol class="install__steps">
+					{steps[tab.id as keyof typeof steps].map((step, idx) => (
+						<li class="install-step">
+							<span class="install-step__num">{idx + 1}</span>
+							<div class="install-step__body">
+								<h3 class="install-step__title">{step.title}</h3>
+								<p class="install-step__description">{step.description}</p>
+								<pre class="install-step__code"><code>{step.code}</code></pre>
+								<p class="install-step__helper">{step.helper}</p>
+							</div>
+						</li>
+					))}
+				</ol>
+			</div>
+		))}
+	</div>
+</section>
+
+<style>
+	.install__intro {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		text-align: center;
+		align-items: center;
+		margin-bottom: 2.5rem;
+	}
+
+	.install__headline {
+		margin: 0;
+		font-size: 28px;
+		line-height: 1.08;
+		font-weight: 700;
+		letter-spacing: -0.035em;
+		color: var(--color-text);
+	}
+
+	@media (min-width: 50rem) {
+		.install__headline {
+			font-size: 34px;
+			line-height: 1.05;
+		}
+	}
+
+	.install__lead {
+		margin: 0;
+		max-width: 520px;
+		color: var(--color-text-secondary);
+		line-height: 1.55;
+	}
+
+	.install__tabs {
+		display: inline-flex;
+		gap: 0.25rem;
+		padding: 4px;
+		margin: 0 auto 1.5rem;
+		background: var(--color-surface-muted);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-pill);
+	}
+
+	.install__tab {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 8px 16px;
+		font-size: 13px;
+		font-weight: 600;
+		color: var(--color-text-secondary);
+		background: transparent;
+		border: 0;
+		border-radius: var(--radius-pill);
+		cursor: pointer;
+		font-family: var(--sl-font);
+		transition: background-color 0.15s ease, color 0.15s ease;
+	}
+
+	.install__tab[aria-selected='true'] {
+		background: var(--color-elevated);
+		color: var(--color-text);
+		box-shadow: 0 1px 0 rgba(17, 16, 14, 0.06);
+	}
+
+	.install__panel[hidden] {
+		display: none;
+	}
+
+	.install__steps {
+		list-style: none;
+		display: grid;
+		gap: 1rem;
+		margin: 0 auto;
+		padding: 0;
+		max-width: 720px;
+	}
+
+	@media (min-width: 50rem) {
+		.install__steps {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	.install-step {
+		display: flex;
+		gap: 1rem;
+		padding: 1.25rem;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-card);
+	}
+
+	.install-step__num {
+		flex-shrink: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		background: var(--color-action);
+		color: var(--color-text-inverse);
+		border-radius: 50%;
+		font-size: 13px;
+		font-weight: 700;
+		font-family: var(--sl-font-mono);
+	}
+
+	.install-step__body {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		min-width: 0;
+		flex: 1;
+	}
+
+	.install-step__title {
+		margin: 0;
+		font-size: 15px;
+		font-weight: 700;
+		letter-spacing: -0.015em;
+		color: var(--color-text);
+	}
+
+	.install-step__description {
+		margin: 0;
+		font-size: 13px;
+		color: var(--color-text-secondary);
+		line-height: 1.5;
+	}
+
+	.install-step__code {
+		margin: 0.25rem 0 0;
+		padding: 10px 12px;
+		background: var(--color-code-bg);
+		border: 1px solid var(--color-border);
+		border-radius: 8px;
+		font-family: var(--sl-font-mono);
+		font-size: 12px;
+		line-height: 1.5;
+		color: var(--color-text);
+		overflow-x: auto;
+	}
+
+	.install-step__code code {
+		background: transparent;
+		border: 0;
+		padding: 0;
+		font-size: inherit;
+	}
+
+	.install-step__helper {
+		margin: 0;
+		font-size: 11px;
+		color: var(--color-text-muted);
+	}
+</style>
+
+<script>
+	const tablist = document.querySelector('.install__tabs');
+	if (tablist) {
+		const tabs = Array.from(tablist.querySelectorAll<HTMLButtonElement>('.install__tab'));
+		const panels = Array.from(
+			document.querySelectorAll<HTMLElement>('.install__panel'),
+		);
+
+		const select = (id: string) => {
+			tabs.forEach((t) => {
+				const active = t.dataset.tab === id;
+				t.setAttribute('aria-selected', active ? 'true' : 'false');
+				t.tabIndex = active ? 0 : -1;
+			});
+			panels.forEach((p) => {
+				p.hidden = p.dataset.panel !== id;
+			});
+		};
+
+		tabs.forEach((t) => {
+			t.addEventListener('click', () => select(t.dataset.tab!));
+			t.addEventListener('keydown', (e) => {
+				if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+				e.preventDefault();
+				const idx = tabs.indexOf(t);
+				const next =
+					e.key === 'ArrowRight'
+						? (idx + 1) % tabs.length
+						: (idx - 1 + tabs.length) % tabs.length;
+				tabs[next].focus();
+				select(tabs[next].dataset.tab!);
+			});
+		});
+	}
+</script>
