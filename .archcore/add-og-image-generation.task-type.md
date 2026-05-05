@@ -33,9 +33,9 @@ Create `scripts/generate-og-image.mts`:
 
 1. Load fonts as `readFileSync` buffers
 2. Load logo, encode as base64 data URI
-3. **Discover pages** — glob `src/content/docs/**/*.{md,mdx}` and `src/content/changelog/*.md`, parse frontmatter with regex to extract `title` and `description`
-4. **Derive slug** from file path (e.g., `src/content/docs/start/quick-start.mdx` → `start/quick-start`)
-5. **Map section breadcrumbs** — slug prefix to section name (e.g., `start/` → "Get Started")
+3. **Discover pages** — walk `src/content/docs/**/*.{md,mdx}` and `src/content/changelog/*.md`, parse frontmatter with regex to extract `title` and `description`
+4. **Derive slug** from file path (e.g., `src/content/docs/start/plugin-quick-start.mdx` → `start/plugin-quick-start`)
+5. **Map section breadcrumbs** — slug prefix to section name (e.g., `start/` → "Get Started"). Keep this map in sync with the actual sidebar sections.
 6. **Parameterize layout** — `createOgNode(title, description, breadcrumb)` returns Satori object tree
 7. For each page: `satori()` → SVG → `new Resvg(svg)` → `.render().asPng()` → write to `public/og/<slug>.png`
 8. Copy root image to `public/og-image.png` for backward compatibility
@@ -46,7 +46,7 @@ Key constraints:
 - `backgroundImage` supports `linear-gradient` for patterns
 - Use `mkdirSync({ recursive: true })` for nested output directories
 
-Design should match site theme. Archcore uses light Solarized palette (#fdf6e3 background, dark text) with 70px grid pattern.
+Design should match the site theme. Archcore uses the warm-cream palette from `DESIGN.md`: `#f8f1e8` background with near-black text (`#11100e` primary, `#5f5a50` muted, `#8a8377` dim) over a subtle 70px grid (`rgba(17, 16, 14, 0.04)`).
 
 ### 4. Wire into build pipeline
 
@@ -77,7 +77,7 @@ Remove from `astro.config.mjs` head[] (now per-page):
 - `og:image`, `og:image:width`, `og:image:height`, `og:image:type`, `twitter:image`
 - `og:title`, `og:description`, `twitter:title`, `twitter:description` (Starlight defaults set these per-page from frontmatter)
 
-Keep global: `og:locale`, `og:type`, `twitter:card`, JSON-LD script.
+Keep global: font preloads, `og:locale`, `og:type`, `twitter:card`, JSON-LD script.
 
 ## Things to Watch Out For
 
@@ -88,4 +88,5 @@ Keep global: `og:locale`, `og:type`, `twitter:card`, JSON-LD script.
 - **Description truncation** — truncate at ~120 characters to prevent overflow
 - **Head component filtering** — must filter out global og:image tags before injecting per-page ones to avoid duplicates
 - **StarlightPage compatibility** — `Astro.locals.starlightRoute.id` works for both docs collection pages and custom StarlightPage pages (uses `urlToSlug()`)
-- **Logo variant** — use dark logo (`logo-light.png`) on light background, not the light-on-dark version
+- **Logo variant** — use the dark logo (`logo-light.png`) on the light cream background, not the light-on-dark version
+- **Section map drift** — the `SECTION_MAP` in `generate-og-image.mts` must be kept in sync with the sidebar sections, or new sections will render with no breadcrumb
