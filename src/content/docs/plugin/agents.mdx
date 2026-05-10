@@ -56,6 +56,15 @@ A read-only auditor for documentation health reviews.
 - Finding orphans: documents with no incoming or outgoing relations that probably should have some.
 - Spotting naming inconsistencies, tag hygiene issues, and missing frontmatter.
 
+## Host file formats
+
+Both agents ship in two file formats side by side under `agents/`:
+
+- **`.md`** (`archcore-assistant.md`, `archcore-auditor.md`) — consumed by Claude Code and Cursor.
+- **`.toml`** (`archcore-assistant.toml`, `archcore-auditor.toml`) — consumed by Codex CLI. The auditor TOML uses `sandbox_mode = "read-only"` plus a `disabled_tools` list covering the five mutating MCP tools; the assistant TOML uses `sandbox_mode = "workspace-write"`.
+
+Tool whitelists are identical across formats — the TOML variants just translate the safety boundaries into Codex's native sandbox model.
+
 ## Why two agents, not one
 
 Separating the write-capable agent from the read-only one is a deliberate safety boundary. The auditor runs on every review, so it handles more documents and more contexts per week than the assistant does. Keeping it read-only means a review session can never accidentally mutate state.

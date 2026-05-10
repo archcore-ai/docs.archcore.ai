@@ -7,7 +7,7 @@ status: accepted
 
 Documentation site for [Archcore](https://github.com/archcore-ai), deployed at **docs.archcore.ai**.
 
-Archcore turns your repository into structured, machine-readable context — so AI coding agents understand your architecture, rules, and decisions. The project ships in two flavors: a **Plugin** for AI coding hosts (Claude Code, Cursor) and a standalone **CLI**. This site provides path-based onboarding, plugin and CLI references, shared concept material, and lookup tables (MCP tools, prompts, skills, tracks).
+Archcore turns your repository into structured, machine-readable context — so AI coding agents understand your architecture, rules, and decisions. The project ships in two flavors: a **Plugin** for AI coding hosts (Claude Code, Cursor, Codex CLI) and a standalone **CLI**. This site provides path-based onboarding, plugin and CLI references, shared concept material, and lookup tables (MCP tools, prompts, skills, tracks).
 
 ## Architecture
 

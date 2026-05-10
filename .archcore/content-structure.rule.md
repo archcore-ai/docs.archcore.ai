@@ -8,7 +8,7 @@ status: accepted
 Every documentation page **must** belong to exactly one of 5 sidebar groups:
 
 1. **Start Here** — Onboarding and path selection (overview, choose Plugin vs CLI, quick starts, migration from flat files)
-2. **Plugin** — The Claude Code / Cursor plugin product (overview, install, supported hosts, how it works, skills, built-in agents, troubleshooting)
+2. **Plugin** — The Claude Code / Cursor / Codex CLI plugin product (overview, install, supported hosts, how it works, skills, built-in agents, troubleshooting)
 3. **CLI** — The standalone CLI product (overview, install, quick start, `archcore init`, commands, MCP server, hooks, agent integrations, configuration, troubleshooting)
 4. **Concepts** — Mental model and conceptual content (what is archcore, mental model, how it works, document types, documents & layout, relations, flat files vs archcore, use cases)
 5. **Reference** — Lookup material (document format, MCP tools, MCP prompts, plugin skills, tracks)

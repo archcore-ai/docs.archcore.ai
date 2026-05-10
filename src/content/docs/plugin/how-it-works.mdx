@@ -8,13 +8,14 @@ import CrossLinkCallout from '../../../components/CrossLinkCallout.astro';
 
 <PathBadge scope="plugin" />
 
-The plugin is invisible most of the time. Five mechanisms run underneath every conversation:
+The plugin is invisible most of the time. Six mechanisms run underneath every conversation:
 
 - Load project context at session start.
 - Inject relevant rules and ADRs before each source-file edit.
 - Enforce the MCP-only write rule.
 - Validate every mutation.
 - Warn you when a change makes dependent documents stale.
+- Surface precision warnings on vague language, missing sections, and stub bodies.
 
 ## The session lifecycle
 
@@ -23,11 +24,13 @@ The plugin is invisible most of the time. Five mechanisms run underneath every c
 3. **Skills activate.** The agent matches your request to a skill — an intent command or a track. Each skill carries document-type knowledge, required sections, and relation guidance.
 4. **MCP tools execute.** Every read and write goes through `archcore mcp`. Direct `Write`/`Edit` calls targeting `.archcore/` are blocked by the `PreToolUse` hook.
 5. **Pre-edit context injection.** When you ask the agent to edit a source file, the plugin greps `.archcore/` for documents referencing that path and injects the top matches (rules, ADRs, specs, cpats) into context — automatically, before the edit runs.
-6. **Hooks validate.** After every MCP mutation, the plugin runs `archcore validate`. If the updated document has dependents (via `implements`, `extends`, `depends_on`), a cascade check warns you that they may need review.
+6. **Hooks validate.** After every MCP mutation, the plugin runs `archcore doctor`. If the updated document has dependents (via `implements`, `extends`, `depends_on`), a cascade check warns you that they may need review. A separate precision check emits soft warnings for vague language, missing sections, frontmatter gaps, and stub bodies.
 
 ## Mechanism 1 — session-start context
 
 The session-start hook runs `archcore hooks <host> session-start` (or equivalent) through the plugin's bundled launcher (`bin/archcore`). The launcher resolves the CLI from `$ARCHCORE_BIN`, a global install on `PATH`, a plugin-managed cache, or — on first-ever use — a checksum-verified download from GitHub Releases. SessionStart sets `ARCHCORE_SKIP_DOWNLOAD=1` so it never blocks on network; the first MCP tool call triggers the download instead.
+
+The launcher path is host-relative: Claude Code resolves it as `${CLAUDE_PLUGIN_ROOT}/bin/archcore`, Cursor as `${CURSOR_PLUGIN_ROOT}/bin/archcore`, and Codex CLI uses the host-neutral `${PLUGIN_ROOT}/bin/archcore`.
 
 The hook returns a document index plus a summary of existing relations. This is the agent's starting point for the conversation — it knows what already exists before you ask the first question.
 
@@ -64,22 +67,33 @@ Config files under `.archcore/` (`settings.json`, `.sync-state.json`) are allowe
 
 ## Mechanism 4 — post-mutation validation
 
-After any MCP operation that writes to disk, the `PostToolUse` hook runs `archcore validate` with a short timeout. If validation fails — invalid frontmatter, broken relation, forbidden tag — the failure is reported back to the agent as tool output, so the agent can react in the same turn.
+After any MCP operation that writes to disk, the `PostToolUse` hook runs `archcore doctor` with a short timeout. If validation fails — invalid frontmatter, broken relation, forbidden tag — the failure is reported back to the agent as tool output, so the agent can react in the same turn.
 
-On Cursor this happens via `afterMCPExecution`; on Claude Code, the same hook is wired to `PostToolUse` with two matchers (one for `Write|Edit`, one for `mcp__archcore_*`).
+On Claude Code and Codex CLI this is wired to `PostToolUse` with multiple matchers — `mcp__archcore__create_document|update_document|remove_document|add_relation|remove_relation` — each running its own dedicated script (`validate-archcore`, `check-cascade`, `check-precision`). On Cursor, the equivalent work fires via `afterMCPExecution`, which bundles all three checks into a single hook invocation.
 
 ## Mechanism 5 — cascade staleness detection
 
-When you update a document (via `update_document`), the plugin reads the relation graph from `.sync-state.json` and finds every document that is `implements`, `extends`, or `depends_on` the one you just changed. Each one becomes a cascade hint — a gentle warning that it may now be out of step with its source of truth.
+When you update a document (via `update_document`), the plugin reads the relation graph from `.sync-state.json` and finds every document linked through one of the three structural relations — `implements`, `extends`, or `depends_on`. Each one becomes a cascade hint — a gentle warning that it may now be out of step with its source of truth. The check intentionally does **not** follow `related` — that relation is associative, not structural, so changes don't propagate through it.
 
 Example:
 
 You accept an updated `jwt-strategy.adr.md`. The plugin finds:
 
-- `auth-redesign.plan.md` — depends_on the ADR.
-- `session-handling.rule.md` — related to the ADR.
+- `auth-redesign.plan.md` — `depends_on` the ADR.
+- `token-refresh.spec.md` — `implements` the ADR.
 
 Both show up as cascade warnings on your next turn. You can resolve them, ignore them, or add them to a todo list — the plugin just surfaces the signal.
+
+## Mechanism 6 — precision warnings
+
+After every `create_document` or `update_document`, the `check-precision` hook runs alongside validate and cascade. It applies the shared rules from `skills/_shared/precision-rules.md` and the ADR contract from `skills/_shared/adr-contract.md`, and emits soft warnings on:
+
+- **Vague language** — words like "various", "etc.", "maybe", "should consider" in places that need a concrete commitment.
+- **Missing sections** — required sections for the document type (e.g., `Decision`, `Context`, `Consequences` for ADRs) absent or empty.
+- **Frontmatter gaps** — missing `status`, `tags`, or other required fields beyond the strict-validation set.
+- **Stub bodies** — placeholder content like `TODO`, `TBD`, or single-sentence sections in documents marked as `accepted`.
+
+This is part of the Phase 1 Precision Initiative. The hook is **always** non-blocking — it exits 0 even when warnings are emitted, and surfaces the findings as agent-visible output for the agent to address in the next turn. Nothing is rejected; nothing is auto-fixed. The signal is for you and the agent to use.
 
 ## Hook guarantees
 

@@ -8,7 +8,7 @@ import CrossLinkCallout from '../../../components/CrossLinkCallout.astro';
 
 <PathBadge scope="plugin" />
 
-Common issues specific to running the plugin inside Claude Code or Cursor. For CLI-level issues (MCP not reachable, `.archcore/` missing, validation errors), see [CLI troubleshooting](/cli/troubleshooting/).
+Common issues specific to running the plugin inside Claude Code, Cursor, or Codex CLI. For CLI-level issues (MCP not reachable, `.archcore/` missing, validation errors), see [CLI troubleshooting](/cli/troubleshooting/).
 
 ## `/archcore:*` commands don't appear
 
@@ -158,6 +158,40 @@ There's no global mute — the warning is intentional friction.
 
 Cursor only fires `afterMCPExecution` for successful MCP calls. If the MCP call itself failed (invalid frontmatter, for example), the hook won't fire — you'll see the MCP error directly.
 
+## Codex CLI-specific: hooks not firing
+
+**Symptom:** On Codex CLI, the validation, cascade, precision, and pre-edit context-injection hooks don't run.
+
+Codex hooks are gated by an under-development feature flag (default off). Enable it:
+
+```bash
+codex features enable plugin_hooks
+```
+
+After enabling, restart the Codex session so the new hook configuration is picked up. If hooks still don't fire, verify your Codex version is `0.117.0` or later (`codex --version`).
+
+## Codex CLI-specific: `apply_patch` writes not blocked
+
+**Symptom:** On Codex CLI, you used Codex's `apply_patch` tool to edit a `.archcore/*.md` file directly and the hook didn't block it.
+
+The Codex hooks file (`hooks/codex.hooks.json`) uses the matcher `Write|Edit|apply_patch` precisely to cover all three Codex write surfaces. If the matcher doesn't appear to be catching `apply_patch`, the most likely cause is that `plugin_hooks` is not enabled (see above). Without the feature flag, none of the hooks fire — including the `PreToolUse` write guard.
+
+## Codex CLI-specific: MCP server not found
+
+**Symptom:** On Codex CLI, MCP tool calls fail with "server not found" or similar.
+
+The plugin ships `.codex.mcp.json`, referenced from the manifest's `mcpServers` field. The `command` is `./bin/archcore` and `cwd` is `"."` — Codex rebases that relative `cwd` to the plugin install root, so the launcher resolves correctly without env-var substitution.
+
+Checks, in order:
+
+1. **Manifest references `.codex.mcp.json`.** Open `.codex-plugin/plugin.json` and verify `"mcpServers": "./.codex.mcp.json"` is present.
+2. **`.codex.mcp.json` exists at plugin root.** It should ship with the marketplace install. If missing, reinstall: `codex plugin marketplace remove archcore-ai/plugin && codex plugin marketplace add archcore-ai/plugin`.
+3. **`cwd` is `"."` in `.codex.mcp.json`.** Codex relies on the relative-path rebase. An absolute path will break under different install locations.
+
+## Codex CLI-specific: path env var
+
+When wiring custom hooks or scripts that reference the plugin root on Codex, use `${PLUGIN_ROOT}` — the host-neutral, canonical name. There is no `${CODEX_PLUGIN_ROOT}` (and `${CLAUDE_PLUGIN_ROOT}` is Claude-only).
+
 ## Claude Code-specific: both `Write` and `Edit` blocked
 
 **Symptom:** On Claude Code, you can't fix a file manually even though you know what you're doing.
@@ -168,4 +202,4 @@ That's deliberate — the matcher is `Write|Edit`. If you truly need to bypass (
 
 - [How plugin works](/plugin/how-it-works/) — understand what each hook is doing before debugging.
 - [CLI troubleshooting](/cli/troubleshooting/) — for MCP/validate issues.
-- [Supported hosts](/plugin/supported-hosts/) — for host-specific differences.
+- [Supported AI agents](/plugin/supported-hosts/) — for host-specific differences.

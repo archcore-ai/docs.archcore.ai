@@ -1,6 +1,6 @@
 ---
 title: Choose Plugin or CLI
-description: Two ways to use Archcore — the plugin gives you the highest-level UX in Claude Code and Cursor; the CLI is the minimal direct integration. A short comparison.
+description: Two ways to use Archcore — the plugin gives you the highest-level UX in Claude Code, Cursor, and Codex CLI; the CLI is the minimal direct integration. A short comparison.
 ---
 
 import PathChooser from '../../../components/PathChooser.astro';
@@ -9,8 +9,8 @@ Archcore has two entry points. Both read and write the same `.archcore/` directo
 
 ## The short answer
 
-- Using **Claude Code or Cursor**? Start with the [Plugin](/plugin/overview/). You get skills, tracks, built-in agents, and guardrails without extra wiring.
-- Using **any other agent** (Copilot, Gemini CLI, OpenCode, Codex CLI, Roo Code, Cline), or scripting in CI? Use the [CLI](/cli/overview/) directly.
+- Using **Claude Code, Cursor, or Codex CLI**? Start with the [Plugin](/plugin/overview/). You get skills, tracks, built-in agents, and guardrails without extra wiring. (Codex CLI also has a CLI-only fallback if you'd rather not enable the plugin's `plugin_hooks` feature flag.)
+- Using **any other agent** (Copilot, Gemini CLI, OpenCode, Roo Code, Cline), or scripting in CI? Use the [CLI](/cli/overview/) directly.
 - Just want to understand the model first? Read the [shared concepts](/concepts/what-is-archcore/).
 
 ## Pick your path
@@ -21,9 +21,9 @@ Archcore has two entry points. Both read and write the same `.archcore/` directo
 
 | | Plugin | CLI |
 | --- | --- | --- |
-| **Install method** | Plugin marketplace (CLI auto-downloaded on first use for Claude Code) | Single binary via curl / PowerShell / `go install` |
-| **CLI prerequisite** | None for Claude Code; Cursor uses the plugin's launcher or a global `archcore` | Required |
-| **Hosts** | Claude Code, Cursor (Copilot + Codex planned) | All 8 supported agents |
+| **Install method** | Plugin marketplace (CLI auto-downloaded on first use for Claude Code and Codex CLI) | Single binary via curl / PowerShell / `go install` |
+| **CLI prerequisite** | None for Claude Code or Codex CLI; Cursor uses the plugin's launcher or a global `archcore` | Required |
+| **Hosts** | Claude Code, Cursor, Codex CLI (Copilot planned) | All 8 supported agents |
 | **Interface** | Slash commands (`/archcore:decide`, `/archcore:context`, `/archcore:standard-track`, …) | MCP tools + natural language |
 | **Multi-step workflows** | Tracks orchestrate document chains automatically | You drive them manually through MCP |
 | **Guardrails** | MCP-only writes, post-mutation validate, cascade warnings | MCP available; guardrails are opt-in via hooks |
@@ -34,12 +34,12 @@ Both use the same `.archcore/` directory and the same MCP server (the plugin's l
 ## The mental model
 
 - **CLI is the compiler.** It reads `.archcore/`, builds the graph, speaks MCP.
-- **Plugin is the runtime.** It applies that graph inside Claude Code and Cursor — skills, hooks, workflows.
+- **Plugin is the runtime.** It applies that graph inside Claude Code, Cursor, and Codex CLI — skills, hooks, workflows.
 
 More depth in [Mental Model](/concepts/mental-model/).
 
 ## Next steps
 
-- [Plugin quick start](/start/plugin-quick-start/) — install the plugin in Claude Code or Cursor.
+- [Plugin quick start](/start/plugin-quick-start/) — install the plugin in Claude Code, Cursor, or Codex CLI.
 - [CLI quick start](/cli/quick-start/) — install the CLI and create your first document.
 - [What is Archcore?](/concepts/what-is-archcore/) — the problem, the solution, and the shared mental model.

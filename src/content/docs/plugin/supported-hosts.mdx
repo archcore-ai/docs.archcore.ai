@@ -1,6 +1,6 @@
 ---
-title: Supported Hosts
-description: Host support matrix for the Archcore Plugin — Claude Code (production), Cursor (implemented), GitHub Copilot and Codex CLI (planned).
+title: Supported AI agents
+description: Host support matrix for the Archcore Plugin — Claude Code (production), Cursor and Codex CLI (implemented), GitHub Copilot (planned).
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -15,12 +15,12 @@ The plugin targets AI coding agents that implement both Agent Skills and MCP as 
 | ---------------- | ------------ | ------------------------------ | --------------------------------------------- | ------------------------------------------------------- |
 | **Claude Code**  | Production   | Plugin marketplace             | Auto — plugin ships `.mcp.json` + launcher    | `SessionStart`, `PreToolUse`, `PostToolUse`             |
 | **Cursor**       | Implemented  | Plugin marketplace / local dir | User-registered (points at plugin's launcher) | `sessionStart`, `preToolUse`, `postToolUse`, `afterMCPExecution` |
+| **Codex CLI**    | Implemented  | `codex plugin marketplace add` | Auto — plugin ships `.codex.mcp.json` (referenced from manifest) | `SessionStart`, `PreToolUse`, `PostToolUse` (gated)     |
 | GitHub Copilot   | Planned      | —                              | —                                             | —                                                       |
-| Codex CLI        | Planned      | —                              | —                                             | —                                                       |
 
 **Production** means the plugin is deployed and used day-to-day; bug fixes and new skills ship through the marketplace.
 
-**Implemented** means every skill and agent works, and all documented hooks fire, but some host-level edge cases still surface occasionally.
+**Implemented** means every skill and agent works, and all documented hooks fire, but some host-level edge cases still surface occasionally. On Codex CLI, hooks are additionally gated by a Codex-side feature flag — see [Codex CLI](#codex-cli) below.
 
 ## Host-specific differences
 
@@ -28,34 +28,65 @@ The plugin keeps skills, agents, and MCP tools identical across hosts. The diffe
 
 ### Plugin manifest
 
-| Aspect           | Claude Code                            | Cursor                                   |
-| ---------------- | -------------------------------------- | ---------------------------------------- |
-| Manifest file    | `.claude-plugin/plugin.json` (minimal) | `.cursor-plugin/plugin.json` (explicit)  |
-| Field pointers   | Convention-based                       | Explicit `skills`, `agents`, `hooks`     |
+| Aspect           | Claude Code                            | Cursor                                   | Codex CLI                                |
+| ---------------- | -------------------------------------- | ---------------------------------------- | ---------------------------------------- |
+| Manifest file    | `.claude-plugin/plugin.json` (minimal) | `.cursor-plugin/plugin.json` (explicit)  | `.codex-plugin/plugin.json` (explicit)   |
+| Field pointers   | Convention-based                       | Explicit `skills`, `agents`, `hooks`     | Explicit `commands`, `agents`, `hooks`, `mcpServers` |
 
 ### MCP server registration
 
-| Aspect              | Claude Code                                       | Cursor                                                  |
-| ------------------- | ------------------------------------------------- | ------------------------------------------------------- |
-| Who registers MCP   | The plugin, via `.mcp.json` at plugin root        | The user, via Cursor MCP settings or project `mcp.json` |
-| Command points at   | `${CLAUDE_PLUGIN_ROOT}/bin/archcore mcp`          | Same launcher, or a globally-installed `archcore`       |
-| CLI install step    | None — launcher auto-downloads on first use       | Either via the launcher path, or install CLI globally   |
-| Duplicate handling  | Launcher defers to any global `archcore` on PATH  | N/A — user controls the registration                    |
+| Aspect              | Claude Code                                       | Cursor                                                  | Codex CLI                                                |
+| ------------------- | ------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
+| Who registers MCP   | The plugin, via `.mcp.json` at plugin root        | The user, via Cursor MCP settings or project `mcp.json` | The plugin, via `.codex.mcp.json` referenced from manifest's `mcpServers` |
+| Command points at   | `${CLAUDE_PLUGIN_ROOT}/bin/archcore mcp`          | Same launcher, or a globally-installed `archcore`       | `./bin/archcore mcp` with `cwd: "."` (Codex rebases relative paths to plugin install root) |
+| CLI install step    | None — launcher auto-downloads on first use       | Either via the launcher path, or install CLI globally   | None — launcher auto-downloads on first use              |
+| Duplicate handling  | Launcher defers to any global `archcore` on PATH  | N/A — user controls the registration                    | Launcher defers to any global `archcore` on PATH         |
 
 ### Hook files
 
-| Aspect           | Claude Code                            | Cursor                                   |
-| ---------------- | -------------------------------------- | ---------------------------------------- |
-| Hook file        | `hooks/hooks.json`                     | `hooks/cursor.hooks.json`                |
-| Trigger names    | `SessionStart`, `PreToolUse`, `PostToolUse` | `sessionStart`, `preToolUse`, `postToolUse`, `afterMCPExecution` |
-| Write matcher    | `Write|Edit`                           | `Write` only                             |
-| Output protocol  | Exit codes + structured JSON           | JSON wrapper objects                     |
+| Aspect           | Claude Code                            | Cursor                                   | Codex CLI                                |
+| ---------------- | -------------------------------------- | ---------------------------------------- | ---------------------------------------- |
+| Hook file        | `hooks/hooks.json`                     | `hooks/cursor.hooks.json`                | `hooks/codex.hooks.json`                 |
+| Trigger names    | `SessionStart`, `PreToolUse`, `PostToolUse` | `sessionStart`, `preToolUse`, `postToolUse`, `afterMCPExecution` | `SessionStart`, `PreToolUse`, `PostToolUse` |
+| Write matcher    | `Write|Edit`                           | `Write` only                             | `Write|Edit|apply_patch`                 |
+| Output protocol  | Exit codes + structured JSON           | JSON wrapper objects                     | Exit codes + structured JSON             |
+| Path env var     | `${CLAUDE_PLUGIN_ROOT}`                | `${CURSOR_PLUGIN_ROOT}`                  | `${PLUGIN_ROOT}` (host-neutral)          |
 
-Both hook files live in the same plugin package and are selected automatically by the host.
+All three hook files live in the same plugin package and are selected automatically by the host.
 
 ### Cursor: `afterMCPExecution`
 
-Cursor exposes an extra `afterMCPExecution` trigger that fires after MCP tool calls succeed. The plugin uses it to run `archcore validate` and the cascade staleness check in a single hook. On Claude Code, the same work happens via `PostToolUse` with two matchers.
+Cursor exposes an extra `afterMCPExecution` trigger that fires after MCP tool calls succeed. The plugin uses it to run `validate-archcore`, the cascade staleness check, and the precision-warnings check in a single hook. On Claude Code and Codex CLI, the same work happens via `PostToolUse` with multiple matchers.
+
+### Codex CLI
+
+Codex CLI uses the same `PostToolUse` semantics as Claude Code, plus a third write surface — Codex's `apply_patch` tool — which is added to the `PreToolUse` matcher. Codex hooks are gated by a Codex-side feature flag:
+
+```bash
+codex features enable plugin_hooks
+```
+
+This flag is currently under development in Codex (default off). Without it, hooks are inert but skills, MCP, and agents still work normally.
+
+The path env var is `${PLUGIN_ROOT}` — Codex's canonical, host-neutral name. There is no `${CODEX_PLUGIN_ROOT}` variable.
+
+### Command surfaces
+
+Skills are surfaced differently depending on host conventions:
+
+- **Claude Code** and **Cursor** load skills directly from `skills/<name>/SKILL.md`.
+- **Codex CLI** surfaces skills through thin `commands/<name>.md` wrappers (16 of them) — one per skill.
+
+The skill content itself is the same; only the entry point differs.
+
+### Agents
+
+Both `archcore-assistant` and `archcore-auditor` ship in two file formats side by side under `agents/`:
+
+- **`.md`** — consumed by Claude Code and Cursor.
+- **`.toml`** — consumed by Codex CLI. The auditor TOML adds `sandbox_mode = "read-only"` plus a `disabled_tools` list covering the five mutating MCP tools; the assistant TOML uses `sandbox_mode = "workspace-write"`.
+
+Tool whitelists are identical across formats — the TOML variants just translate the safety boundaries into Codex's native sandbox model.
 
 ## Choosing a host
 
@@ -67,11 +98,15 @@ Cursor exposes an extra `afterMCPExecution` trigger that fires after MCP tool ca
 - You prefer a full editor over a terminal-first agent.
 - You want `afterMCPExecution` semantics (single post-MCP hook).
 
-**Both are first-class.** Skills, tracks, agents, and guardrails behave identically.
+**Use Codex CLI if:**
+- You want a terminal-first agent with auto-registered MCP (no manual wiring).
+- You're comfortable enabling the `plugin_hooks` feature flag to get full hook coverage.
+
+**All three are first-class.** Skills, tracks, agents, and guardrails behave identically.
 
 ## Unsupported hosts
 
-The plugin is not available on GitHub Copilot or Codex CLI yet. Those hosts currently work with the [CLI path](/cli/overview/) only — you get MCP access and agent integrations, but no plugin skills or tracks.
+The plugin is not available on GitHub Copilot yet, and on any other MCP-aware CLI without a plugin runtime. Those agents currently work with the [CLI path](/cli/overview/) only — you get MCP access and agent integrations, but no plugin skills or tracks.
 
 Track planned host support in the plugin's [repository](https://github.com/archcore-ai/plugin).
 

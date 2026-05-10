@@ -1,6 +1,6 @@
 ---
 title: Install the Plugin
-description: Install the Archcore Plugin into Claude Code or Cursor. Zero prerequisites for Claude Code — the plugin bundles a launcher that auto-downloads the CLI on first use.
+description: Install the Archcore Plugin into Claude Code, Cursor, or Codex CLI. Zero prerequisites for Claude Code and Codex — the plugin bundles a launcher that auto-downloads the CLI on first use.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -8,7 +8,7 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-The plugin runs inside your coding agent (Claude Code or Cursor). For Claude Code, no prerequisites — the plugin bundles a launcher that resolves the Archcore CLI on first use (from an existing global install, a plugin-managed cache, or a checksum-verified download). MCP is registered automatically.
+The plugin runs inside your coding agent (Claude Code, Cursor, or Codex CLI). For Claude Code and Codex CLI, no prerequisites — the plugin bundles a launcher that resolves the Archcore CLI on first use (from an existing global install, a plugin-managed cache, or a checksum-verified download). MCP is registered automatically.
 
 For Cursor, you register MCP yourself — see the Cursor tab below.
 
@@ -58,7 +58,26 @@ For Cursor, you register MCP yourself — see the Cursor tab below.
 
 		Alternatively, install the CLI globally and point `command` at `archcore`. Either way, the resolved binary is the same.
 
-		Cursor support is implemented but has a slightly different hooks API — see [Supported Hosts](/plugin/supported-hosts/).
+		Cursor support is implemented but has a slightly different hooks API — see [Supported AI agents](/plugin/supported-hosts/).
+	</TabItem>
+	<TabItem label="Codex CLI">
+		Requires Codex 0.117.0+. Install from the marketplace:
+
+		```bash
+		codex plugin marketplace add archcore-ai/plugin
+		```
+
+		MCP is registered automatically — the plugin's manifest references `.codex.mcp.json`, which points at the bundled launcher (`./bin/archcore mcp`) with `cwd: "."`. Codex rebases that relative path to the plugin install root, so no environment variable substitution is needed.
+
+		**Enable hooks (recommended).** Codex hooks are gated by an under-development feature flag (default off):
+
+		```bash
+		codex features enable plugin_hooks
+		```
+
+		Without this flag, skills, MCP tools, and agents work normally, but the validation, cascade, precision, and pre-edit context-injection hooks won't fire.
+
+		Codex CLI surfaces skills as 16 thin `commands/<name>.md` wrappers. After install, run `/archcore:help` to list them.
 	</TabItem>
 	<TabItem label="Local development (any host)">
 		Clone the plugin repo:
@@ -80,7 +99,15 @@ For Cursor, you register MCP yourself — see the Cursor tab below.
 		# then in Cursor: Cmd/Ctrl+Shift+P → "Developer: Reload Window"
 		```
 
-		Both manifests (`.claude-plugin/plugin.json` and `.cursor-plugin/plugin.json`) sit at the repo root.
+		**Codex CLI** — point the marketplace at a local path:
+
+		```bash
+		codex plugin marketplace add /path/to/archcore-plugin
+		```
+
+		Don't forget `codex features enable plugin_hooks` if you want hooks active.
+
+		All three manifests (`.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json`) sit at the repo root.
 
 		Local mode is useful when hacking on skills or hooks. The launcher still auto-resolves the CLI — set `ARCHCORE_BIN=/abs/path/to/your/archcore` to test against a locally-built CLI binary.
 	</TabItem>
@@ -91,6 +118,8 @@ For Cursor, you register MCP yourself — see the Cursor tab below.
 If you already have the Archcore CLI installed globally, the launcher respects it — the `archcore` on `PATH` always wins over the plugin-managed cache.
 
 For fully offline environments, set `ARCHCORE_SKIP_DOWNLOAD=1` to disable the launcher's auto-download. The launcher then falls through to `ARCHCORE_BIN` or `PATH` only. Alternatively, pin an explicit binary with `ARCHCORE_BIN=/abs/path/to/archcore`.
+
+The plugin-managed cache resolves in this order: `$CODEX_PLUGIN_DATA/archcore/cli` → `$CLAUDE_PLUGIN_DATA/archcore/cli` → `$XDG_DATA_HOME/archcore-plugin/cli` → `$HOME/.local/share/archcore-plugin/cli` (POSIX), and `$env:CODEX_PLUGIN_DATA\archcore\cli` → `$env:CLAUDE_PLUGIN_DATA\archcore\cli` → `$env:LOCALAPPDATA\archcore-plugin\cli` (Windows). Whichever directory the host populates first is reused across hosts.
 
 ### Plugin environment variables
 
@@ -140,8 +169,14 @@ rm -rf "${XDG_DATA_HOME:-$HOME/.local/share}/archcore-plugin"
 
 **Cursor:** remove Archcore from plugin settings, and remove the `archcore` entry from your Cursor MCP config.
 
+**Codex CLI:**
+
+```bash
+codex plugin marketplace remove archcore-ai/plugin
+```
+
 ## Next steps
 
-- [Supported hosts](/plugin/supported-hosts/) — confirm your host supports the features you need.
+- [Supported AI agents](/plugin/supported-hosts/) — confirm your host supports the features you need.
 - [Intent commands](/plugin/skills/#intent-commands) — the 9 commands you'll use day-to-day.
 - [Tracks](/plugin/skills/#tracks) — multi-step workflows for product, architecture, standards.

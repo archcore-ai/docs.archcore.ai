@@ -18,7 +18,7 @@ Each subsection **must** use a bullet list. Keep bullets concise — one line pe
 
 The `description` field is **required in practice** — it serves as the preview text on the `/changelog/` listing page. Write 2–3 sentences that summarize the key changes. This is different from `title`, which is a short headline.
 
-The `product` field is **required by schema** — entries without it fail the build. Use `"plugin"` for releases of the AI host plugin (Claude Code / Cursor) and `"cli"` for releases of the standalone CLI. The listing page renders Plugin and CLI as separate tabs (Plugin first), so the field controls which audience sees the entry.
+The `product` field is **required by schema** — entries without it fail the build. Use `"plugin"` for releases of the AI host plugin (Claude Code / Cursor / Codex CLI) and `"cli"` for releases of the standalone CLI. The listing page renders Plugin and CLI as separate tabs (Plugin first), so the field controls which audience sees the entry.
 
 Images **must** be placed in `public/changelog/` and referenced with absolute paths (`/changelog/image.png`).
 

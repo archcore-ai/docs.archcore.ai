@@ -1,6 +1,6 @@
 ---
 title: Plugin Quick Start
-description: Install the Archcore Plugin in Claude Code or Cursor, open your project, and run your first intent command in under three minutes. Zero setup for Claude Code.
+description: Install the Archcore Plugin in Claude Code, Cursor, or Codex CLI, open your project, and run your first intent command in under three minutes. Zero setup for Claude Code and Codex CLI.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -8,9 +8,9 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-Get the full Archcore experience inside Claude Code or Cursor. Skills, tracks, built-in agents, and guardrails — all on top of your repo.
+Get the full Archcore experience inside Claude Code, Cursor, or Codex CLI. Skills, tracks, built-in agents, and guardrails — all on top of your repo.
 
-For **Claude Code**, no prerequisites — the plugin bundles a launcher that auto-resolves the CLI on first use and registers MCP automatically.
+For **Claude Code** and **Codex CLI**, no prerequisites — the plugin bundles a launcher that auto-resolves the CLI on first use and registers MCP automatically.
 
 For **Cursor**, the plugin still works, but you register MCP yourself (Cursor does not auto-register plugin-provided MCP). If you don't already have the CLI on `PATH`, install it first with the [CLI install guide](/cli/install/).
 
@@ -34,6 +34,21 @@ For **Cursor**, the plugin still works, but you register MCP yourself (Cursor do
 		Requires Cursor 2.5+. Open Cursor → **Plugins**, paste `https://github.com/archcore-ai/plugin` into the **Search or paste link** field, and click **Add Plugin**. Cursor reads the repo's `marketplace.json` and installs Archcore.
 
 		Then register MCP in Cursor's MCP settings, pointing `command` at `${CURSOR_PLUGIN_ROOT}/bin/archcore` (or an absolute path to a locally-cloned `bin/archcore`), with `args: ["mcp"]`. See [Install the plugin](/plugin/install/) for the exact snippet.
+	</TabItem>
+	<TabItem label="Codex CLI">
+		Requires Codex 0.117.0+.
+
+		```bash
+		codex plugin marketplace add archcore-ai/plugin
+		```
+
+		MCP is auto-registered via the plugin's `.codex.mcp.json`. Enable hooks for full coverage:
+
+		```bash
+		codex features enable plugin_hooks
+		```
+
+		`plugin_hooks` is currently under development in Codex (default off). Without it, skills, MCP tools, and agents work normally, but validation, cascade, precision, and pre-edit injection hooks won't fire.
 	</TabItem>
 </Tabs>
 
@@ -69,7 +84,7 @@ Use an intent command to record a real decision:
 /archcore:decide use PostgreSQL as our primary database
 ```
 
-On Claude Code, the first Archcore tool call downloads the CLI (~5s, one-time, cached between sessions) and — if `.archcore/` doesn't exist yet — initializes it through MCP. No `archcore init` needed.
+On Claude Code and Codex CLI, the first Archcore tool call downloads the CLI (~5s, one-time, cached between sessions) and — if `.archcore/` doesn't exist yet — initializes it through MCP. No `archcore init` needed.
 
 The plugin routes to the `adr` skill, creates a draft ADR through MCP, and offers a rule + guide follow-up. Accept it:
 

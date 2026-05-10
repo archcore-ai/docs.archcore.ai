@@ -137,7 +137,7 @@ export default defineConfig({
 					items: [
 						{ label: 'Overview', slug: 'plugin/overview' },
 						{ label: 'Install', slug: 'plugin/install' },
-						{ label: 'Supported Hosts', slug: 'plugin/supported-hosts' },
+						{ label: 'Supported AI agents', slug: 'plugin/supported-hosts' },
 						{ label: 'How Plugin Works', slug: 'plugin/how-it-works' },
 						{ label: 'Skills', slug: 'plugin/skills' },
 						{ label: 'Built-in Agents', slug: 'plugin/agents' },
