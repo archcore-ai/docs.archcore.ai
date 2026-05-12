@@ -11,12 +11,12 @@ The plugin targets AI coding agents that implement both Agent Skills and MCP as 
 
 ## Support matrix
 
-| Host             | Status       | Install                        | MCP wiring                                    | Hooks API                                               |
-| ---------------- | ------------ | ------------------------------ | --------------------------------------------- | ------------------------------------------------------- |
-| **Claude Code**  | Production   | Plugin marketplace             | Auto — plugin ships `.mcp.json` + launcher    | `SessionStart`, `PreToolUse`, `PostToolUse`             |
-| **Cursor**       | Implemented  | Plugin marketplace / local dir | User-registered (points at plugin's launcher) | `sessionStart`, `preToolUse`, `postToolUse`, `afterMCPExecution` |
-| **Codex CLI**    | Implemented  | `codex plugin marketplace add` | Auto — plugin ships `.codex.mcp.json` (referenced from manifest) | `SessionStart`, `PreToolUse`, `PostToolUse` (gated)     |
-| GitHub Copilot   | Planned      | —                              | —                                             | —                                                       |
+| Host             | Status       | Install                        | MCP wiring                                                  | Hooks API                                               |
+| ---------------- | ------------ | ------------------------------ | ----------------------------------------------------------- | ------------------------------------------------------- |
+| **Claude Code**  | Production   | Plugin marketplace             | Auto — plugin ships `.mcp.json` (uses `archcore` from PATH) | `SessionStart`, `PreToolUse`, `PostToolUse`             |
+| **Cursor**       | Implemented  | Plugin marketplace / local dir | User-registered from `cursor.mcp.json` template (pin `cwd: "${workspaceFolder}"`) | `sessionStart`, `preToolUse`, `postToolUse`, `afterMCPExecution` |
+| **Codex CLI**    | Implemented  | `codex plugin marketplace add` | Auto — plugin ships `.codex.mcp.json` (uses `archcore` from PATH) | `SessionStart`, `PreToolUse`, `PostToolUse` (gated)     |
+| GitHub Copilot   | Planned      | —                              | —                                                           | —                                                       |
 
 **Production** means the plugin is deployed and used day-to-day; bug fixes and new skills ship through the marketplace.
 
@@ -37,10 +37,9 @@ The plugin keeps skills, agents, and MCP tools identical across hosts. The diffe
 
 | Aspect              | Claude Code                                       | Cursor                                                  | Codex CLI                                                |
 | ------------------- | ------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
-| Who registers MCP   | The plugin, via `.mcp.json` at plugin root        | The user, via Cursor MCP settings or project `mcp.json` | The plugin, via `.codex.mcp.json` referenced from manifest's `mcpServers` |
-| Command points at   | `${CLAUDE_PLUGIN_ROOT}/bin/archcore mcp`          | Same launcher, or a globally-installed `archcore`       | `./bin/archcore mcp` with `cwd: "."` (Codex rebases relative paths to plugin install root) |
-| CLI install step    | None — launcher auto-downloads on first use       | Either via the launcher path, or install CLI globally   | None — launcher auto-downloads on first use              |
-| Duplicate handling  | Launcher defers to any global `archcore` on PATH  | N/A — user controls the registration                    | Launcher defers to any global `archcore` on PATH         |
+| Who registers MCP   | The plugin, via `.mcp.json` at plugin root        | The user, via `~/.cursor/mcp.json` or `.cursor/mcp.json` (copy `cursor.mcp.json` template) | The plugin, via `.codex.mcp.json` referenced from manifest's `mcpServers` |
+| Command points at   | `archcore mcp` (from `PATH`)                      | `archcore mcp` (from `PATH`), with `cwd: "${workspaceFolder}"` and `env.ARCHCORE_CWD` | `archcore mcp` (from `PATH`; Codex inherits shell `PATH`) |
+| CLI install step    | Required — install globally via `archcore.ai/install.sh` | Required — install globally via `archcore.ai/install.sh` | Required — install globally via `archcore.ai/install.sh` |
 
 ### Hook files
 

@@ -23,9 +23,9 @@ Structured documents fix all three, and every modern agent reads them through MC
 
 ### Step 1 — initialize
 
-**Using the plugin in Claude Code?** Skip the CLI install — follow the [Plugin quick start](/start/plugin-quick-start/). The plugin bundles a launcher that auto-downloads the CLI on first use and initializes `.archcore/` through MCP. Zero setup.
+**Using the plugin?** Install the CLI first (see [CLI install](/cli/install/)), then follow the [Plugin quick start](/start/plugin-quick-start/) — the plugin initializes `.archcore/` through MCP on first call, no manual `archcore init` needed.
 
-**Otherwise** (Cursor, any non-plugin host, scripting, CI), install the CLI directly:
+**Otherwise** (any non-plugin host, scripting, CI), install the CLI directly:
 
 ```bash
 curl -fsSL https://archcore.ai/install.sh | bash

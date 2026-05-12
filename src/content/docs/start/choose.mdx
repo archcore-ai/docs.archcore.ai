@@ -21,15 +21,15 @@ Archcore has two entry points. Both read and write the same `.archcore/` directo
 
 | | Plugin | CLI |
 | --- | --- | --- |
-| **Install method** | Plugin marketplace (CLI auto-downloaded on first use for Claude Code and Codex CLI) | Single binary via curl / PowerShell / `go install` |
-| **CLI prerequisite** | None for Claude Code or Codex CLI; Cursor uses the plugin's launcher or a global `archcore` | Required |
+| **Install method** | Install CLI globally, then add the plugin from the marketplace | Single binary via curl / PowerShell |
+| **CLI prerequisite** | Required (same one-line installer as standalone CLI) | Required |
 | **Hosts** | Claude Code, Cursor, Codex CLI (Copilot planned) | All 8 supported agents |
 | **Interface** | Slash commands (`/archcore:decide`, `/archcore:context`, `/archcore:standard-track`, …) | MCP tools + natural language |
 | **Multi-step workflows** | Tracks orchestrate document chains automatically | You drive them manually through MCP |
 | **Guardrails** | MCP-only writes, post-mutation validate, cascade warnings | MCP available; guardrails are opt-in via hooks |
 | **Best for** | Day-to-day use inside Claude Code or Cursor | Scripting, CI, agents without plugin support |
 
-Both use the same `.archcore/` directory and the same MCP server (the plugin's launcher resolves to the same `archcore` binary, whether it's a pre-existing global install or a plugin-cached download). Switching paths — or using both at once — requires no migration.
+Both paths share the same `.archcore/` directory and the same MCP server backed by the globally-installed `archcore` binary. Switching paths — or using both at once — requires no migration.
 
 ## The mental model
 

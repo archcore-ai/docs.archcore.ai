@@ -28,9 +28,7 @@ The plugin is invisible most of the time. Six mechanisms run underneath every co
 
 ## Mechanism 1 — session-start context
 
-The session-start hook runs `archcore hooks <host> session-start` (or equivalent) through the plugin's bundled launcher (`bin/archcore`). The launcher resolves the CLI from `$ARCHCORE_BIN`, a global install on `PATH`, a plugin-managed cache, or — on first-ever use — a checksum-verified download from GitHub Releases. SessionStart sets `ARCHCORE_SKIP_DOWNLOAD=1` so it never blocks on network; the first MCP tool call triggers the download instead.
-
-The launcher path is host-relative: Claude Code resolves it as `${CLAUDE_PLUGIN_ROOT}/bin/archcore`, Cursor as `${CURSOR_PLUGIN_ROOT}/bin/archcore`, and Codex CLI uses the host-neutral `${PLUGIN_ROOT}/bin/archcore`.
+The session-start hook runs `archcore hooks <host> session-start` (or equivalent) directly. There is no bundled launcher and no auto-download: the plugin invokes whichever `archcore` is on the host's `PATH`. If the binary isn't found, the hook prints install instructions linking to https://docs.archcore.ai/cli/install/ and exits — skills, MCP tools, and agents won't function until you install the CLI.
 
 The hook returns a document index plus a summary of existing relations. This is the agent's starting point for the conversation — it knows what already exists before you ask the first question.
 

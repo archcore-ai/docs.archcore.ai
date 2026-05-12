@@ -1,6 +1,6 @@
 ---
 title: Plugin Quick Start
-description: Install the Archcore Plugin in Claude Code, Cursor, or Codex CLI, open your project, and run your first intent command in under three minutes. Zero setup for Claude Code and Codex CLI.
+description: Install the Archcore CLI, add the plugin to Claude Code, Cursor, or Codex CLI, and run your first intent command in under three minutes.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -10,9 +10,9 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 Get the full Archcore experience inside Claude Code, Cursor, or Codex CLI. Skills, tracks, built-in agents, and guardrails — all on top of your repo.
 
-For **Claude Code** and **Codex CLI**, no prerequisites — the plugin bundles a launcher that auto-resolves the CLI on first use and registers MCP automatically.
+**Prerequisite (all hosts):** install the Archcore CLI globally — one curl line on macOS/Linux, one PowerShell line on Windows. See the [CLI install guide](/cli/install/). The plugin calls `archcore` from your `PATH` in every supported host.
 
-For **Cursor**, the plugin still works, but you register MCP yourself (Cursor does not auto-register plugin-provided MCP). If you don't already have the CLI on `PATH`, install it first with the [CLI install guide](/cli/install/).
+Then install the plugin (below). Cursor users do one extra step: register MCP from the `cursor.mcp.json` template (Cursor doesn't auto-register plugin-provided MCP).
 
 ## 1. Install the plugin
 
@@ -33,7 +33,22 @@ For **Cursor**, the plugin still works, but you register MCP yourself (Cursor do
 	<TabItem label="Cursor">
 		Requires Cursor 2.5+. Open Cursor → **Plugins**, paste `https://github.com/archcore-ai/plugin` into the **Search or paste link** field, and click **Add Plugin**. Cursor reads the repo's `marketplace.json` and installs Archcore.
 
-		Then register MCP in Cursor's MCP settings, pointing `command` at `${CURSOR_PLUGIN_ROOT}/bin/archcore` (or an absolute path to a locally-cloned `bin/archcore`), with `args: ["mcp"]`. See [Install the plugin](/plugin/install/) for the exact snippet.
+		Then copy `cursor.mcp.json` (from the installed plugin root) into `~/.cursor/mcp.json` (user-scoped) or `.cursor/mcp.json` (project-scoped):
+
+		```json
+		{
+			"mcpServers": {
+				"archcore": {
+					"command": "archcore",
+					"args": ["mcp"],
+					"cwd": "${workspaceFolder}",
+					"env": { "ARCHCORE_CWD": "${workspaceFolder}" }
+				}
+			}
+		}
+		```
+
+		Keep `cwd: "${workspaceFolder}"` — without it, one project's `.archcore/` leaks into every other Cursor window.
 	</TabItem>
 	<TabItem label="Codex CLI">
 		Requires Codex 0.117.0+.
@@ -76,7 +91,7 @@ The skill detects repo scale (small / medium / large) and seeds scale-appropriat
 
 Already have an `.archcore/` directory? Skip ahead to step 4.
 
-## 4. Run your first command (downloads the CLI on first use)
+## 4. Run your first command
 
 Use an intent command to record a real decision:
 
@@ -84,7 +99,7 @@ Use an intent command to record a real decision:
 /archcore:decide use PostgreSQL as our primary database
 ```
 
-On Claude Code and Codex CLI, the first Archcore tool call downloads the CLI (~5s, one-time, cached between sessions) and — if `.archcore/` doesn't exist yet — initializes it through MCP. No `archcore init` needed.
+If `.archcore/` doesn't exist yet, MCP initializes it on the first call — no `archcore init` needed.
 
 The plugin routes to the `adr` skill, creates a draft ADR through MCP, and offers a rule + guide follow-up. Accept it:
 
@@ -128,10 +143,6 @@ The plugin walks you through an ADR, a spec, and a plan — one document per ste
 - **Automatic context injection** — before any source-file edit, the plugin greps `.archcore/` for relevant rules, ADRs, specs, and patterns and injects them into context.
 - **Built-in agents** — `archcore-assistant` for multi-document flows, `archcore-auditor` for reviews.
 - **Guardrails** — direct `.archcore/*.md` writes are blocked; every mutation is validated; cascade staleness is flagged.
-
-## Already have the CLI installed?
-
-The bundled launcher defers to any `archcore` on `PATH`. If you've previously installed the CLI via `curl | bash`, `go install`, or a package manager, the plugin picks up that binary — no duplicate cache, no conflict. The only time the plugin downloads anything is when neither `$ARCHCORE_BIN` nor a PATH `archcore` is available and the cache is empty.
 
 ## Next steps
 
