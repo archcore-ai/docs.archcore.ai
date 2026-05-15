@@ -40,8 +40,9 @@ export default defineConfig({
 		'/reference/troubleshooting/': '/cli/troubleshooting/',
 
 		// Plugin Skills consolidation — Intent Commands and Tracks merged into Skills
-		'/plugin/intent-commands/': '/plugin/skills/#intent-commands',
-		'/plugin/tracks/': '/plugin/skills/#tracks',
+		'/plugin/intent-commands/': '/plugin/skills/#all-7-commands-at-a-glance',
+		'/plugin/tracks/': '/plugin/skills/#archcoreplan',
+		'/reference/tracks/': '/plugin/skills/#archcoreplan',
 
 		// `archcore init` deep-dive folded into CLI Quick Start
 		'/cli/init/': '/cli/quick-start/',
@@ -178,7 +179,6 @@ export default defineConfig({
 						{ label: 'MCP Tools', slug: 'reference/mcp-tools' },
 						{ label: 'MCP Prompts', slug: 'reference/mcp-prompts' },
 						{ label: 'Plugin Skills', slug: 'reference/skills' },
-						{ label: 'Tracks', slug: 'reference/tracks' },
 					],
 				},
 			],

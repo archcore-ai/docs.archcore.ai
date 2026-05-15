@@ -32,7 +32,7 @@ Putting both in one package would couple shipping cadences — every plugin twea
 | Build the relation graph (`.sync-state.json`)     | Yes              | —                |
 | Expose MCP tools to agents                        | `archcore mcp`   | —                |
 | Install MCP configs and session hooks             | Yes              | —                |
-| Provide skills (`/archcore:adr`, tracks, …)       | —                | Yes              |
+| Provide outcome-focused slash commands (`/archcore:decide`, `/archcore:plan`, …) | —                | Yes              |
 | Block direct writes to `.archcore/*.md`           | —                | Yes              |
 | Run `archcore validate` after each mutation       | —                | Yes (via hook)   |
 | Detect cascade staleness after `update_document`  | —                | Yes              |
@@ -71,7 +71,7 @@ The plugin does not duplicate MCP — it reuses the server from `archcore mcp`. 
 Use the **[Plugin](/plugin/overview/)** when:
 
 - You work in **Claude Code** or **Cursor** day-to-day.
-- You want skills (`/archcore:adr`, `/archcore:standard-track`) without explaining document types to the agent.
+- You want outcome-focused slash commands (`/archcore:decide`, `/archcore:plan`, `/archcore:capture`) without explaining document types to the agent.
 - You want guardrails on by default — MCP-only writes, post-mutation validation, cascade warnings.
 
 Use the **[CLI](/cli/overview/)** directly when:

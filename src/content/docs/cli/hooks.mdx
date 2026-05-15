@@ -21,7 +21,7 @@ Archcore responds with:
 
 - An index of every document in `.archcore/` — path, type, title, status.
 - A summary of relations (which documents reference which).
-- Any drift signals detected since the last run.
+- Top tags currently used across documents (up to 30).
 
 This output goes straight into the agent's working context, so the agent already "knows" about your ADRs, rules, guides, and plans on turn one.
 
@@ -46,8 +46,8 @@ Four agents support hooks today:
 | Agent          | Hook file                            |
 | -------------- | ------------------------------------ |
 | Claude Code    | `.claude/settings.json`              |
-| Cursor         | `.cursor/settings.json`              |
-| GitHub Copilot | `.vscode/settings.json`              |
+| Cursor         | `.cursor/hooks.json`                 |
+| GitHub Copilot | `.github/hooks/archcore.json`        |
 | Gemini CLI     | `.gemini/settings.json`              |
 
 OpenCode, Codex CLI, Roo Code, and Cline do not support session hooks yet. You can still use MCP with them — just ask the agent to list documents when you want context.

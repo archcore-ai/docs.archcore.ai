@@ -7,20 +7,20 @@ The Archcore MCP server exposes 5 **prompts** in addition to its [tools](/refere
 
 Most MCP-aware clients surface prompts as slash commands. The exact prefix depends on the client (e.g. `/product_track` in some hosts, `archcore.product_track` in others).
 
-## MCP prompts vs plugin track skills
+## MCP prompts vs plugin cascades
 
-These MCP prompts are **different** from the plugin's `/archcore:product-track` skill commands.
+These MCP prompts are **different** from the plugin's `/archcore:plan` and `/archcore:decide` cascades.
 
-| | MCP prompts | Plugin track skills |
+| | MCP prompts | Plugin cascades |
 | --- | --- | --- |
-| Where they live | Archcore CLI's MCP server | Archcore Plugin (Claude Code, Cursor) |
-| Invocation | Slash command in any MCP-aware client (host-namespaced) | `/archcore:<track-name>` (plugin-scoped) |
-| Available in | Any MCP client — Gemini CLI, Copilot, Codex, OpenCode, Roo Code, Cursor, Claude Code, ... | Claude Code and Cursor only |
-| Tracks shipped | 5 (`product`, `architecture`, `standard`, `sources`, `iso`) | 6 — adds `feature-track` |
+| Where they live | Archcore CLI's MCP server | Archcore Plugin (Claude Code, Cursor, Codex CLI) |
+| Invocation | Slash command in any MCP-aware client (host-namespaced) | `/archcore:plan --track <name>` or `/archcore:decide` continuation (plugin-scoped) |
+| Available in | Any MCP client — Gemini CLI, Copilot, Codex, OpenCode, Roo Code, Cursor, Claude Code, ... | Claude Code, Cursor, and Codex CLI only |
+| Cascades shipped | 5 (`product`, `architecture`, `standard`, `sources`, `iso`) | 6 — 4 plan tracks (`product`, `feature`, `sources`, `iso`) + 2 `/archcore:decide` continuations (standard chain, architecture chain) |
 
-Both exist by design. Use plugin tracks when you're on a plugin host and want the richer skill experience. Use MCP prompts when you're on a host the plugin doesn't support yet, or when you want a host-agnostic way to drive cascades.
+Both exist by design. Use plugin cascades when you're on a plugin host and want the outcome-focused command experience. Use MCP prompts when you're on a host the plugin doesn't support yet, or when you want a host-agnostic way to drive cascades.
 
-See [Plugin tracks reference](/reference/tracks/) for the plugin-side equivalents.
+See [Plugin Skills](/plugin/skills/#archcoreplan) for the plugin-side equivalents.
 
 ## Prompt catalog
 
@@ -153,4 +153,4 @@ Formal ISO/IEC/IEEE 29148:2018 cascade. Each level decomposes the one above it.
 
 - [MCP tools](/reference/mcp-tools/) — the underlying tool API each prompt drives.
 - [MCP server](/cli/mcp-server/) — how the CLI exposes prompts to agents.
-- [Plugin tracks](/reference/tracks/) — the plugin-side equivalents (host-scoped under `/archcore:`).
+- [Plugin skills](/plugin/skills/) — the plugin-side equivalents under `/archcore:plan --track …`.

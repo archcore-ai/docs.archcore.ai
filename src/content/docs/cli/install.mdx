@@ -34,6 +34,31 @@ The CLI is a single binary. Install it with one command for your platform.
 	</TabItem>
 </Tabs>
 
+## Install options
+
+The install scripts accept three environment variables (Unix and Windows share the same surface):
+
+| Variable               | Default (Unix)    | Default (Windows)                       | Purpose                                                                  |
+| ---------------------- | ----------------- | --------------------------------------- | ------------------------------------------------------------------------ |
+| `ARCHCORE_VERSION`     | latest            | latest                                  | Pin to a specific release tag (e.g. `v1.0.0`).                            |
+| `ARCHCORE_INSTALL_DIR` | `~/.local/bin`    | `%LOCALAPPDATA%\Programs\archcore`      | Override the install directory.                                          |
+| `GITHUB_TOKEN`         | —                 | —                                       | Authenticate API and download requests (private repos, rate limits).     |
+
+<Tabs>
+	<TabItem label="macOS / Linux">
+		```bash
+		ARCHCORE_VERSION=v1.0.0 ARCHCORE_INSTALL_DIR=/usr/local/bin \
+		  curl -fsSL https://archcore.ai/install.sh | bash
+		```
+	</TabItem>
+	<TabItem label="Windows">
+		```powershell
+		$env:ARCHCORE_VERSION = 'v1.0.0'; $env:ARCHCORE_INSTALL_DIR = 'C:\tools\archcore'
+		irm https://archcore.ai/install.ps1 | iex
+		```
+	</TabItem>
+</Tabs>
+
 ## Verify
 
 ```bash

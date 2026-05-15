@@ -1,6 +1,6 @@
 ---
 title: Plugin Quick Start
-description: Install the Archcore CLI, add the plugin to Claude Code, Cursor, or Codex CLI, and run your first intent command in under three minutes.
+description: Install the Archcore CLI, add the plugin to Claude Code, Cursor, or Codex CLI, and run your first command in under three minutes.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -8,7 +8,7 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-Get the full Archcore experience inside Claude Code, Cursor, or Codex CLI. Skills, tracks, built-in agents, and guardrails — all on top of your repo.
+Get the full Archcore experience inside Claude Code, Cursor, or Codex CLI. Seven outcome-focused slash commands, built-in agents, and guardrails — all on top of your repo.
 
 **Prerequisite (all hosts):** install the Archcore CLI globally — one curl line on macOS/Linux, one PowerShell line on Windows. See the [CLI install guide](/cli/install/). The plugin calls `archcore` from your `PATH` in every supported host.
 
@@ -63,7 +63,7 @@ Then install the plugin (below). Cursor users do one extra step: register MCP fr
 		codex features enable plugin_hooks
 		```
 
-		`plugin_hooks` is currently under development in Codex (default off). Without it, skills, MCP tools, and agents work normally, but validation, cascade, precision, and pre-edit injection hooks won't fire.
+		`plugin_hooks` is currently under development in Codex (default off). Without it, commands, MCP tools, and agents work normally, but validation, cascade, precision, and pre-edit injection hooks won't fire.
 	</TabItem>
 </Tabs>
 
@@ -77,23 +77,23 @@ Open your project in a fresh conversation and run:
 /archcore:help
 ```
 
-You should see a list of available skills grouped by family (intent commands, tracks, utility). If not, see [plugin troubleshooting](/plugin/troubleshooting/).
+You should see a list of the seven `/archcore:*` commands with their outcomes. If not, see [plugin troubleshooting](/plugin/troubleshooting/).
 
-## 3. Bootstrap an empty repo (optional)
+## 3. Make your repo legible (optional)
 
-If `.archcore/` doesn't exist yet, the fastest way to get something useful in there is:
+If `.archcore/` doesn't exist yet, the fastest way to seed something useful is:
 
 ```
-/archcore:bootstrap
+/archcore:init
 ```
 
-The skill detects repo scale (small / medium / large) and seeds scale-appropriate documents: a stack rule, a run-the-app guide, an entry-point inventory (medium+), a top-level domain map (large), and a list of hotspot capture candidates. It also offers to import existing `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` if you have any. Run this once per project.
+The command detects repo scale (small / medium / large) and seeds scale-appropriate documents: a stack rule, a run-the-app guide, an entry-point inventory (medium+), a top-level domain map (large), and a list of hotspot capture candidates. It also offers to import existing `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` if you have any. Run this once per project.
 
 Already have an `.archcore/` directory? Skip ahead to step 4.
 
-## 4. Run your first command
+## 4. Record your first decision
 
-Use an intent command to record a real decision:
+Use `/archcore:decide` for an actual decision you've already made:
 
 ```
 /archcore:decide use PostgreSQL as our primary database
@@ -101,13 +101,12 @@ Use an intent command to record a real decision:
 
 If `.archcore/` doesn't exist yet, MCP initializes it on the first call — no `archcore init` needed.
 
-The plugin routes to the `adr` skill, creates a draft ADR through MCP, and offers a rule + guide follow-up. Accept it:
+The skill creates an ADR with rationale and consequences, then **offers a follow-up cascade**:
 
-```
-/archcore:standard migration format
-```
+- **Standard chain** (`adr → rule → guide`) — if PostgreSQL becomes the mandated database, codify it as a rule and write the how-to guide.
+- **Architecture chain** (`adr → spec → plan`) — if the decision needs formal specification and an implementation plan.
 
-This triggers the `standard-track`: `adr` → `rule` → `guide`, with relations wired automatically.
+Accept whichever cascade fits. Each step pauses for your review.
 
 Check the result:
 
@@ -115,7 +114,7 @@ Check the result:
 ls .archcore/
 ```
 
-You should see three linked documents, all validated.
+You should see one or more linked documents, all validated.
 
 ## 5. See the context the agent now has
 
@@ -127,19 +126,25 @@ Before touching some code, ask Archcore what already applies:
 
 The skill loads the rules, ADRs, and patterns tied to `src/db/` — so the agent edits inside the lines your team has already drawn. The same context is also injected automatically before each source-file edit; this command shows you the full set on demand.
 
-## 6. Try a multi-step track
+## 6. Try a multi-step plan
 
-For something bigger:
+For something bigger, drive a full cascade with `/archcore:plan`:
 
 ```
-/archcore:architecture-track event-driven orders
+/archcore:plan --track feature event-driven orders
 ```
 
-The plugin walks you through an ADR, a spec, and a plan — one document per step, with the right relations between them. You review each step before the next.
+This walks you through a PRD, a spec, a plan, and a task-type — one document per step, with the right relations between them. You review each step before the next. Pick a different track when you need a different depth:
+
+- `--track product` (idea → prd → plan) — lightweight.
+- `--track sources` (mrd → brd → urd) — discovery-focused.
+- `--track iso` (brs → strs → syrs → srs) — formal ISO 29148 cascade.
+
+Default (no `--track`) routes a single `/archcore:plan` ask to the `product` flow.
 
 ## What you get
 
-- **16 skills** — 9 intent commands, 6 tracks, and 1 utility (`verify`). The agent picks the right document type for you.
+- **7 outcome-focused commands** — each one routes to the right document type for you. See [Skills](/plugin/skills/) for the full catalog.
 - **Automatic context injection** — before any source-file edit, the plugin greps `.archcore/` for relevant rules, ADRs, specs, and patterns and injects them into context.
 - **Built-in agents** — `archcore-assistant` for multi-document flows, `archcore-auditor` for reviews.
 - **Guardrails** — direct `.archcore/*.md` writes are blocked; every mutation is validated; cascade staleness is flagged.
@@ -147,6 +152,5 @@ The plugin walks you through an ADR, a spec, and a plan — one document per ste
 ## Next steps
 
 - [Plugin overview](/plugin/overview/) — what ships in the box.
-- [Intent commands](/plugin/skills/#intent-commands) — the 9 routing commands.
-- [Tracks](/plugin/skills/#tracks) — the 6 multi-step workflows.
+- [Skills](/plugin/skills/) — outcome, examples, and flags for each of the 7 commands.
 - [Document types](/concepts/document-types/) — the vocabulary you're using.

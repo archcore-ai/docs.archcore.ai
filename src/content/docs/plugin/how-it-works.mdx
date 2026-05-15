@@ -21,7 +21,7 @@ The plugin is invisible most of the time. Six mechanisms run underneath every co
 
 1. **Session starts.** The host fires `SessionStart` (Claude Code) or `sessionStart` (Cursor). The plugin's hook loads your project's document index and relations into the conversation before you type anything.
 2. **You ask for something.** "Create an ADR for the caching decision", "audit our rule coverage", "plan the auth redesign".
-3. **Skills activate.** The agent matches your request to a skill — an intent command or a track. Each skill carries document-type knowledge, required sections, and relation guidance.
+3. **A command activates.** The agent matches your request to one of the seven `/archcore:*` skills. Each one carries document-type knowledge, required sections, and relation guidance.
 4. **MCP tools execute.** Every read and write goes through `archcore mcp`. Direct `Write`/`Edit` calls targeting `.archcore/` are blocked by the `PreToolUse` hook.
 5. **Pre-edit context injection.** When you ask the agent to edit a source file, the plugin greps `.archcore/` for documents referencing that path and injects the top matches (rules, ADRs, specs, cpats) into context — automatically, before the edit runs.
 6. **Hooks validate.** After every MCP mutation, the plugin runs `archcore doctor`. If the updated document has dependents (via `implements`, `extends`, `depends_on`), a cascade check warns you that they may need review. A separate precision check emits soft warnings for vague language, missing sections, frontmatter gaps, and stub bodies.
@@ -112,6 +112,6 @@ The `PreToolUse` / `PostToolUse` hooks run on every relevant tool call. They are
 
 ## Next steps
 
-- [Skills](/plugin/skills/) — the 16 skills that activate once context is loaded.
+- [Skills](/plugin/skills/) — the 7 commands that activate once context is loaded.
 - [Built-in agents](/plugin/agents/) — `archcore-assistant` and `archcore-auditor`.
 - [Troubleshooting](/plugin/troubleshooting/) — common hook and session issues.

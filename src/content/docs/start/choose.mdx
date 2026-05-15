@@ -24,8 +24,8 @@ Archcore has two entry points. Both read and write the same `.archcore/` directo
 | **Install method** | Install CLI globally, then add the plugin from the marketplace | Single binary via curl / PowerShell |
 | **CLI prerequisite** | Required (same one-line installer as standalone CLI) | Required |
 | **Hosts** | Claude Code, Cursor, Codex CLI (Copilot planned) | All 8 supported agents |
-| **Interface** | Slash commands (`/archcore:decide`, `/archcore:context`, `/archcore:standard-track`, …) | MCP tools + natural language |
-| **Multi-step workflows** | Tracks orchestrate document chains automatically | You drive them manually through MCP |
+| **Interface** | 7 slash commands (`/archcore:init`, `/archcore:context`, `/archcore:capture`, `/archcore:plan`, `/archcore:decide`, `/archcore:audit`, `/archcore:help`) | MCP tools + natural language |
+| **Multi-step workflows** | `/archcore:plan --track` and `/archcore:decide` continuations orchestrate document chains automatically | You drive them manually through MCP |
 | **Guardrails** | MCP-only writes, post-mutation validate, cascade warnings | MCP available; guardrails are opt-in via hooks |
 | **Best for** | Day-to-day use inside Claude Code or Cursor | Scripting, CI, agents without plugin support |
 

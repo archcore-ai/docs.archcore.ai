@@ -59,7 +59,7 @@ The agent drafts the PRD, asks you to confirm, then derives a Plan and links it 
 See [MCP prompts reference](/reference/mcp-prompts/) for arguments and full chain details.
 
 :::note
-These MCP prompts are **different** from the plugin's `/archcore:product-track` slash commands. MCP prompts ship in the CLI's MCP server and work in any MCP-aware client (Gemini CLI, Copilot, Codex, OpenCode, ...). Plugin tracks are skills that ship with the [Archcore Plugin](/plugin/skills/#tracks) and are scoped to plugin hosts.
+These MCP prompts are **different** from the plugin's `/archcore:plan --track ...` cascades. MCP prompts ship in the CLI's MCP server and work in any MCP-aware client (Gemini CLI, Copilot, Codex, OpenCode, ...). Plugin cascades are skills that ship with the [Archcore Plugin](/plugin/skills/#archcoreplan) and are scoped to plugin hosts.
 :::
 
 ## Built-in agent instructions
@@ -115,6 +115,28 @@ If you need to configure MCP by hand, add to your agent's MCP config:
 ```
 
 Config file locations vary by agent — see [Agent integrations](/cli/agent-integrations/) for details.
+
+### Pointing the server at a project root
+
+By default `archcore mcp` reads documents from the current working directory. Some agents launch the server from a directory that isn't the workspace root (e.g., a desktop app's install directory, or a profile-scoped runner). In those cases, point the server at the right project:
+
+- **Flag** — `archcore mcp --project /absolute/path/to/repo`
+- **Environment** — `ARCHCORE_PROJECT_ROOT=/absolute/path/to/repo archcore mcp`
+
+Precedence: `--project` > `ARCHCORE_PROJECT_ROOT` > current working directory. The path must exist; it does not need to contain `.archcore/` yet — `init_project` can bootstrap it from the session.
+
+Example MCP config that pins an absolute project root:
+
+```json
+{
+  "mcpServers": {
+    "archcore": {
+      "command": "archcore",
+      "args": ["mcp", "--project", "/Users/me/code/my-repo"]
+    }
+  }
+}
+```
 
 ## Language support
 

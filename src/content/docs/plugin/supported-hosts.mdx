@@ -74,7 +74,7 @@ The path env var is `${PLUGIN_ROOT}` — Codex's canonical, host-neutral name. T
 Skills are surfaced differently depending on host conventions:
 
 - **Claude Code** and **Cursor** load skills directly from `skills/<name>/SKILL.md`.
-- **Codex CLI** surfaces skills through thin `commands/<name>.md` wrappers (16 of them) — one per skill.
+- **Codex CLI** surfaces skills through thin `commands/<name>.md` wrappers (7 of them) — one per command.
 
 The skill content itself is the same; only the entry point differs.
 
@@ -101,7 +101,7 @@ Tool whitelists are identical across formats — the TOML variants just translat
 - You want a terminal-first agent with auto-registered MCP (no manual wiring).
 - You're comfortable enabling the `plugin_hooks` feature flag to get full hook coverage.
 
-**All three are first-class.** Skills, tracks, agents, and guardrails behave identically.
+**All three are first-class.** Skills, agents, hooks, and guardrails behave identically.
 
 ## Unsupported hosts
 

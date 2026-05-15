@@ -1,52 +1,60 @@
 ---
 title: Plugin Skills Reference
-description: One-page reference of all 16 Archcore Plugin skills — 9 intent commands, 6 tracks, 1 utility.
+description: One-page reference of all 7 Archcore Plugin commands — outcome, flags, and (where applicable) cascade flows.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-Quick lookup of every skill shipped with the Archcore Plugin — one page, no clicks. For grouped, annotated coverage with examples see [Skills](/plugin/skills/). For the document types these skills produce, see [Document types](/concepts/document-types/).
+Quick lookup of every command shipped with the Archcore Plugin — one page, no clicks. For grouped coverage with examples see [Skills](/plugin/skills/). For the document types these commands produce, see [Document types](/concepts/document-types/).
 
-## Intent commands (9)
+## All 7 commands
 
-The primary routing commands — describe an intent, the skill picks the right document type or multi-step flow.
+| Command              | Outcome                                                | Flags                                                       |
+| -------------------- | ------------------------------------------------------ | ----------------------------------------------------------- |
+| `/archcore:init`     | Make your repo legible to AI agents                    | —                                                           |
+| `/archcore:context`  | Load what's already decided before you change code     | —                                                           |
+| `/archcore:capture`  | Document what already lives in code                    | —                                                           |
+| `/archcore:plan`     | Turn an idea into a scoped implementation plan         | `--track product\|feature\|sources\|iso`                    |
+| `/archcore:decide`   | Record a decision and (optionally) make it a team rule | —                                                           |
+| `/archcore:audit`    | Find stale, missing, or drifting docs                  | `--deep`, `--drift`, or any non-flag filter (implies `--deep`) |
+| `/archcore:help`     | Navigate the skill catalog                             | —                                                           |
 
-| Command                 | Purpose                                                                         |
-| ----------------------- | ------------------------------------------------------------------------------- |
-| `/archcore:context`     | Load the rules, ADRs, specs, and patterns that apply to a code area before changing it. |
-| `/archcore:bootstrap`   | First-time onboarding — scale-aware seeding for an empty `.archcore/`.         |
-| `/archcore:capture`     | Document a module, component, or API — routes to adr, spec, doc, or guide.     |
-| `/archcore:plan`        | Plan a feature — routes to `product-track` or a single plan.                   |
-| `/archcore:decide`      | Record a finalized decision — creates ADR, offers rule + guide follow-up.      |
-| `/archcore:standard`    | Establish a team standard — drives `standard-track`.                           |
-| `/archcore:review`      | Documentation health — counts dashboard by default; full audit (gaps, staleness, orphans, missing relations) with `--deep`. |
-| `/archcore:actualize`   | Detect stale docs via code drift, cascade analysis, temporal signals.          |
-| `/archcore:help`        | List every skill grouped by family.                                            |
+## `/archcore:plan` track flows
 
-## Tracks (6)
+A track is a multi-step cascade. The skill creates each document through MCP in order, wires relations automatically, and pauses for your review before the next step.
 
-Multi-step workflows — each orchestrates several documents and wires relations automatically.
+| `--track`  | Flow                                  | Relations created                                                            | Use when                                                       |
+| ---------- | ------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `product`  | idea → prd → plan                     | `prd implements idea`, `plan implements prd`                                 | Lightweight product flow — simple, fast, individual features.   |
+| `feature`  | prd → spec → plan → task-type         | `spec implements prd`, `plan implements spec`, `task-type related plan`      | Full feature lifecycle with formal spec and delivery pattern.   |
+| `sources`  | mrd → brd → urd                       | `brd related mrd`, `urd related mrd, brd`                                    | Discovery — market, business, user research.                    |
+| `iso`      | brs → strs → syrs → srs               | `strs implements brs, urd`; `syrs implements strs`; `srs implements syrs`    | Regulated systems, multi-team projects, full traceability.      |
 
-| Command                         | Flow                                       | Use when                                                     |
-| ------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
-| `/archcore:product-track`       | idea → prd → plan                          | Lightweight product flow — simple and fast.                  |
-| `/archcore:sources-track`       | mrd → brd → urd                            | Discovery-focused — market, business, user inputs.           |
-| `/archcore:iso-track`           | brs → strs → syrs → srs                    | Formal ISO 29148 cascade with traceability.                  |
-| `/archcore:architecture-track`  | adr → spec → plan                          | Design decisions flowing into implementation.                |
-| `/archcore:standard-track`      | adr → (optional cpat) → rule → guide       | Decision → codified standard → how-to.                       |
-| `/archcore:feature-track`       | prd → spec → plan → task-type              | Full feature lifecycle.                                      |
+Default (no `--track`) routes to the `product` flow.
 
-## Utility
+## `/archcore:decide` continuations
 
-| Command               | Purpose                                                                        |
-| --------------------- | ------------------------------------------------------------------------------ |
-| `/archcore:verify`    | Plugin integrity check — validates configs, scripts, skills, hooks, and runs the test suite. |
+After an ADR is recorded, `/archcore:decide` offers a follow-up cascade:
+
+| Continuation        | Flow                                  | Relations created                                                  | Use when                                                  |
+| ------------------- | ------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------- |
+| Standard chain      | adr → (optional cpat) → rule → guide  | `rule implements adr`, `guide related rule`, `cpat related rule`   | The decision is a team standard that needs enforcement.   |
+| Architecture chain  | adr → spec → plan                     | `spec implements adr`, `plan implements spec`                      | The decision needs formal specification and a plan.        |
+
+## `/archcore:audit` modes
+
+| Invocation                    | Mode                | Returns                                                              |
+| ----------------------------- | ------------------- | -------------------------------------------------------------------- |
+| `/archcore:audit`             | Dashboard (default) | One-screen counts by category, status, type, relation coverage.      |
+| `/archcore:audit --deep`      | Full audit          | Gaps, staleness, orphans, missing relations, prioritized fixes.       |
+| `/archcore:audit --deep tag:auth` | Scoped audit    | Same as `--deep` but scoped to a tag, type, or category.              |
+| `/archcore:audit --drift`     | Staleness scan      | Code drift, cascade drift, temporal drift — what's gone out of date.  |
 
 ## Document types
 
-The 18 document types no longer have dedicated slash commands. Use intent commands and tracks above, or call `mcp__archcore__create_document` directly when you need a specific type without a routing skill.
+The 18 document types don't have dedicated slash commands — commands above route to them. Call `mcp__archcore__create_document` directly when you need a specific type without a routing command.
 
 | Layer      | Types                                                              |
 | ---------- | ------------------------------------------------------------------ |
@@ -58,7 +66,5 @@ Full descriptions and required sections for each type: [Document types](/concept
 
 ## See also
 
-- [Skills](/plugin/skills/) — full descriptions with examples for every intent command and track.
-- [Intent commands](/plugin/skills/#intent-commands) — annotated coverage of the 9 routing commands.
-- [Tracks](/plugin/skills/#tracks) — flow diagrams and relation wiring per track.
+- [Skills](/plugin/skills/) — full descriptions with examples for every command.
 - [Document types](/concepts/document-types/) — required sections per type.

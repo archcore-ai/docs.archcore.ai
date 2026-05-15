@@ -130,6 +130,13 @@ If this shows "No such file or directory," you're not in the right project root.
 
 **Fix:** Open your editor or terminal in the directory that contains `.archcore/`. For multi-root workspaces, make sure the project with `.archcore/` is the active workspace root.
 
+If the agent launches `archcore mcp` from a fixed directory you can't change (e.g., a desktop app or a profile-scoped runner), pin the project root in the MCP config instead:
+
+- **Flag:** `archcore mcp --project /absolute/path/to/repo`
+- **Environment:** set `ARCHCORE_PROJECT_ROOT=/absolute/path/to/repo` in the agent's environment.
+
+See [Pointing the server at a project root](/cli/mcp-server/#pointing-the-server-at-a-project-root) for the full config example.
+
 If you haven't initialized the project yet:
 
 ```bash

@@ -28,7 +28,7 @@ Common issues specific to running the plugin inside Claude Code, Cursor, or Code
 
 3. **Session-start hook ran.** Look at the session opening messages — you should see a short "Archcore context loaded" line. If not, the hook didn't fire.
 
-4. **Run `/archcore:verify`.** The plugin's self-check validates that all skills, agents, and hook scripts are present.
+4. **Run `archcore doctor` from your shell.** The CLI validates `.archcore/` integrity. For plugin-side install issues (missing skills, hook scripts, manifest problems), reinstall via the marketplace — see [Install](/plugin/install/).
 
 ## "Plugin failed to load"
 
