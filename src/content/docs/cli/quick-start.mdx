@@ -29,11 +29,12 @@ cd your-project
 archcore init
 ```
 
-This does three things:
+This does four things:
 
 1. Creates the `.archcore/` directory with a default `settings.json`.
 2. Auto-detects installed coding agents (Claude Code, Cursor, Copilot, Gemini CLI, and more — see [agent integrations](/cli/agent-integrations/) for the full list).
 3. Writes MCP server config and session hooks for every agent it detects.
+4. Offers to add a short "use Archcore" hint to each detected agent's config so they actually reach for the Archcore tools. You can add it later with `archcore instructions install`.
 
 If no agents are detected, `init` falls back to Claude Code configuration.
 

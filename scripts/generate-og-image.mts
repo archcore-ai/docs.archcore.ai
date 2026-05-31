@@ -50,6 +50,17 @@ interface PageInfo {
   section?: string;
 }
 
+// Slugify a changelog filename the same way Astro's glob loader derives the
+// entry id: lowercase, drop punctuation (dots included), spaces → hyphens. For
+// semver-named entries this collapses `0.4.0` → `040`, matching the page route.
+function changelogSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
 function parseFrontmatter(content: string): { title?: string; description?: string } {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return {};
@@ -92,13 +103,19 @@ function discoverPages(): PageInfo[] {
     });
   }
 
-  // Changelog entries
+  // Changelog entries.
+  // The output filename must match Astro's content-collection id (used by
+  // Head.astro to build the og:image URL), not the raw filename. Astro's glob
+  // loader slugifies the id — for version-named entries that strips the dots
+  // (e.g. `0.4.0.md` → id `040` → /changelog/040/). Mirror that here, or the
+  // generated PNG (`0.4.0.png`) never matches the requested URL (`040.png`).
   for (const file of collectFiles(changelogDir, [".md"])) {
     const name = basename(file, ".md");
+    const slug = changelogSlug(name);
     const content = readFileSync(file, "utf-8");
     const { title, description } = parseFrontmatter(content);
     pages.push({
-      slug: `changelog/${name}`,
+      slug: `changelog/${slug}`,
       title: title || `v${name}`,
       description,
       section: "Changelog",

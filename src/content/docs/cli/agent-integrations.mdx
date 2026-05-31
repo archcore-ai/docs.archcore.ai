@@ -7,23 +7,24 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="cli" />
 
-Archcore supports 8 coding agents out of the box. Each agent gets MCP server configuration and (where supported) session hooks installed automatically during `archcore init`.
+Archcore supports 8 coding agents out of the box. Each agent integrates through three mechanisms: **MCP servers**, **session hooks**, and an **instruction hint** — a short "use Archcore" nudge written into the agent's config files. All three are installed automatically (where supported) during `archcore init`.
 
 ## Support matrix
 
-| Agent          | MCP    | Hooks |
-| -------------- | ------ | ----- |
-| Claude Code    | Yes    | Yes   |
-| Cursor         | Yes    | Yes   |
-| GitHub Copilot | Yes    | Yes   |
-| Gemini CLI     | Yes    | Yes   |
-| OpenCode       | Yes    | —     |
-| Codex CLI      | Yes    | —     |
-| Roo Code       | Yes    | —     |
-| Cline          | Manual | —     |
+| Agent          | MCP    | Hooks | Instruction File |
+| -------------- | ------ | ----- | ---------------- |
+| Claude Code    | Yes    | Yes   | `.claude/rules/` |
+| Cursor         | Yes    | Yes   | `AGENTS.md`      |
+| GitHub Copilot | Yes    | Yes   | `AGENTS.md`      |
+| Gemini CLI     | Yes    | Yes   | `GEMINI.md`      |
+| OpenCode       | Yes    | —     | `AGENTS.md`      |
+| Codex CLI      | Yes    | —     | `AGENTS.md`      |
+| Roo Code       | Yes    | —     | `AGENTS.md`      |
+| Cline          | Manual | —     | `AGENTS.md`      |
 
 **MCP** = agent can list, search, read, create, and update documents through Archcore tools.
 **Hooks** = agent receives document context automatically at session start.
+**Instruction File** = where the "use Archcore" instruction hint is written.
 
 ## Auto-detection
 
@@ -54,6 +55,32 @@ If no agents are detected, Archcore falls back to configuring Claude Code.
 | Codex CLI      | `codex-cli`   | `.codex/config.toml`           |
 | Roo Code       | `roo-code`    | `.roo/mcp.json`                |
 | Cline          | `cline`       | VS Code globalStorage (manual) |
+
+## Instruction hint
+
+Installing the MCP server doesn't guarantee the agent will use it. The instruction hint is a short "use Archcore" nudge written into the agent's instruction file. It tells the model that Archcore's MCP tools exist and when to consult them — otherwise the tools sit idle and the agent never calls `list_documents` or `search_documents`.
+
+The hint is **opt-in** during interactive `archcore init` (the prompt defaults to yes). In non-interactive mode it's skipped, and Archcore points you to `archcore instructions install` instead.
+
+For agents with shared instruction files (`AGENTS.md`, `GEMINI.md`), the hint is inserted inside a managed marker block:
+
+```markdown
+<!-- archcore:start -->
+...
+<!-- archcore:end -->
+```
+
+The markers let Archcore update or remove the hint without clobbering your own content. Claude Code uses `.claude/rules/` instead of a shared file.
+
+Manage the hint with [`archcore instructions`](/cli/commands/#archcore-instructions):
+
+```bash
+archcore instructions install            # write the hint to all detected agents
+archcore instructions install --agent gemini-cli   # target a single host
+archcore instructions remove             # strip the managed block
+```
+
+Removal strips only the managed block, and works even after de-init.
 
 ## Manual installation
 

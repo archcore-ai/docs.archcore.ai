@@ -21,8 +21,11 @@ archcore init
 2. Auto-detects installed coding agents
 3. Installs MCP server config for detected agents
 4. Installs session hooks for supported agents
+5. Offers to write the "use Archcore" instruction hint into detected agent configs (interactive only)
 
 If no agents are detected, falls back to Claude Code configuration. Safe to re-run — `.archcore/settings.json` is left untouched and MCP/hook writes are idempotent.
+
+In `--non-interactive` mode the instruction hint is skipped — add it later with [`archcore instructions install`](#archcore-instructions).
 
 For a step-by-step walkthrough, see the [CLI Quick Start](/cli/quick-start/).
 
@@ -117,7 +120,66 @@ The `archcore mcp` command starts a stdio MCP server that coding agents connect 
 
 **Agent IDs:** `claude-code`, `cursor`, `copilot`, `gemini-cli`, `opencode`, `codex-cli`, `roo-code`, `cline`
 
+**Flags:**
+
+| Flag               | Description                                                  |
+| ------------------ | ----------------------------------------------------------- |
+| `--project <path>` | Project root to serve. Overrides the current directory.     |
+
+The project root is resolved in order: the `--project` flag, then the `ARCHCORE_PROJECT_ROOT` environment variable, then the current working directory. This is useful when an agent launches the server from a fixed location instead of the project directory.
+
 See [MCP server](/cli/mcp-server/) for details.
+
+---
+
+## archcore instructions
+
+Manage the "use Archcore" hint in agent instruction files.
+
+The hint tells agents that Archcore's MCP tools are available and when to consult them. Without it, agents may never call the MCP tools even though the server is installed.
+
+```bash
+archcore instructions install   # Write the hint into detected agent configs
+archcore instructions remove    # Remove the hint
+```
+
+**Subcommands:**
+
+| Subcommand | Description                                                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------------ |
+| `install`  | Writes the "use Archcore" hint into the instruction files of detected agents (e.g. `AGENTS.md`, `.claude/rules`). |
+| `remove`   | Removes the hint previously written by `instructions install` or `init`. Works even after the project is de-initialized. |
+
+**Flags:**
+
+| Flag             | Description                                                          |
+| ---------------- | ------------------------------------------------------------------- |
+| `--agent <id>` | Target a single agent host (e.g. `claude-code`, `cursor`, `gemini-cli`, `codex-cli`) instead of all detected ones. |
+
+For shared files (`AGENTS.md`, `GEMINI.md`) the hint is inserted inside a managed marker block:
+
+```
+<!-- archcore:start -->
+…
+<!-- archcore:end -->
+```
+
+This lets Archcore update or remove the hint without touching your own content — `remove` deletes only the marker block and leaves the rest of the file intact.
+
+**Instruction file locations:**
+
+| Agent                                                 | Location         |
+| ----------------------------------------------------- | ---------------- |
+| Claude Code                                           | `.claude/rules/` |
+| Gemini CLI                                            | `GEMINI.md`      |
+| Cursor, Codex CLI, OpenCode, Roo Code, Cline, Copilot | `AGENTS.md`      |
+
+**Examples:**
+
+```bash
+archcore instructions install                  # All detected agents
+archcore instructions install --agent claude-code   # Claude Code only
+```
 
 ---
 
