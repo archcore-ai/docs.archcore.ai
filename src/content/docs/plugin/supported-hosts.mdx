@@ -24,7 +24,7 @@ The plugin targets AI coding agents that implement both Agent Skills and MCP as 
 
 ## Host-specific differences
 
-The plugin keeps skills, agents, and MCP tools identical across hosts. The differences are at the edges:
+The differences are at the edges:
 
 ### Plugin manifest
 
@@ -80,12 +80,7 @@ The skill content itself is the same; only the entry point differs.
 
 ### Agents
 
-Both `archcore-assistant` and `archcore-auditor` ship in two file formats side by side under `agents/`:
-
-- **`.md`** — consumed by Claude Code and Cursor.
-- **`.toml`** — consumed by Codex CLI. The auditor TOML adds `sandbox_mode = "read-only"` plus a `disabled_tools` list covering the five mutating MCP tools; the assistant TOML uses `sandbox_mode = "workspace-write"`.
-
-Tool whitelists are identical across formats — the TOML variants just translate the safety boundaries into Codex's native sandbox model.
+Both `archcore-assistant` and `archcore-auditor` ship as `.md` (Claude Code, Cursor) and `.toml` (Codex CLI). The TOML variants translate the same tool whitelists into Codex's sandbox model — `read-only` for the auditor, `workspace-write` for the assistant. See [Built-in agents](/plugin/agents/).
 
 ## Choosing a host
 
@@ -105,7 +100,7 @@ Tool whitelists are identical across formats — the TOML variants just translat
 
 ## Unsupported hosts
 
-The plugin is not available on GitHub Copilot yet, and on any other MCP-aware CLI without a plugin runtime. Those agents currently work with the [CLI path](/cli/overview/) only — you get MCP access and agent integrations, but no plugin skills or tracks.
+The plugin is not available on GitHub Copilot yet, or on any other MCP-aware CLI without a plugin runtime. Those agents work via the [CLI path](/cli/overview/) only — MCP access and agent integrations, but no plugin skills or tracks.
 
 Track planned host support in the plugin's [repository](https://github.com/archcore-ai/plugin).
 

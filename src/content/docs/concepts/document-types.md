@@ -29,7 +29,7 @@ Need to record a coding pattern change?    → cpat
 ```
 
 :::tip[Let agents choose]
-When working with an AI agent, just describe what you want to document. The agent will pick the right type based on these rules — they're embedded in the MCP server instructions.
+When working with an AI agent, just describe what you want to document. The agent picks the right type from these rules — they're embedded in the MCP server instructions.
 :::
 
 ---
@@ -162,16 +162,14 @@ Per-function and per-endpoint specifications with a verification matrix.
 | Sources (discovery) | `mrd` -> `brd` -> `urd` | Product teams doing discovery, stakeholder alignment, business analysis |
 | ISO (decomposition) | `brs` -> `strs` -> `syrs` -> `srs` | Regulated systems, multi-team projects, complex distributed systems |
 
-All three tracks can coexist in the same project. A team might use `prd` for a small feature while running the full ISO track for a safety-critical subsystem.
+All three tracks can coexist — e.g. `prd` for a small feature while the full ISO track covers a safety-critical subsystem.
 
 ### Requirements Layers — Sources vs Specifications
 
 Sources and Specifications serve **separate purposes**:
 
 - **Layer A (Sources):** `mrd`, `brd`, `urd`, `prd` -- capture raw requirements from market, business, and user perspectives
-- **Layer B (Specifications):** `brs`, `strs`, `syrs`, `srs` -- formalize requirements into ISO-structured specifications
-
-Specifications formalize what sources capture informally, connected via the `implements` [relation](/concepts/relations/).
+- **Layer B (Specifications):** `brs`, `strs`, `syrs`, `srs` -- formalize what sources capture informally, connected via the `implements` [relation](/concepts/relations/)
 
 :::tip[When types look similar]
 The Sources and ISO tracks overlap in subject matter but differ in formality:
@@ -337,7 +335,7 @@ A **rule** contains imperative statements ("Always do X", "Never do Y") with enf
 
 ## Experience
 
-Patterns learned from doing the work. You can ignore these types at first — they become useful once your team has accumulated enough practice to recognize repeatable patterns.
+Patterns learned from doing the work. You can ignore these types at first — they become useful once your team has enough practice to recognize repeatable patterns.
 
 ### Task Type — Recurring Task Pattern
 

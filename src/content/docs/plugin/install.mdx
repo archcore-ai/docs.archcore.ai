@@ -30,7 +30,7 @@ For Cursor, you additionally register MCP yourself — see the Cursor tab below.
 		/plugin install archcore@archcore-plugins
 		```
 
-		That's it. Open your project and run `/archcore:help` — the plugin spawns `archcore mcp` from your `PATH`, and initializes `.archcore/` on the first MCP call if missing.
+		Open your project and run `/archcore:help` — the plugin spawns `archcore mcp` from your `PATH`, and initializes `.archcore/` on the first MCP call if missing.
 
 		If `archcore` isn't on `PATH`, the session-start hook prints install instructions and links to the [CLI install guide](/cli/install/).
 	</TabItem>
@@ -41,7 +41,7 @@ For Cursor, you additionally register MCP yourself — see the Cursor tab below.
 		2. Paste `https://github.com/archcore-ai/plugin` into the **Search or paste link** field
 		3. Click **Add Plugin**
 
-		Cursor reads the repo's `marketplace.json`, shows the plugin, and installs it. For team rollouts, paste the same URL under Dashboard → Settings → Plugins → Team Marketplaces → Import.
+		Cursor reads the repo's `marketplace.json` and installs the plugin. For team rollouts, paste the same URL under Dashboard → Settings → Plugins → Team Marketplaces → Import.
 
 		Cursor does not auto-register plugin MCP, so register `archcore` yourself. Copy [`cursor.mcp.json`](https://github.com/archcore-ai/plugin/blob/main/cursor.mcp.json) (also shipped at the root of the installed plugin) into `~/.cursor/mcp.json` (user-scoped) or `.cursor/mcp.json` (project-scoped):
 
@@ -111,7 +111,7 @@ For Cursor, you additionally register MCP yourself — see the Cursor tab below.
 
 		All three manifests (`.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json`) sit at the repo root.
 
-		Local mode is useful when hacking on skills or hooks. The plugin calls `archcore` from `PATH` — to test against a locally-built CLI binary, put it ahead of the installed one on `PATH` (e.g. `export PATH="$(pwd)/cli/bin:$PATH"`).
+		Use local mode when hacking on skills or hooks. The plugin calls `archcore` from `PATH` — to test against a locally-built CLI binary, put it ahead of the installed one on `PATH` (e.g. `export PATH="$(pwd)/cli/bin:$PATH"`).
 	</TabItem>
 </Tabs>
 

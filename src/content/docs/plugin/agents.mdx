@@ -7,7 +7,7 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-The plugin ships two built-in agents. They are focused, narrow specialists with the MCP tools they need and nothing more.
+The plugin ships two built-in agents — narrow specialists with the MCP tools they need and nothing more.
 
 You rarely invoke agents directly — skills call them. But it helps to know what each does so you can reason about what's happening when a skill delegates.
 
@@ -67,7 +67,7 @@ Tool whitelists are identical across formats — the TOML variants just translat
 
 ## Why two agents, not one
 
-Separating the write-capable agent from the read-only one is a deliberate safety boundary. The auditor runs on every review, so it handles more documents and more contexts per week than the assistant does. Keeping it read-only means a review session can never accidentally mutate state.
+Separating the write-capable agent from the read-only one is a deliberate safety boundary. The auditor runs on every review, so it handles more documents and contexts per week than the assistant. Keeping it read-only means a review session can never accidentally mutate state.
 
 ## Next steps
 

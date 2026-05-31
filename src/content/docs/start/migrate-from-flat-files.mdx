@@ -11,7 +11,7 @@ You already have a `CLAUDE.md`, `.cursorrules`, a `docs/` folder, or team knowle
 
 ## Why migrate at all
 
-Flat files hit a wall around 50–200 lines. See [Flat files vs Archcore](/concepts/vs-flat-files/) for the full comparison. The short version:
+Flat files hit a wall around 50–200 lines. See [Flat files vs Archcore](/concepts/vs-flat-files/) for the full comparison. Short version:
 
 - Agents can't query flat files — they re-read everything every turn.
 - Multi-agent teams maintain overlapping files that drift apart.
@@ -40,7 +40,7 @@ Open your existing `CLAUDE.md` / `.cursorrules` / docs. Pick three high-value ch
 - A **rule** that every new PR should follow (e.g., "all API errors use this JSON shape").
 - A **procedure** engineers keep asking about (e.g., "how to add a new migration").
 
-You don't need to migrate the whole file. Start where agents will feel the difference on the next session.
+Start where agents will feel the difference on the next session.
 
 ### Step 3 — ask your agent to do the conversion
 
@@ -121,7 +121,7 @@ archcore status
 archcore doctor
 ```
 
-If both are green, agents can already see and follow the new content. Start a fresh session and ask:
+If both are green, agents can see and follow the new content. Start a fresh session and ask:
 
 > "What decisions have we recorded about the database layer?"
 
