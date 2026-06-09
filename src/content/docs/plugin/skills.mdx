@@ -16,7 +16,7 @@ Describe what you want in plain English ("before I touch `src/auth/`, what rules
 | Command              | Outcome                                                | When to use                                                                                                                       |
 | -------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
 | `/archcore:init`     | Make your repo legible to AI agents                    | First-time setup — seeds a stack rule, a run-the-app guide, and imports your `CLAUDE.md` / `AGENTS.md` / `.cursorrules` if present |
-| `/archcore:context`  | Load what's already decided before you change code     | Daily, before editing — pulls relevant rules, decisions, specs, and patterns for a file, directory, or topic                      |
+| `/archcore:context`  | Load what's already decided before you change code     | Daily, before editing — pulls relevant rules, decisions, specs, and patterns for a file, directory, or topic; `--git-changes` scopes to your uncommitted changes |
 | `/archcore:capture`  | Document what already lives in code                    | A module, API, pipeline, or integration has tribal knowledge but no doc yet                                                       |
 | `/archcore:plan`     | Turn an idea into a scoped implementation plan         | New feature, refactor, or initiative — pick depth with `--track product\|feature\|sources\|iso`                                   |
 | `/archcore:decide`   | Record a decision and (optionally) make it a team rule | A decision was made — capture rationale, consequences, and turn it into an enforced standard                                      |
@@ -29,9 +29,12 @@ Describe what you want in plain English ("before I touch `src/auth/`, what rules
 
 ```
 /archcore:init
+/archcore:init --mode=medium  # force the scale mode, overriding auto-detection
 ```
 
 Run once per project. Detects repo scale (small / medium / large) and seeds scale-appropriate documents: a stack rule, a run-the-app guide, an entry-point inventory (medium+), a top-level domain map (large), and a list of hotspot capture candidates.
+
+Pass `--mode=small|medium|large` to force the scale mode, overriding auto-detection.
 
 If you already have `CLAUDE.md`, `AGENTS.md`, or `.cursorrules`, `init` also offers to import them — no existing context is lost.
 
@@ -45,9 +48,12 @@ After `init`, `/archcore:capture` and `/archcore:decide` take over for day-to-da
 /archcore:context src/auth/
 /archcore:context payment retries
 /archcore:context where am I on the auth redesign?
+/archcore:context --git-changes  # rules governing your uncommitted changes
 ```
 
 Pulls the rules, ADRs, specs, and patterns tied to a path or topic — grouped by type, ranked by specificity — so the agent edits inside the lines your team has already drawn.
+
+Pass `--git-changes` to surface the rules, decisions, specs, and patterns that govern your uncommitted git changes — "what rules apply to what I just edited." Leave the command empty for current-focus pickup.
 
 The same context is also injected automatically before any source-file edit (see [How it works](/plugin/how-it-works/)). Run the command explicitly when you want to see the full set, not just the top picks.
 

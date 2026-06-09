@@ -12,7 +12,7 @@ Get the full Archcore experience inside Claude Code, Cursor, or Codex CLI. Seven
 
 **Prerequisite (all hosts):** install the Archcore CLI globally — one curl line on macOS/Linux, one PowerShell line on Windows. See the [CLI install guide](/cli/install/). The plugin calls `archcore` from your `PATH` in every supported host.
 
-Then install the plugin (below). Cursor users do one extra step: register MCP from the `cursor.mcp.json` template (Cursor doesn't auto-register plugin-provided MCP).
+Then install the plugin (below). Cursor users do one extra step: register MCP from the `docs/cursor.mcp.example.json` template (Cursor doesn't auto-register plugin-provided MCP).
 
 ## 1. Install the plugin
 
@@ -33,22 +33,21 @@ Then install the plugin (below). Cursor users do one extra step: register MCP fr
 	<TabItem label="Cursor">
 		Requires Cursor 2.5+. Open Cursor → **Plugins**, paste `https://github.com/archcore-ai/plugin` into the **Search or paste link** field, and click **Add Plugin**. Cursor reads the repo's `marketplace.json` and installs Archcore.
 
-		Then copy `cursor.mcp.json` (from the installed plugin root) into `~/.cursor/mcp.json` (user-scoped) or `.cursor/mcp.json` (project-scoped):
+		Then copy `docs/cursor.mcp.example.json` (from the plugin) into `~/.cursor/mcp.json` (user-scoped) or `.cursor/mcp.json` (project-scoped):
 
 		```json
 		{
 			"mcpServers": {
 				"archcore": {
+					"type": "stdio",
 					"command": "archcore",
-					"args": ["mcp"],
-					"cwd": "${workspaceFolder}",
-					"env": { "ARCHCORE_CWD": "${workspaceFolder}" }
+					"args": ["mcp", "--project", "${workspaceFolder}"]
 				}
 			}
 		}
 		```
 
-		Keep `cwd: "${workspaceFolder}"` — without it, one project's `.archcore/` leaks into every other Cursor window.
+		Keep the `--project ${workspaceFolder}` argument — without it, one project's `.archcore/` is read across every other Cursor window.
 	</TabItem>
 	<TabItem label="Codex CLI">
 		Requires Codex 0.117.0+.

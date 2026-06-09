@@ -77,22 +77,21 @@ The plugin ships `.mcp.json` at its root running `archcore mcp` from your `PATH`
 
 ## MCP server not found (Cursor)
 
-Cursor does not auto-register plugin-provided MCP. Copy `cursor.mcp.json` from the installed plugin into `~/.cursor/mcp.json` (user-scoped) or `.cursor/mcp.json` (project-scoped):
+Cursor does not auto-register plugin-provided MCP. Copy `docs/cursor.mcp.example.json` from the plugin into `~/.cursor/mcp.json` (user-scoped) or `.cursor/mcp.json` (project-scoped):
 
 ```json
 {
 	"mcpServers": {
 		"archcore": {
+			"type": "stdio",
 			"command": "archcore",
-			"args": ["mcp"],
-			"cwd": "${workspaceFolder}",
-			"env": { "ARCHCORE_CWD": "${workspaceFolder}" }
+			"args": ["mcp", "--project", "${workspaceFolder}"]
 		}
 	}
 }
 ```
 
-**Keep `cwd: "${workspaceFolder}"`** — without it, a single registration leaks one project's `.archcore/` into every other Cursor window. Verify the CLI itself resolves:
+**Keep the `--project ${workspaceFolder}` argument** — without it, a single registration would read one project's `.archcore/` across every Cursor window. Verify the CLI itself resolves:
 
 ```bash
 archcore --version
@@ -104,7 +103,7 @@ If that fails, install via https://docs.archcore.ai/cli/install/ and relaunch Cu
 
 **Symptom:** MCP tools answer from a different project's `.archcore/` than the one currently open in Cursor.
 
-Your Cursor MCP registration is missing the `cwd: "${workspaceFolder}"` line (or has a literal path baked in). Without it, Cursor reuses the first registration across every window and the MCP server reads whichever `.archcore/` it sees from that initial cwd. Re-copy the template from `cursor.mcp.json` at the installed plugin root and restart Cursor.
+Your Cursor MCP registration is missing the `--project ${workspaceFolder}` argument (or has a literal path baked in). Without it, Cursor reuses the first registration across every window and the MCP server reads whichever `.archcore/` that initial registration was scoped to. Re-copy the `docs/cursor.mcp.example.json` template and restart Cursor.
 
 ## Writes blocked unexpectedly
 
@@ -187,7 +186,7 @@ The plugin ships `.codex.mcp.json`, referenced from the manifest's `mcpServers` 
 Checks, in order:
 
 1. **Manifest references `.codex.mcp.json`.** Open `.codex-plugin/plugin.json` and verify `"mcpServers": "./.codex.mcp.json"` is present.
-2. **`.codex.mcp.json` exists at plugin root.** It should ship with the marketplace install. If missing, reinstall: `codex plugin marketplace remove archcore-ai/plugin && codex plugin marketplace add archcore-ai/plugin`.
+2. **`.codex.mcp.json` exists at plugin root.** It should ship with the marketplace install. If missing, reinstall: `codex plugin uninstall archcore`, then `codex plugin marketplace add archcore-ai/plugin` and re-install Archcore from `/plugins`.
 3. **`archcore` is on `PATH` in the shell that launched Codex.** Run `archcore --version` from that shell; if it fails, install via https://docs.archcore.ai/cli/install/ and re-launch Codex.
 
 ## Codex CLI-specific: path env var

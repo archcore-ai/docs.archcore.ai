@@ -43,22 +43,21 @@ For Cursor, you additionally register MCP yourself — see the Cursor tab below.
 
 		Cursor reads the repo's `marketplace.json` and installs the plugin. For team rollouts, paste the same URL under Dashboard → Settings → Plugins → Team Marketplaces → Import.
 
-		Cursor does not auto-register plugin MCP, so register `archcore` yourself. Copy [`cursor.mcp.json`](https://github.com/archcore-ai/plugin/blob/main/cursor.mcp.json) (also shipped at the root of the installed plugin) into `~/.cursor/mcp.json` (user-scoped) or `.cursor/mcp.json` (project-scoped):
+		Cursor does not auto-register plugin MCP, so register `archcore` yourself. Copy [`docs/cursor.mcp.example.json`](https://github.com/archcore-ai/plugin/blob/main/docs/cursor.mcp.example.json) (shipped in the plugin's `docs/` directory) into `~/.cursor/mcp.json` (user-scoped) or `.cursor/mcp.json` (project-scoped):
 
 		```json
 		{
 			"mcpServers": {
 				"archcore": {
+					"type": "stdio",
 					"command": "archcore",
-					"args": ["mcp"],
-					"cwd": "${workspaceFolder}",
-					"env": { "ARCHCORE_CWD": "${workspaceFolder}" }
+					"args": ["mcp", "--project", "${workspaceFolder}"]
 				}
 			}
 		}
 		```
 
-		**Keep `cwd: "${workspaceFolder}"`.** It scopes MCP to the active project; without it, a single registration leaks one project's `.archcore/` into every other Cursor window.
+		**Keep the `--project ${workspaceFolder}` argument.** It scopes MCP to the active project; without it, a single registration would read one project's `.archcore/` across every Cursor window.
 
 		Cursor support is implemented but has a slightly different hooks API — see [Supported AI agents](/plugin/supported-hosts/).
 	</TabItem>
@@ -126,7 +125,6 @@ To pin a specific binary, install it to a directory you control and put that dir
 | Variable                     | Effect                                                                       |
 | ---------------------------- | ---------------------------------------------------------------------------- |
 | `ARCHCORE_DISABLE_INJECTION` | `=1` turns off the pre-edit context injection hook globally.                 |
-| `ARCHCORE_CWD`               | Forces the MCP server to read `.archcore/` from this directory (used by the Cursor template to pin per-workspace scope). |
 
 ## Verify
 
@@ -161,7 +159,7 @@ If `/archcore:*` commands don't appear, check [Troubleshooting](/plugin/troubles
 **Codex CLI:**
 
 ```bash
-codex plugin marketplace remove archcore-ai/plugin
+codex plugin uninstall archcore
 ```
 
 The `archcore` CLI is a separate install — uninstall via the same script that installed it, if desired.
