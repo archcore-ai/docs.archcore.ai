@@ -142,6 +142,33 @@ export ARCHCORE_DISABLE_INJECTION=1
 
 The hook is non-blocking by design — if it errors, it exits silently rather than holding up the edit. So absence of output ≠ broken hook; it usually means "nothing relevant to inject."
 
+## "Update your CLI" nudge at session start
+
+**Symptom:** A session opens with a message that your `.archcore/settings.json` uses a newer setting (e.g. global sources) that the installed `archcore` CLI is too old to understand, and that MCP and context are unavailable until you update.
+
+A project that declares [global sources](/cli/global-sources/) carries a `globals` field in `settings.json`. An older, pre-globals CLI uses a strict config parser that rejects unknown fields, so every config-loading command (`mcp`, `hooks`, `doctor`) fails. The host launches `archcore mcp` directly, so the plugin can't wrap that crash — the session-start hook is the one place it can turn the cryptic failure into a clear nudge.
+
+**Fix:** Update the CLI, then restart the host:
+
+```bash
+# macOS / Linux / WSL
+curl -fsSL https://archcore.ai/install.sh | bash
+# Windows (PowerShell)
+irm https://archcore.ai/install.ps1 | iex
+
+archcore --version   # verify
+```
+
+The advisory is rate-limited to once per 24h and only fires on the strict parser's exact field-rejection signature, so a current CLI that understands `globals` never triggers it — even in projects that declare globals.
+
+## A declared global source is missing
+
+**Symptom:** The session-start context shows a warning that a global source named in `settings.json` couldn't be found, and only local documents were loaded.
+
+With a current CLI, a missing global doesn't block your session — the hook degrades to a **local-only** context summary and names the missing source so your own documents are never silently dropped. (The MCP server itself still fails fast on a missing global; see [CLI troubleshooting](/cli/troubleshooting/#missing-or-invalid-global-source).)
+
+**Fix:** Clone or [vendor](/cli/global-sources/#vendoring-a-global-in-tree) the source so its `path` resolves, or remove the entry from `globals` if it's no longer needed.
+
 ## Cascade warnings overwhelm the output
 
 **Symptom:** Every mutation dumps a long "cascade dependents may need review" block.

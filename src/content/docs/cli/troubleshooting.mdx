@@ -248,6 +248,28 @@ which -a archcore
 archcore mcp install
 ```
 
+### Missing or invalid global source
+
+If your `settings.json` declares a [global source](/cli/global-sources/) whose directory isn't on disk, the server refuses to start — every declared global is mandatory.
+
+**What you see:**
+
+```text
+global source "company-standards" not found at "../company-standards/.archcore" — clone it before starting the MCP server
+```
+
+**Fix:** Clone or vendor the source so the `path` resolves, or remove the entry from `globals` if you no longer need it. For a source that ships with the repo, [vendor it in-tree](/cli/global-sources/#vendoring-a-global-in-tree) under `.archcore/global/`.
+
+A different message — `invalid .archcore/settings.json: …` — means the file itself is malformed; the server aborts rather than start with globals silently dropped. Run `archcore doctor` to see the exact parse or validation error.
+
+On non-server surfaces a missing global never blocks you: the session-start hook degrades to a local-only context summary with a warning naming the source, and `archcore status` reports it as a visible failure while still running its local checks.
+
+### "Cannot update a read-only global source document"
+
+**What you see:** A write tool (`create_document`, `update_document`, `remove_document`) or `add_relation` is rejected because the target is a global document.
+
+This is working as intended — globals are read-only and are never relation endpoints. Make the change upstream in the source repository, and link **local → local** documents instead of linking to a global. See [Read-only everywhere](/cli/global-sources/#read-only-everywhere).
+
 ## Validation errors
 
 `archcore status` checks every document in `.archcore/` for correct naming, structure, and frontmatter.

@@ -75,6 +75,17 @@ The MCP server doesn't just expose tools — it teaches agents how to use them. 
 
 These instructions are sent automatically. You don't need to explain Archcore conventions to your agent.
 
+## Global sources
+
+If your `.archcore/settings.json` declares a `globals` array, the MCP server mounts those external knowledge bases **read-only** and surfaces them through the read tools (`list_documents`, `get_document`, `search_documents`) alongside your local documents. Each global document is tagged `source_kind: "global"`, `read_only: true`, and a `source_id` so the agent can tell it apart from local content. The write tools (`create_document`, `update_document`, `remove_document`) and `add_relation` refuse global paths.
+
+Every declared global is **mandatory**. Before serving, the server validates each one:
+
+- A missing source aborts startup with `global source "<id>" not found at "<path>" — clone it before starting the MCP server`.
+- An invalid `settings.json` aborts startup rather than serving with globals silently dropped.
+
+This fail-fast keeps the agent from running against silently incomplete context. See [Global sources](/cli/global-sources/) for declaration, vendoring, and precedence rules.
+
 ## Installation
 
 ### Automatic (recommended)

@@ -155,6 +155,7 @@ export default defineConfig({
 						{ label: 'MCP Server', slug: 'cli/mcp-server' },
 						{ label: 'Hooks', slug: 'cli/hooks' },
 						{ label: 'Agent Integrations', slug: 'cli/agent-integrations' },
+						{ label: 'Global Sources', slug: 'cli/global-sources' },
 						{ label: 'Configuration', slug: 'cli/configuration' },
 						{ label: 'Troubleshooting', slug: 'cli/troubleshooting' },
 					],

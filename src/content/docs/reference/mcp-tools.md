@@ -5,6 +5,19 @@ description: Complete reference for all 10 Model Context Protocol tools — list
 
 The Archcore MCP server exposes 10 tools that AI agents use to interact with your `.archcore/` documents.
 
+## Source annotation and global sources
+
+When a project declares [global sources](/cli/global-sources/), the read tools (`list_documents`, `search_documents`, `get_document`) return documents from both the local project and the mounted globals. Every returned document carries source annotation so the agent can tell them apart:
+
+| Field | Local document | Global document |
+| ----- | -------------- | --------------- |
+| `source_id` | `local` | the source's declared `id` |
+| `source_kind` | `local` | `global` |
+| `read_only` | _(omitted)_ | `true` |
+| `global` | _(omitted)_ | `true` |
+
+Global documents are **read-only**: the write tools (`create_document`, `update_document`, `remove_document`) reject any global path, and `add_relation` refuses an edge that touches a global on either endpoint. Local documents always take precedence over a same-topic global.
+
 ## list_documents
 
 List documents with optional filters.
@@ -100,7 +113,7 @@ Read a document's full content with its relations.
 
 ## create_document
 
-Create a new document. Generates from template if no content is provided.
+Create a new document. Generates from template if no content is provided. Rejects a target directory under a [global source](/cli/global-sources/) — globals are read-only.
 
 **Parameters:**
 
@@ -133,7 +146,7 @@ Creates: .archcore/database/use-postgres.adr.md
 
 ## update_document
 
-Modify an existing document's title, status, or content.
+Modify an existing document's title, status, or content. Rejects a path under a [global source](/cli/global-sources/) — globals are read-only.
 
 **Parameters:**
 
@@ -151,7 +164,7 @@ At least one of `title`, `status`, `content`, or `tags` must be provided.
 
 ## remove_document
 
-Permanently delete a document and all its relations.
+Permanently delete a document and all its relations. Rejects a path under a [global source](/cli/global-sources/) — globals are read-only.
 
 **Parameters:**
 
@@ -169,7 +182,7 @@ This is a destructive action. Prefer `update_document` with `status: "rejected"`
 
 ## add_relation
 
-Create a directed relation between two documents.
+Create a directed relation between two documents. Refuses an edge whose source **or** target is a [global source](/cli/global-sources/) document, in either direction — relations connect local documents only.
 
 **Parameters:**
 

@@ -36,6 +36,7 @@ Configuration is stored in `.archcore/settings.json`. This file is created durin
 | `project_id` | integer | No | Project identifier for cloud/on-prem sync |
 | `archcore_url` | string | No | Server URL for on-prem sync |
 | `language` | string | No | Language code for document content |
+| `globals` | array | No | Read-only external knowledge bases to mount. See [Global sources](#global-sources) |
 
 ## Sync types
 
@@ -89,12 +90,35 @@ Syncs to a self-hosted Archcore server.
 On-prem sync is not yet available.
 :::
 
+## Global sources
+
+The `globals` array mounts other `.archcore/` knowledge bases — company standards, platform conventions, a monorepo root — into your project **read-only**. It is allowed for every sync type.
+
+```json
+{
+  "sync": "none",
+  "globals": [
+    { "id": "company-standards", "path": "../company-standards/.archcore" }
+  ]
+}
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `id` | Yes | Stable identifier; becomes the document `source_id`. Lowercase alphanumeric with hyphens (`^[a-z0-9][a-z0-9-]*$`), not the reserved value `local`, unique within the array |
+| `path` | Yes | Points at the global's `.archcore` directory. Relative (including `../`), absolute, or in-tree under `.archcore/global/` |
+
+Every declared global is **mandatory** — if its directory is absent, the MCP server fails fast at startup. Globals are read-only everywhere outside the MCP read tools, and local documents take precedence over a same-topic global.
+
+See [Global sources](/cli/global-sources/) for the full model, vendoring, and the monorepo-root pattern.
+
 ## Validation rules
 
 - `sync` must be one of: `none`, `cloud`, `on-prem`
 - Fields must be consistent with the sync type (e.g., `archcore_url` is forbidden for `cloud`)
 - `language` must not contain spaces
 - `archcore_url` must not be empty when sync is `on-prem`
+- Each `globals` entry must have a non-empty `id` (lowercase alphanumeric with hyphens, not `local`) and non-empty `path`; `id` must be unique across the array
 - Optional fields use `omitempty` — omitted fields use code-level defaults
 
 ## Managing config
