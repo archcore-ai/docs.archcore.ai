@@ -1,9 +1,9 @@
 ---
 title: Document Types
-description: All 18 document types — ADRs, RFCs, rules, guides, PRDs, market/business/user requirement docs, ISO specifications, and more. When to use each, required sections, and templates.
+description: All 19 document types — ADRs, RFCs, rules, guides, PRDs, R&D notes, market/business/user requirement docs, ISO specifications, and more. When to use each, required sections, and templates.
 ---
 
-Archcore has 18 document types organized into 3 layers. Each type has a template with required sections that the CLI generates automatically.
+Archcore has 19 document types organized into 3 layers. Each type has a template with required sections that the CLI generates automatically.
 
 ## Choosing the Right Type
 
@@ -16,6 +16,7 @@ Need a normative contract for a boundary?  → spec
 Need reference/lookup material?            → doc
 Need to define product requirements?       → prd
 Need to capture an early idea?             → idea
+Need to investigate before deciding?       → rnd
 Need to plan implementation tasks?         → plan
 Need market analysis (TAM, competitors)?   → mrd
 Need business justification (ROI, budget)? → brd
@@ -61,6 +62,28 @@ A product or technical concept that needs capturing before it's fully formed.
 | **File extension** | `.idea.md` |
 | **When to use** | A concept needs capturing for future evaluation |
 | **Required sections** | Idea, Value, Possible Implementation, Risks & Constraints |
+
+#### RnD — Research & Investigation
+
+A bounded investigation that answers an open question before a decision is made or work begins. Every `rnd` ends with a **Recommendation** — `proceed`, `refine`, `defer`, or `stop` — plus the single next action that follows from it.
+
+| | |
+|---|---|
+| **File extension** | `.rnd.md` |
+| **When to use** | A bounded investigation is needed to answer a question before deciding or building |
+| **Required sections** | Research Goal, Questions/Hypotheses, Approach, Findings, Recommendation, Next Action |
+
+An `rnd` is the **Research Gate** in front of the committing tracks (`rnd` -> `idea`, `rnd` -> `adr` -> `spec` -> `plan`). Its status maps to the verdict:
+
+- `draft` — still investigating
+- `accepted` — recommendation adopted, proceed or refine
+- `rejected` — defer or stop
+
+A rejected `rnd` is a first-class outcome, not a failure. "We investigated and decided not to" stays visible as a record of the dead end — keep it, don't delete it. By convention, `prd`/`plan`/`adr` `depends_on` an `rnd`, and an `rfc` may `extend` one; `rnd` never uses [`implements`](/concepts/relations/).
+
+:::note[RnD vs Idea vs ADR vs RFC]
+An **rnd** investigates an open question and must conclude with a recommendation — use it for "should we / which way." An **idea** proposes a concept worth exploring — "we could." An **adr** records a decision already made; gather evidence in an `rnd`, then record the resulting decision as an `adr`. An **rfc** puts a concrete proposal up for review. If there's nothing to propose yet, use `rnd`.
+:::
 
 #### Plan — Implementation Plan
 

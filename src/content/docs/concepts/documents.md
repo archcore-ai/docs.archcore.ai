@@ -12,7 +12,7 @@ Every document follows the pattern:
 ```
 
 - **Slug** -- lowercase alphanumeric with hyphens. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`
-- **Type** -- one of the 18 valid types (see [Document Types](/concepts/document-types/))
+- **Type** -- one of the 19 valid types (see [Document Types](/concepts/document-types/))
 - **Extension** -- always `.md`
 
 **Valid:** `jwt-strategy`, `use-postgres`, `api-v2-migration`
@@ -114,6 +114,6 @@ Both files are managed by the [CLI](/cli/commands/) and skipped during document 
 
 ## Next Steps
 
-- [Document Types](/concepts/document-types/) -- all 18 types and when to use each
+- [Document Types](/concepts/document-types/) -- all 19 types and when to use each
 - [Plugin quick start](/start/plugin-quick-start/) or [CLI quick start](/cli/quick-start/) -- create your first document
 - [MCP Server](/cli/mcp-server/) -- let AI agents read and write project context

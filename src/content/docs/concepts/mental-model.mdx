@@ -34,7 +34,6 @@ Putting both in one package would couple shipping cadences — every plugin twea
 | Install MCP configs and session hooks             | Yes              | —                |
 | Provide outcome-focused slash commands (`/archcore:decide`, `/archcore:plan`, …) | —                | Yes              |
 | Block direct writes to `.archcore/*.md`           | —                | Yes              |
-| Run `archcore validate` after each mutation       | —                | Yes (via hook)   |
 | Detect cascade staleness after `update_document`  | —                | Yes              |
 | Host-specific integrations (Claude Code / Cursor) | —                | Yes              |
 
@@ -64,7 +63,7 @@ The plugin does not duplicate MCP — it reuses the server from `archcore mcp`. 
 - The host spawns `archcore mcp` as a subprocess on session start.
 - The plugin's session-start hook calls the CLI to emit a summary of documents and relations.
 - You issue a slash command; the plugin loads the matching skill and makes MCP calls.
-- Every MCP mutation triggers `archcore validate` and (for updates) a cascade check.
+- Every MCP mutation validates the document's frontmatter before writing, and (for updates) triggers a cascade staleness check.
 
 ## When to use each path
 

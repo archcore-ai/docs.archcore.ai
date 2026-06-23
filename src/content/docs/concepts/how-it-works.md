@@ -31,7 +31,7 @@ No database, no special tooling. `ls .archcore/` tells you what's there. PRs sho
 Archcore has a small surface area by design:
 
 - **3 statuses** — `draft`, `accepted`, `rejected`
-- **18 document types** — each with a clear purpose
+- **19 document types** — each with a clear purpose
 - **4 relation types** — `implements`, `extends`, `depends_on`, `related`
 - **1 naming convention** — `slug.type.md`, always
 
@@ -47,11 +47,11 @@ If you create an `adr`, it is in the Knowledge layer. If you create a `plan`, it
 
 ### Vision — what to build and why
 
-Vision has 10 document types across three **requirement tracks**. Use whichever fits your situation — all three can coexist.
+Vision has 11 document types across three **requirement tracks**. Use whichever fits your situation — all three can coexist.
 
 | Track | Documents | Best For |
 |-------|-----------|----------|
-| Product (simple) | `prd`, `idea`, `plan` | Individual features, small teams, rapid prototyping |
+| Product (simple) | `prd`, `idea`, `rnd`, `plan` | Individual features, small teams, rapid prototyping |
 | Sources (discovery) | `mrd` -> `brd` -> `urd` | Product teams doing discovery, stakeholder alignment |
 | ISO (decomposition) | `brs` -> `strs` -> `syrs` -> `srs` | Regulated systems, multi-team projects |
 
@@ -82,18 +82,18 @@ Patterns crystallized from repeated work.
 The natural lifecycle flows from **Vision -> Knowledge -> Experience**:
 
 ```
-Vision                     Knowledge              Experience
-┌───────────────────┐     ┌──────────┐           ┌──────────┐
-│ Product track     │     │   rfc    │           │          │
-│   idea prd plan   │──>  │   adr    │───>       │task-type │
-│                   │     │   rule   │───>       │   cpat   │
-│ Sources track     │     │  guide   │           │          │
-│   mrd brd urd     │──>  │   spec   │           │          │
-│                   │     │   doc    │           │          │
-│ ISO track         │     │          │           │          │
-│   brs strs        │──>  │          │           │          │
-│   syrs srs        │     │          │           │          │
-└───────────────────┘     └──────────┘           └──────────┘
+Vision                       Knowledge              Experience
+┌─────────────────────┐     ┌──────────┐           ┌──────────┐
+│ Product track       │     │   rfc    │           │          │
+│   idea rnd prd plan │──>  │   adr    │───>       │task-type │
+│                     │     │   rule   │───>       │   cpat   │
+│ Sources track       │     │  guide   │           │          │
+│   mrd brd urd       │──>  │   spec   │           │          │
+│                     │     │   doc    │           │          │
+│ ISO track           │     │          │           │          │
+│   brs strs          │──>  │          │           │          │
+│   syrs srs          │     │          │           │          │
+└─────────────────────┘     └──────────┘           └──────────┘
 ```
 
 This is not a strict sequence. Documents can be created in any layer at any time. A team might start with a `rule` that was always understood but never written down, or create a `task-type` before the underlying `adr` exists.
@@ -142,6 +142,6 @@ You can say "create an ADR for the decision we just discussed" or "link this rul
 ## Next Steps
 
 - [Plugin quick start](/start/plugin-quick-start/) or [CLI quick start](/cli/quick-start/) — set up Archcore in 2 minutes
-- [Document Types](/concepts/document-types/) — full reference for all 18 types
+- [Document Types](/concepts/document-types/) — full reference for all 19 types
 - [Relations](/concepts/relations/) — link documents with directed relations
 - [MCP Server](/cli/mcp-server/) — how agents connect to your project context

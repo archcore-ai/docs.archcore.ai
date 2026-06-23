@@ -44,7 +44,7 @@ archcore status
 - Directory structure exists
 - File naming follows `<slug>.<type>.md` pattern
 - Slugs are lowercase alphanumeric with hyphens only
-- Document types are valid (one of the 18 types)
+- Document types are valid (one of the 19 types)
 - YAML frontmatter has required `title` and `status` fields
 - Frontmatter is valid YAML
 - Sync manifest JSON structure
@@ -202,18 +202,6 @@ archcore hooks copilot <event>
 ```
 
 See [hooks](/cli/hooks/) for details.
-
----
-
-## archcore validate
-
-Validate every document in `.archcore/` against the schema (frontmatter, slug, type, tags). Used by hooks after each mutation.
-
-```bash
-archcore validate
-```
-
-Returns non-zero on any validation failure.
 
 ---
 

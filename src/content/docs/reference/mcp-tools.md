@@ -61,7 +61,8 @@ Search documents by path reference, content substring, or metadata. Unlike `list
 | `status`      | string   | conditional | Filter by status: `draft`, `accepted`, or `rejected`.                                                                        |
 | `mtime_after` | string   | No          | Only include documents modified after this time. Accepts RFC3339 timestamps or relative durations (`24h`, `30d`, `90d`).     |
 | `sort`        | string   | No          | Result ordering: `relevance` (default) or `mtime`.                                                                           |
-| `limit`       | number   | No          | Maximum number of results. Default 50, max 200. Values above 200 are clamped.                                                |
+| `mode`        | string   | No          | Output detail: `snippets` (default) returns only matching excerpts; `full` additionally returns each result's complete document `body` (frontmatter stripped), so you can read the matched docs without a follow-up `get_document`. |
+| `limit`       | number   | No          | Maximum number of results. Defaults and caps are mode-dependent: `snippets` → default 50, max 200; `full` → default 3, max 20. Values above the cap are clamped.                                                |
 
 At least one of `path_ref`, `content`, `types`, or `status` must be provided. Filters combine with AND semantics.
 
@@ -74,6 +75,7 @@ At least one of `path_ref`, `content`, `types`, or `status` must be provided. Fi
 
 - `path`, `title`, `type`, `status`, `mtime`, `tags` — document metadata.
 - `matches` — per-match evidence array. Each entry has `kind` (`path_ref_explicit`, `path_ref_mention`, or `content`), `ref` (the matched token), `specificity` (integer), and `excerpt` (~120-char window). Empty array for pure-metadata queries.
+- `body` — the complete document body (frontmatter stripped). Included only when `mode: "full"`; omitted in the default `snippets` mode.
 - `incoming_relations`, `outgoing_relations` — manifest edges involving this document.
 
 **Example — find rules and ADRs that reference a code path:**

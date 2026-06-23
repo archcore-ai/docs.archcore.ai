@@ -54,19 +54,7 @@ Tags must match `^[a-z][a-z0-9_:|-]*$` — lowercase, with hyphens, underscores,
 
 When tags are absent, the field is omitted from output. Documents without tags parse and work normally.
 
-#### meta
-
-The `meta` field can hold arbitrary YAML metadata:
-
-```yaml
----
-title: API Rate Limiting Standards
-status: accepted
-meta:
-  author: team-backend
-  reviewed: 2025-01-15
----
-```
+`tags` is the only optional frontmatter field. The parser recognizes exactly three keys — `title`, `status`, and `tags`. Any other key (for example, an arbitrary `meta:` block) is silently ignored: it stays in the file but Archcore never reads, validates, or syncs it.
 
 ## Content Structure
 

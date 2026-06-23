@@ -19,9 +19,9 @@ archcore hooks <agent-id> session-start
 
 Archcore responds with:
 
-- An index of every document in `.archcore/` — path, type, title, status.
+- An index of every document in `.archcore/`, grouped by category (knowledge, vision, experience), listing each document's filename and title.
 - A summary of relations (which documents reference which).
-- Top tags currently used across documents (up to 30).
+- Top tags currently used across documents (up to 20).
 
 This output goes straight into the agent's working context, so the agent already "knows" about your ADRs, rules, guides, and plans on turn one.
 
