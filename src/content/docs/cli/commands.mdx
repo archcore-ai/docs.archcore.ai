@@ -23,9 +23,11 @@ archcore init
 4. Installs session hooks for supported agents
 5. Offers to write the "use Archcore" instruction hint into detected agent configs (interactive only)
 
-If no agents are detected, falls back to Claude Code configuration. Safe to re-run — `.archcore/settings.json` is left untouched and MCP/hook writes are idempotent.
+If no agents are detected, behavior depends on the environment. In an interactive terminal, `init` prompts a multi-select of all supported agents plus a "Skip — configure later" option. In non-interactive contexts (no TTY), it installs nothing and prints a hint to run `archcore mcp install --agent <id>` later.
 
-In `--non-interactive` mode the instruction hint is skipped — add it later with [`archcore instructions install`](#archcore-instructions).
+Re-running `init` prompts "Reinitialize?". Confirming overwrites `.archcore/settings.json` back to `{"sync":"none"}`, discarding any `language` or `globals` you had set; declining leaves it untouched. MCP and hook writes are always idempotent.
+
+In non-interactive contexts (no TTY) the instruction hint is skipped — add it later with [`archcore instructions install`](#archcore-instructions).
 
 For a step-by-step walkthrough, see the [CLI Quick Start](/cli/quick-start/).
 
@@ -92,9 +94,9 @@ archcore config set <key> <value>  # Set a config value
 
 | Key            | Values                     | Description                                      |
 | -------------- | -------------------------- | ------------------------------------------------ |
-| `sync`         | `none`, `cloud`, `on-prem` | Sync type (currently locked)                     |
-| `project_id`   | integer                    | Project ID for sync (currently locked)           |
-| `archcore_url` | URL                        | Server URL for on-prem (currently locked)        |
+| `sync`         | `none`, `cloud`, `on-prem` | Sync type. Read-only via `get`; `set` is locked  |
+| `project_id`   | integer                    | Project ID for sync (locked — `get` and `set` both return "not available yet") |
+| `archcore_url` | URL                        | Server URL for on-prem (locked — `get` and `set` both return "not available yet") |
 | `language`     | language code              | Language for document content (e.g., `en`, `ru`) |
 
 **Examples:**

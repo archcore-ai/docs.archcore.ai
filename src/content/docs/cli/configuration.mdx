@@ -50,7 +50,7 @@ Documents stay local. No server communication.
 }
 ```
 
-**Allowed fields:** `sync`, `language`
+**Allowed fields:** `sync`, `language`, `globals`
 **Forbidden fields:** `project_id`, `archcore_url`
 
 ### `cloud` — cloud sync
@@ -64,7 +64,7 @@ Syncs to `https://app.archcore.ai`.
 }
 ```
 
-**Allowed fields:** `sync`, `project_id`, `language`
+**Allowed fields:** `sync`, `project_id`, `language`, `globals`
 **Forbidden fields:** `archcore_url`
 
 :::note
@@ -83,7 +83,7 @@ Syncs to a self-hosted Archcore server.
 }
 ```
 
-**Allowed fields:** `sync`, `project_id`, `archcore_url`, `language`
+**Allowed fields:** `sync`, `project_id`, `archcore_url`, `language`, `globals`
 **Required fields:** `archcore_url`
 
 :::note

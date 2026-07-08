@@ -30,19 +30,54 @@ List documents with optional filters.
 | `category` | string   | No       | Filter by layer: `vision`, `knowledge`, or `experience`                                      |
 | `status`   | string   | No       | Filter by status: `draft`, `accepted`, or `rejected`                                         |
 | `tags`     | string[] | No       | Filter by tags with OR semantics (matches documents with at least one of the specified tags) |
+| `limit`    | number   | No       | Maximum number of documents to return. Default 100, max 500. Values above 500 are clamped; `0` or omitted maps to the default; negative values return `limit must be non-negative`. |
+| `offset`   | number   | No       | Number of matching documents to skip before the returned page. Default 0. Use with `truncated` to page through large result sets; negative values return `offset must be non-negative`. |
 
-**Returns:** Array of documents with path, title, type, layer, and status.
+**Returns:** A JSON envelope object:
+
+```json
+{
+  "documents": [ /* array of matching document rows */ ],
+  "total": 0,
+  "offset": 0,
+  "returned": 0,
+  "truncated": false
+}
+```
+
+- `documents` — the page of matches, `[]` when nothing matches. Each row carries `path`, `title`, `type`, `category`, `status`, and `tags`.
+- `total` — total number of documents matching the filters, before pagination.
+- `offset` — the offset applied to this page.
+- `returned` — number of documents in `documents` (the page size).
+- `truncated` — `true` when more matches exist beyond this page. Narrow the filters or request the next page with `offset`.
 
 **Example response:**
 
-```
-[vision]
-  - roadmap/auth-v2.prd.md — "Auth System Redesign" (draft)
-
-[knowledge]
-  - auth/jwt-strategy.adr.md — "Use JWT for Authentication" (accepted)
-  - auth/auth-rules.rule.md — "Authentication Rules" (accepted)
-  - api/rest-guide.guide.md — "REST API Setup Guide" (draft)
+```json
+{
+  "documents": [
+    {
+      "path": "roadmap/auth-v2.prd.md",
+      "title": "Auth System Redesign",
+      "type": "prd",
+      "category": "vision",
+      "status": "draft",
+      "tags": ["auth"]
+    },
+    {
+      "path": "auth/jwt-strategy.adr.md",
+      "title": "Use JWT for Authentication",
+      "type": "adr",
+      "category": "knowledge",
+      "status": "accepted",
+      "tags": ["auth", "security"]
+    }
+  ],
+  "total": 142,
+  "offset": 0,
+  "returned": 2,
+  "truncated": true
+}
 ```
 
 ---

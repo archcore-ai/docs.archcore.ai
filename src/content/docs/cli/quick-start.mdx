@@ -36,7 +36,7 @@ This does four things:
 3. Writes MCP server config and session hooks for every agent it detects.
 4. Offers to add a "use Archcore" hint to each detected agent's config so they reach for the Archcore tools. You can add it later with `archcore instructions install`.
 
-If no agents are detected, `init` falls back to Claude Code configuration.
+If no agents are detected, `init` prompts you to pick which agents to configure from the full supported list (or choose Skip). When run without an interactive terminal, it configures nothing and points you to `archcore mcp install --agent <id>` to wire one up later.
 
 ## Verify the agent sees Archcore
 

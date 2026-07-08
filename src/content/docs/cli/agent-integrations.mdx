@@ -41,7 +41,12 @@ Archcore supports 8 coding agents out of the box. Each agent integrates through 
 | Roo Code       | `.roo/` directory                              |
 | Cline          | `.clinerules/` directory                       |
 
-If no agents are detected, Archcore falls back to configuring Claude Code.
+If no agents are detected, behavior depends on the terminal:
+
+- **Interactive** — Archcore prompts you with a multi-select of every supported agent, plus a **Skip — configure later** option. Pick the agents you want to configure, or skip.
+- **Non-interactive** (no TTY, e.g. CI) — Archcore skips agent setup entirely and prints a hint to run `archcore mcp install --agent <id>` later.
+
+There is no default agent — nothing is installed until you pick or run a manual install.
 
 ## MCP config locations
 
@@ -55,6 +60,15 @@ If no agents are detected, Archcore falls back to configuring Claude Code.
 | Codex CLI      | `codex-cli`   | `.codex/config.toml`           |
 | Roo Code       | `roo-code`    | `.roo/mcp.json`                |
 | Cline          | `cline`       | VS Code globalStorage (manual) |
+
+## Corrupt config handling
+
+Archcore never silently overwrites a config it can't parse. When it writes an agent's MCP or hook config, the behavior depends on the file format:
+
+- **Standard JSON** — `.claude/settings.json`, `.cursor/hooks.json`, `.mcp.json`, `opencode.json`, and other strict-JSON configs. If the file is corrupt or unparseable, Archcore backs it up to `{path}.bak` and starts fresh from a valid config. You'll see a warning noting the backup.
+- **`.vscode/mcp.json`** (GitHub Copilot) — this file is JSONC, so comments and trailing commas are valid even though they aren't strict JSON. Archcore leaves it untouched and prints a manual-install hint instead of touching your other MCP servers.
+
+Add `*.bak` to your `.gitignore` so these backups don't get committed.
 
 ## Instruction hint
 

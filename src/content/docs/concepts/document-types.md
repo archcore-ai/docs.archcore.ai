@@ -12,7 +12,7 @@ Need to record a final decision?           → adr
 Need to propose a change for review?       → rfc
 Need to enforce a team standard?           → rule
 Need step-by-step instructions?            → guide
-Need a normative contract for a boundary?  → spec
+Need a contract for a boundary or feature? → spec
 Need reference/lookup material?            → doc
 Need to define product requirements?       → prd
 Need to capture an early idea?             → idea
@@ -299,13 +299,13 @@ How-to instructions for completing a specific task.
 
 ### Spec — Normative Contract
 
-The canonical normative contract for a concrete system, component, interface, schema, or protocol.
+Normative behavior contract of something others rely on — a boundary (API/interface/schema/protocol) or a feature/subsystem — captured after code or specified ahead of it.
 
 | | |
 |---|---|
 | **File extension** | `.spec.md` |
 | **When to use** | A normative contract with behavior, constraints, and conformance criteria is being formalized |
-| **Required sections** | Purpose, Scope, Authority, Subject, Contract Surface, Normative Behavior, Constraints & Invariants, Error Handling, Conformance |
+| **Required sections** | Purpose & Scope, Surface, Normative Behavior, Constraints & Invariants, Failure Behavior, Conformance |
 
 ```markdown
 ---
@@ -313,27 +313,38 @@ title: Webhook Delivery Contract
 status: accepted
 ---
 
-## Purpose
-This specification defines the canonical webhook delivery contract.
+## Purpose & Scope
+This specification is normative for webhook delivery — how the system pushes
+event payloads to subscriber endpoints.
 
-## Scope
-### Covers
-- Payload format, delivery guarantees, retry policy, signature verification
+Depended on by: subscriber integrations and the delivery worker.
 
-### Does Not Cover
-- Webhook management API (registration, listing, deletion)
+Out of scope: the webhook management API (registration, listing, deletion).
 
-## Authority
-This document is the normative specification for webhook delivery.
+## Surface
+What dependents see of the subject. Reference source definitions with @-notation —
+don't copy interface or struct bodies; copies go stale.
+
+- Delivery worker: @internal/webhooks/delivery.go — sends each event to subscribers
+- Signature header: `X-Signature` carries the payload HMAC
+- States: queued → delivering → delivered | failed
 
 ## Normative Behavior
-1. The system MUST deliver payloads as JSON with Content-Type `application/json`
-2. The system MUST retry failed deliveries up to 5 times with exponential backoff
-3. The system SHOULD include an HMAC-SHA256 signature in the `X-Signature` header
+1. The system MUST deliver payloads as JSON with Content-Type `application/json`.
+2. WHEN a delivery fails, the system MUST retry up to 5 times with exponential backoff.
+3. The system SHOULD include an HMAC-SHA256 signature in the `X-Signature` header.
+
+## Constraints & Invariants
+- Constraint: payloads MUST NOT exceed 256 KB — keeps delivery within the request timeout.
+- Invariant: each event MUST be delivered at least once to every active subscriber.
+
+## Failure Behavior
+1. IF all retries are exhausted, THEN the system MUST mark the delivery `failed` and stop.
+2. WHEN a subscriber endpoint times out, the system MUST re-queue the delivery for retry.
 
 ## Conformance
-An implementation conforms to this spec if it satisfies all MUST requirements
-and all stated invariants.
+An implementation conforms when it satisfies all MUST requirements, all
+invariants, and all failure rules above.
 ```
 
 :::note[Spec vs Doc vs Rule]
