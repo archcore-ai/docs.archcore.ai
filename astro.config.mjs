@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import starlightLlmsTxt from 'starlight-llms-txt';
 
 // https://astro.build/config
 export default defineConfig({
@@ -56,13 +57,26 @@ export default defineConfig({
 				Hero: './src/components/SplashHeroOverride.astro',
 				PageTitle: './src/components/PageTitleOverride.astro',
 			},
+			plugins: [
+				starlightLlmsTxt({
+					projectName: 'Archcore',
+					description:
+						'Git-native repo memory for AI coding agents. Typed markdown documents (decisions, rules, specs, plans) stored in a .archcore/ directory in your repository and served to agents over MCP.',
+					customSets: [
+						{ label: 'CLI', paths: ['cli/**'] },
+						{ label: 'Plugin', paths: ['plugin/**'] },
+						{ label: 'Concepts', paths: ['concepts/**'] },
+					],
+				}),
+			],
 			favicon: '/favicon.ico',
 			logo: {
 				light: './src/assets/logo-light.png',
 				dark: './src/assets/logo-dark.png',
 				alt: 'archcore logo',
 			},
-			description: 'Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions.',
+			description:
+				'Git-native repo memory for AI coding agents. Archcore keeps decisions, rules, specs, and plans as typed markdown documents in your repository — loaded into any MCP agent.',
 			head: [
 				// Preload critical variable fonts so the browser fetches them
 				// in parallel with CSS instead of waiting for @font-face discovery.

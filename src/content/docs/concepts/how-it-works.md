@@ -1,5 +1,5 @@
 ---
-title: How It Works
+title: How Archcore Works
 description: Core design principles and the three context layers that organize project knowledge in Archcore.
 ---
 
