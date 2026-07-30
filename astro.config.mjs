@@ -196,6 +196,18 @@ export default defineConfig({
 						{ label: 'Plugin Skills', slug: 'reference/skills' },
 					],
 				},
+				{
+					// Return path to archcore.ai. Without this group the docs are a
+					// one-way street: marketing links in, nothing links back out.
+					label: 'Product',
+					items: [
+						{ label: 'archcore.ai', link: 'https://archcore.ai/' },
+						{ label: 'Plugin page', link: 'https://archcore.ai/plugin/' },
+						{ label: 'CLI page', link: 'https://archcore.ai/cli/' },
+						{ label: 'What is repo memory?', link: 'https://archcore.ai/learn/repo-memory/' },
+						{ label: 'Blog', link: 'https://archcore.ai/blog/' },
+					],
+				},
 			],
 		}),
 	],

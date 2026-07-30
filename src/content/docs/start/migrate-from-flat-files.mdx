@@ -9,6 +9,8 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 You already have a `CLAUDE.md`, `.cursorrules`, a `docs/` folder, or team knowledge scattered across Slack. You don't need to blow it all up. Archcore is additive — keep what works, extract what doesn't.
 
+New to the idea? [What is repo memory?](https://archcore.ai/learn/repo-memory/) explains what you are migrating *to* before you start moving files.
+
 ## Why migrate at all
 
 Flat files hit a wall around 50–200 lines. See [Flat files vs Archcore](/concepts/vs-flat-files/) for the full comparison. Short version:
@@ -23,7 +25,7 @@ Structured documents fix all three, and every modern agent reads them through MC
 
 ### Step 1 — initialize
 
-**Using the plugin?** Install the CLI first (see [CLI install](/cli/install/)), then follow the [Plugin quick start](/start/plugin-quick-start/) — the plugin initializes `.archcore/` through MCP on first call, no manual `archcore init` needed.
+**Using the plugin?** Install the CLI first (see [CLI install](/cli/install/)), then follow the [Plugin quick start](/start/plugin-quick-start/) — the plugin initializes `.archcore/` through MCP on first call, no manual `archcore init` needed. The [plugin page](https://archcore.ai/plugin/) lists which hosts it runs in.
 
 **Otherwise** (any non-plugin host, scripting, CI), install the CLI directly:
 

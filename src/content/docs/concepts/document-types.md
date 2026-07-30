@@ -3,7 +3,7 @@ title: Document Types
 description: All 19 document types — ADRs, RFCs, rules, guides, PRDs, R&D notes, market/business/user requirement docs, ISO specifications, and more. When to use each, required sections, and templates.
 ---
 
-Archcore has 19 document types organized into 3 layers. Each type has a template with required sections that the CLI generates automatically.
+Archcore has 19 document types organized into 3 layers. Each type has a template with required sections that the CLI generates automatically. Install it from the [CLI page](https://archcore.ai/cli/) if you have not yet.
 
 ## Choosing the Right Type
 
