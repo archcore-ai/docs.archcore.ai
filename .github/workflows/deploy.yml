@@ -29,6 +29,15 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+        env:
+          # PostHog's project API key is public by design — it ships in every
+          # client bundle — so it lives in a repository variable, not a secret.
+          # Use the same POSTHOG_KEY value as the landing repository: one
+          # project covers archcore.ai and docs.archcore.ai, and the cookie
+          # scoped to .archcore.ai is what keeps a visitor who moves between
+          # them as a single person. The build fails without it.
+          PUBLIC_POSTHOG_KEY: ${{ vars.POSTHOG_KEY }}
+          PUBLIC_POSTHOG_HOST: ${{ vars.POSTHOG_HOST }}
 
       - uses: actions/configure-pages@v5
 

@@ -3,9 +3,50 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightLlmsTxt from 'starlight-llms-txt';
 
+/**
+ * Fails a production build with no PostHog key instead of publishing pages
+ * whose analytics silently do nothing — the state archcore.ai shipped in
+ * before analytics were wired up properly.
+ *
+ * `apply: 'build'` keeps `astro dev` unaffected. Astro exposes process.env
+ * entries with the PUBLIC_ prefix to the client, so checking process.env here
+ * matches exactly what the bundle will end up containing.
+ *
+ * Set ALLOW_MISSING_ANALYTICS_KEY=1 for a deliberate build without analytics.
+ */
+function requireAnalyticsKey() {
+	return {
+		name: 'require-analytics-key',
+		apply: 'build',
+		config() {
+			if (process.env.ALLOW_MISSING_ANALYTICS_KEY === '1') return;
+			if (process.env.PUBLIC_POSTHOG_KEY) return;
+			throw new Error(
+				[
+					'PUBLIC_POSTHOG_KEY is not set — refusing to build docs whose analytics',
+					'silently do nothing.',
+					'',
+					'  Local build:  PUBLIC_POSTHOG_KEY=phc_... npm run build (or use .env)',
+					'  CI:           set the POSTHOG_KEY repository variable; the deploy',
+					'                workflow maps it to PUBLIC_POSTHOG_KEY',
+					'',
+					'Use the same key as archcore.ai — one PostHog project covers both, and',
+					'the shared .archcore.ai cookie is what stitches a visitor moving from',
+					'the marketing site into the docs into a single session.',
+					'',
+					'To build without analytics on purpose, set ALLOW_MISSING_ANALYTICS_KEY=1.',
+				].join('\n')
+			);
+		},
+	};
+}
+
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://docs.archcore.ai',
+	vite: {
+		plugins: [requireAnalyticsKey()],
+	},
 	redirects: {
 		// Legacy paths
 		'/getting-started/installation/': '/cli/install/',

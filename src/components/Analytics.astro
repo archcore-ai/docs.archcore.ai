@@ -1,0 +1,25 @@
+---
+/**
+ * PostHog for docs.archcore.ai, rendered from the Head override.
+ *
+ * Uses the same project key as archcore.ai. The analytics core scopes its
+ * cookie to .archcore.ai, so a visitor who arrives on the marketing site and
+ * continues into the docs stays one person in one session rather than two
+ * unrelated visitors. The `site` super property is what separates the two
+ * surfaces in reports.
+ */
+---
+
+<script>
+  import { setupAnalytics } from "../lib/analytics/core";
+  import { attachDocsSearchTracking } from "../lib/analytics/docs-instrumentation";
+
+  setupAnalytics({
+    site: "docs",
+    key: import.meta.env.PUBLIC_POSTHOG_KEY,
+    host: import.meta.env.PUBLIC_POSTHOG_HOST,
+    debug: import.meta.env.DEV,
+  });
+
+  attachDocsSearchTracking();
+</script>

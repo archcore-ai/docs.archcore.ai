@@ -1,4 +1,6 @@
 ---
+import Analytics from './Analytics.astro';
+
 const { head, id } = Astro.locals.starlightRoute;
 
 const slug = id || 'index';
@@ -23,3 +25,4 @@ const finalHead = [
 ---
 
 {finalHead.map(({ tag: Tag, attrs, content }) => <Tag {...attrs} set:html={content} />)}
+<Analytics />
