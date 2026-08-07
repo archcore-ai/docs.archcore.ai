@@ -18,14 +18,14 @@ A universal read/write agent for complex multi-document tasks.
 | | |
 | --- | --- |
 | **Role** | Requirements engineering, multi-document planning, relation graph management. |
-| **Tools** | All 8 MCP tools (`list_documents`, `get_document`, `create_document`, `update_document`, `remove_document`, `add_relation`, `remove_relation`, `list_relations`), plus `Read`, `Grep`, `Glob`. |
+| **Tools** | 8 of the 11 MCP tools (`list_documents`, `get_document`, `create_document`, `update_document`, `remove_document`, `add_relation`, `remove_relation`, `list_relations`), plus `Read`, `Grep`, `Glob`. It has neither `init_project` nor `install_host_config`, which write outside `.archcore/`. |
 | **Max turns** | 20 |
 | **Safety** | Every `.archcore/` write goes through MCP. Direct `Write`/`Edit` calls are not in its toolbox. |
 
 ### When skills call it
 
-- [`/archcore:plan --track iso`](/plugin/skills/#archcoreplan) builds the full BRS → StRS → SyRS → SRS cascade.
-- [`/archcore:decide`](/plugin/skills/#archcoredecide) continuations wire ADR → spec → plan or ADR → rule → guide with the right relations.
+- [`/archcore:plan iso`](/plugin/skills/#archcoreplan) builds the full BRS → StRS → SyRS → SRS cascade.
+- [`/archcore:document`](/plugin/skills/#archcoredocument) cascades wire ADR → spec → plan or ADR → rule → guide with the right relations.
 - Large-scope refactors of `.archcore/` across many files.
 
 ### What it's good at
@@ -41,15 +41,15 @@ A read-only auditor for documentation health reviews.
 | | |
 | --- | --- |
 | **Role** | Detects coverage gaps, orphaned documents, stale statuses, consistency issues. |
-| **Tools** | `list_documents`, `get_document`, `list_relations`, plus `Read`, `Grep`, `Glob`. |
+| **Tools** | 3 of the 11 MCP tools (`list_documents`, `get_document`, `list_relations`), plus `Read`, `Grep`, `Glob`. |
 | **Max turns** | 15 |
 | **Execution** | Runs in the background (`background: true`). The host invokes it proactively after a batch of document creations, or before a release. The audit is non-blocking, so you keep working while it reviews. |
 | **Safety** | Read-only by design. It cannot create, update, or delete documents. |
 
 ### When skills call it
 
-- [`/archcore:audit`](/plugin/skills/#archcoreaudit) returns the dashboard (default) or the full audit (`--deep`). Some dashboard numbers come from auditor queries.
-- [`/archcore:audit --drift`](/plugin/skills/#archcoreaudit) finds stale documents through code drift, cascade drift, and temporal signals.
+- [`/archcore:review`](/plugin/skills/#archcorereview) returns the branch review, the project health dashboard, or the full audit (`--deep`). Some dashboard numbers come from auditor queries.
+- [`/archcore:review --drift`](/plugin/skills/#archcorereview) finds stale documents through code drift, cascade drift, and temporal signals. The auditor may run the checks, but the main thread confirms every verdict with you.
 
 ### What it's good at
 
@@ -59,12 +59,15 @@ A read-only auditor for documentation health reviews.
 
 ## Host file formats
 
-Both agents ship in two file formats side by side under `agents/`:
+Both agents ship in three file formats:
 
-- **`.md`** (`archcore-assistant.md`, `archcore-auditor.md`) for Claude Code and Cursor.
-- **`.toml`** (`archcore-assistant.toml`, `archcore-auditor.toml`) for Codex CLI. The auditor TOML uses `sandbox_mode = "read-only"`, `model_reasoning_effort = "high"`, plus a `disabled_tools` list covering the five mutating MCP tools; the assistant TOML uses `sandbox_mode = "workspace-write"`.
+- **`.md`** under `agents/` (`archcore-assistant.md`, `archcore-auditor.md`) for Claude Code and Cursor.
+- **`.toml`** under `agents/` (`archcore-assistant.toml`, `archcore-auditor.toml`) for Codex CLI. The auditor TOML uses `sandbox_mode = "read-only"`, `model_reasoning_effort = "high"`, plus a `disabled_tools` list covering all seven mutating MCP tools; the assistant TOML uses `sandbox_mode = "workspace-write"`.
+- **`.agent.md`** under `copilot-agents/` for GitHub Copilot CLI.
 
-Tool whitelists are identical across formats. The TOML variants translate the same safety boundaries into Codex's native sandbox model.
+Tool whitelists are identical across formats. The TOML variant translates the same safety boundaries into Codex's native sandbox model.
+
+The auditor's deny list is exhaustive on purpose. `sandbox_mode = "read-only"` constrains the agent's shell, not the MCP server process that executes the tools, so a mutating tool left off the list would still be callable.
 
 ## Why two agents, not one
 
@@ -72,5 +75,5 @@ Separating the write-capable agent from the read-only one is a deliberate safety
 
 ## Next steps
 
-- [Plugin skills](/plugin/skills/) documents the 7 commands that call these agents.
+- [Plugin skills](/plugin/skills/) documents the four commands that call these agents.
 - [Plugin troubleshooting](/plugin/troubleshooting/) covers issues with agent invocations.

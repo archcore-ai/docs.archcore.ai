@@ -1,6 +1,6 @@
 ---
 title: Install the Plugin
-description: Install the Archcore CLI globally, then add the plugin to Claude Code, Cursor, or Codex CLI.
+description: Install the Archcore CLI globally, then add the plugin to Claude Code, Cursor, Codex CLI, or GitHub Copilot CLI.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -8,9 +8,9 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-The plugin runs inside your coding agent (Claude Code, Cursor, or Codex CLI) and invokes `archcore` from your `PATH`. Install the CLI first, then install the plugin. The [CLI install guide](/cli/install/) has one curl line for macOS and Linux and one PowerShell line for Windows.
+The plugin runs inside your coding agent and invokes `archcore` from your `PATH`. Install the CLI first, then install the plugin. The [CLI install guide](/cli/install/) has one curl line for macOS and Linux and one PowerShell line for Windows.
 
-On Cursor you also register MCP yourself. See the Cursor tab below.
+Two hosts need one extra step. On Cursor you register MCP yourself. On GitHub Copilot CLI you wire the project with `archcore init --agent copilot`. See the tabs below.
 
 ## Install the plugin
 
@@ -30,7 +30,7 @@ On Cursor you also register MCP yourself. See the Cursor tab below.
 		/plugin install archcore@archcore-plugins
 		```
 
-		Open your project and run `/archcore:help`. The plugin spawns `archcore mcp` from your `PATH`. If `.archcore/` does not exist yet, the first MCP call initializes it.
+		The plugin spawns `archcore mcp` from your `PATH` through its `.claude.mcp.json`. If `.archcore/` does not exist yet, the first MCP call initializes it.
 
 		If `archcore` isn't on `PATH`, the session-start hook prints install instructions and links to the [CLI install guide](/cli/install/).
 	</TabItem>
@@ -59,13 +59,15 @@ On Cursor you also register MCP yourself. See the Cursor tab below.
 
 		**Keep the `--project ${workspaceFolder}` argument.** It scopes MCP to the active project; without it, a single registration would read one project's `.archcore/` across every Cursor window.
 
-		Cursor support is implemented, and its hooks API differs from the Claude Code one. [Supported AI agents](/plugin/supported-hosts/) lists the differences.
+		Cursor's hooks API differs from the Claude Code one. [Supported AI agents](/plugin/supported-hosts/) lists the differences.
 	</TabItem>
 	<TabItem label="Codex CLI">
-		Requires Codex 0.117.0+. Install from the marketplace:
+		Requires Codex CLI 0.117.0+. Add the marketplace, then install from inside Codex:
 
 		```bash
 		codex plugin marketplace add archcore-ai/plugin
+		codex
+		# then run /plugins, open Archcore, and select Install plugin
 		```
 
 		Codex registers MCP automatically. The plugin's manifest references `.codex.mcp.json`, which runs `archcore mcp` from your `PATH`. That config uses no env-var substitution and no plugin-relative paths.
@@ -76,9 +78,21 @@ On Cursor you also register MCP yourself. See the Cursor tab below.
 		codex features enable plugin_hooks
 		```
 
-		Without this flag, skills, MCP tools, and agents work normally, but the validation, cascade, precision, and pre-edit context-injection hooks won't fire.
+		Without this flag, skills, MCP tools, and agents work normally, but the write guard, code-alignment injection, and post-write checks won't fire.
+	</TabItem>
+	<TabItem label="GitHub Copilot CLI">
+		Two steps, both required:
 
-		Codex CLI surfaces skills as 7 `commands/<name>.md` wrappers. After install, run `/archcore:help` to list them.
+		```bash
+		copilot plugin install archcore-ai/plugin:plugins/archcore
+		archcore init --agent copilot --project "$PWD"
+		```
+
+		Step 2 is not optional. On Copilot the plugin ships **no MCP server**, so a project that skips it loads skills and hooks but has no document tools at all. Copilot launches a plugin's MCP server in the plugin install directory with no project path ([github/copilot-cli#4234](https://github.com/github/copilot-cli/issues/4234)), which would serve the plugin cache instead of your repository.
+
+		`archcore init --agent copilot` writes the project-level MCP entry, the hooks, and the usage hint. Restart the session afterwards so Copilot connects the tools.
+
+		Copilot **CLI** only. VS Code agent mode has no self-serve plugin install, and cloud-agent sandboxes do not load plugin hooks.
 	</TabItem>
 	<TabItem label="Local development (any host)">
 		Clone the plugin repo:
@@ -90,25 +104,32 @@ On Cursor you also register MCP yourself. See the Cursor tab below.
 		On **Claude Code**, load the cloned directory for the session:
 
 		```bash
-		claude --plugin-dir /path/to/archcore-plugin
+		claude --plugin-dir /path/to/plugin
 		```
 
 		**Cursor** has no `--plugin-dir` flag. Symlink the repo into Cursor's local plugins directory, then reload the window:
 
 		```bash
-		ln -s /path/to/archcore-plugin ~/.cursor/plugins/local/archcore
+		ln -s /path/to/plugin ~/.cursor/plugins/local/archcore
 		# then in Cursor: Cmd/Ctrl+Shift+P → "Developer: Reload Window"
 		```
 
-		On **Codex CLI**, point the marketplace at a local path:
+		On **Codex CLI**, point a local marketplace at the checkout:
 
 		```bash
-		codex plugin marketplace add /path/to/archcore-plugin
+		codex plugin marketplace add /path/to/plugin
+		codex plugin add archcore@archcore-plugins
 		```
 
 		If you want hooks active, run `codex features enable plugin_hooks`.
 
-		All three manifests (`.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json`) sit at the repo root.
+		On **GitHub Copilot CLI**, load the plugin directory directly:
+
+		```bash
+		copilot --plugin-dir /path/to/plugin/plugins/archcore
+		```
+
+		All four manifests (`.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.plugin/plugin.json`) sit under `plugins/archcore/`.
 
 		Use local mode when you work on skills or hooks. The plugin calls `archcore` from `PATH`. To test against a locally built CLI binary, put its directory ahead of the installed one on `PATH` (e.g. `export PATH="$(pwd)/cli/bin:$PATH"`).
 	</TabItem>
@@ -122,27 +143,30 @@ To pin a specific binary, install it to a directory you control and put that dir
 
 ### Plugin environment variables
 
-| Variable                     | Effect                                                                       |
-| ---------------------------- | ---------------------------------------------------------------------------- |
-| `ARCHCORE_DISABLE_INJECTION` | `=1` turns off the pre-edit context injection hook globally.                 |
+| Variable                      | Effect                                                                     |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| `ARCHCORE_DISABLE_INJECTION`  | `=1` turns off the pre-edit context injection globally.                     |
+| `ARCHCORE_HIDE_EMPTY_NUDGE`   | `=1` suppresses the session-start nudge that suggests `/archcore:init`.     |
+| `ARCHCORE_HIDE_WIRING_NUDGE`  | `=1` suppresses the Copilot advisory about a project with no MCP wiring.    |
 
 ## Verify
 
 1. Restart your coding agent so the session-start hook can run.
-2. In a fresh conversation, run:
+2. In a fresh conversation, type `/archcore:` and check that autocomplete lists four commands: `init`, `plan`, `document`, and `review`.
+3. Run a read-only command against a real project:
 
 	```
-	/archcore:help
+	/archcore:review
 	```
 
-	You should see a list of available skills and intent commands.
-3. Try an intent command on a real decision:
+	On a branch with changes you get a review of those changes against `.archcore/`. On the default branch you get the project health dashboard.
+4. Record a real decision:
 
 	```
-	/archcore:decide use PostgreSQL as the primary database
+	/archcore:document use PostgreSQL as the primary database
 	```
 
-	The agent picks the right document type (an ADR), creates a draft in `.archcore/` through MCP rather than a direct file write, and offers a rule and guide follow-up.
+	The agent classifies it as an ADR, creates a draft in `.archcore/` through MCP rather than a direct file write, and offers a rule and guide continuation.
 
 If `/archcore:*` commands don't appear, check [Troubleshooting](/plugin/troubleshooting/).
 
@@ -160,6 +184,12 @@ On Codex CLI:
 
 ```bash
 codex plugin uninstall archcore
+```
+
+On GitHub Copilot CLI:
+
+```bash
+copilot plugin uninstall archcore
 ```
 
 The `archcore` CLI is a separate install. To remove it as well, use the same script that installed it.

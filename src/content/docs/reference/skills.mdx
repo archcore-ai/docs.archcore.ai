@@ -1,6 +1,6 @@
 ---
 title: Plugin Skills Reference
-description: Lookup table for the 7 Archcore plugin commands with flags, plan track flows, decide continuations, and audit modes.
+description: "Lookup table for the four Archcore plugin commands: flags, plan track flows, document cascades, and review modes."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -9,58 +9,68 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 Every command shipped with the Archcore plugin, with its outcome and flags. For grouped coverage with examples, see [Skills](/plugin/skills/). For the document types these commands produce, see [Document types](/concepts/document-types/).
 
-## All 7 commands
+## All four commands
 
-| Command              | Outcome                                                | Flags                                                       |
-| -------------------- | ------------------------------------------------------ | ----------------------------------------------------------- |
-| `/archcore:init`     | Make your repo legible to AI agents                    | `--mode=small\|medium\|large`                               |
-| `/archcore:context`  | Load what's already decided before you change code     | `--git-changes`                                             |
-| `/archcore:capture`  | Document what already lives in code                    | None                                                        |
-| `/archcore:plan`     | Turn an idea into a scoped implementation plan         | `--track product\|feature\|sources\|iso`                    |
-| `/archcore:decide`   | Record a decision and optionally make it a team rule   | None                                                        |
-| `/archcore:audit`    | Find stale, missing, or drifting docs                  | `--deep`, `--drift`, or any non-flag filter (implies `--deep`) |
-| `/archcore:help`     | Navigate the skill catalog                             | None                                                        |
+| Command              | Outcome                                             | Arguments and flags                                                        |
+| -------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `/archcore:init`     | Make your repo legible to AI agents                 | `--depth=light\|standard\|deep`, `--mode=small\|medium\|large`, `--domain=<slug>`, `--refresh` |
+| `/archcore:plan`     | Turn an idea into a scoped implementation plan      | `[topic]`, plus an optional track name: `sdd`, `sources`, or `iso`         |
+| `/archcore:document` | Record a decision or document what lives in code    | `[module, topic, or decision]`, plus an optional type: `adr`, `rfc`, `spec`, `doc`, `guide`, `rule` |
+| `/archcore:review`   | Check your changes and your docs against each other | `--deep`, `--drift`, and an optional path, tag, or scope                    |
+
+Track and type names are positional, not flags. `/archcore:plan iso payment gateway` runs the ISO cascade directly.
 
 ## `/archcore:plan` track flows
 
-A track is a multi-step cascade. The skill creates each document through MCP in order, wires relations automatically, and pauses for your review before the next step.
+A track is a gated cascade. The skill creates each document through MCP in order, wires relations automatically, and pauses for your review before the next gate opens.
 
-| `--track`  | Flow                                  | Relations created                                                            | Use when                                                       |
-| ---------- | ------------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `product`  | idea → prd → plan                     | `prd implements idea`, `plan implements prd`                                 | Lightweight product flow for individual features.               |
-| `feature`  | prd → spec → plan → task-type         | `spec implements prd`, `plan implements spec`, `task-type related plan`      | Full feature lifecycle with formal spec and delivery pattern.   |
-| `sources`  | mrd → brd → urd                       | `brd related mrd`, `urd related mrd, brd`                                    | Discovery across market, business, and user research.           |
-| `iso`      | brs → strs → syrs → srs               | `strs implements brs, urd`; `syrs implements strs`; `srs implements syrs`    | Regulated systems, multi-team projects, full traceability.      |
+| Track           | Flow                     | Relations created                                                             | Use when                                                    |
+| --------------- | ------------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `sdd` (default) | idea → prd → spec → plan | `prd implements idea`, `spec implements prd`, `plan implements spec`          | A feature, refactor, initiative, or roadmap.                |
+| `sources`       | mrd → brd → urd          | The three source documents are peers, related rather than implementing         | Market research, discovery, or stakeholder alignment.       |
+| `iso`           | brs → strs → syrs → srs  | `strs implements brs` and `urd`, `syrs implements strs`, `srs implements syrs` | Regulated systems, audits, full ISO 29148 traceability.     |
 
-Default (no `--track`) routes to the `product` flow.
+Without a named track, the skill routes from the request wording and from the documents already in `.archcore/`. A gate whose topic an existing document covers closes through `skip_when`, so an `sdd` run can produce the plan alone.
 
-## `/archcore:decide` continuations
+## `/archcore:document` tracks
 
-After an ADR is recorded, `/archcore:decide` offers a follow-up cascade:
+| Track    | Input                                                | Produces                                              |
+| -------- | ---------------------------------------------------- | ------------------------------------------------------- |
+| Decision | A settled decision, a team standard, or a proposal   | `adr` for a settled decision, `rfc` for an open proposal |
+| Describe | A module, component, API, system, or technical topic | `spec`, `doc`, or `guide`, picked from the evidence     |
 
-| Continuation        | Flow                                  | Relations created                                                  | Use when                                                  |
-| ------------------- | ------------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------- |
-| Standard chain      | adr → (optional cpat) → rule → guide  | `rule implements adr`, `guide related rule`, `cpat related rule`   | The decision is a team standard that needs enforcement.   |
-| Architecture chain  | adr → spec → plan                     | `spec implements adr`, `plan implements spec`                      | The decision needs formal specification and a plan.        |
+### Decision cascade
 
-## `/archcore:audit` modes
+After an ADR is recorded, `/archcore:document` offers one continuation. It creates nothing before you confirm.
 
-| Invocation                    | Mode                | Returns                                                              |
-| ----------------------------- | ------------------- | -------------------------------------------------------------------- |
-| `/archcore:audit`             | Dashboard (default) | One-screen counts by category, status, type, relation coverage.      |
-| `/archcore:audit --deep`      | Full audit          | Gaps, staleness, orphans, missing relations, prioritized fixes.       |
-| `/archcore:audit --deep tag:auth` | Scoped audit    | Same as `--deep` but scoped to a tag, type, or category.              |
-| `/archcore:audit --drift`     | Staleness scan      | Code drift, cascade drift, and temporal drift: documents that have gone out of date. |
+| Continuation | Flow                                    | Relations created                                                                       | Use when                                                  |
+| ------------ | --------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Standard     | adr → rule → guide, optionally `+ cpat` | `rule implements adr`, `guide related rule`, `cpat implements adr`, `rule related cpat`  | The decision describes enforceable behavior.              |
+| Architecture | adr → spec → plan                       | `spec implements adr`, `plan implements spec`                                            | The decision changes a boundary contract.                 |
+
+The ADR alone is a valid endpoint. An `rfc` gets no cascade.
+
+## `/archcore:review` modes
+
+| Invocation                       | Mode                     | Returns                                                                                       |
+| -------------------------------- | ------------------------ | ----------------------------------------------------------------------------------------------- |
+| `/archcore:review`               | Branch review (default)  | Both directions of the branch diff against `.archcore/`, each finding verdicted `spec-wrong`, `code-wrong`, or `ok`. |
+| `/archcore:review`               | Project health           | Fallback on the default branch or an empty diff: counts by category, status, and type, relation counts, orphans. |
+| `/archcore:review --drift`       | Staleness scan           | Code drift, cascade drift, and temporal drift over the scope.                                  |
+| `/archcore:review --deep`        | Full audit               | Every document, plus coverage gaps, relation health, and consistency findings.                 |
+| `/archcore:review --deep tag:auth` | Scoped audit           | The same as `--deep`, narrowed to a tag, type, or path.                                        |
+
+When reviewed changes repeat an undocumented pattern, `review` offers a `cpat` or `task-type` capture. It asks once, and a decline writes nothing.
 
 ## Document types
 
 The 19 document types have no dedicated slash commands. The commands above route to them. Call `mcp__archcore__create_document` directly when you need a specific type without a routing command.
 
-| Layer      | Types                                                              |
-| ---------- | ------------------------------------------------------------------ |
-| Vision     | `prd`, `idea`, `mrd`, `brd`, `urd`, `brs`, `strs`, `syrs`, `srs`, `plan` |
-| Knowledge  | `adr`, `rfc`, `rule`, `guide`, `doc`, `spec`                       |
-| Experience | `task-type`, `cpat`                                                |
+| Layer      | Types                                                                    |
+| ---------- | -------------------------------------------------------------------------- |
+| Vision     | `prd`, `idea`, `plan`, `rnd`, `mrd`, `brd`, `urd`, `brs`, `strs`, `syrs`, `srs` |
+| Knowledge  | `adr`, `rfc`, `rule`, `guide`, `doc`, `spec`                             |
+| Experience | `task-type`, `cpat`                                                      |
 
 Full descriptions and required sections for each type: [Document types](/concepts/document-types/).
 

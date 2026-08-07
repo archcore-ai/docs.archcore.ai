@@ -30,10 +30,10 @@ Putting both in one package would couple their release cadences. Every plugin ch
 | Build the relation graph (`.sync-state.json`)     | Yes              | No               |
 | Expose MCP tools to agents                        | `archcore mcp`   | No               |
 | Install MCP configs and session hooks             | Yes              | No               |
-| Provide outcome-focused slash commands (`/archcore:decide`, `/archcore:plan`, …) | No               | Yes              |
+| Provide outcome-focused slash commands (`/archcore:document`, `/archcore:plan`, …) | No               | Yes              |
 | Block direct writes to `.archcore/*.md`           | No               | Yes              |
 | Detect cascade staleness after `update_document`  | No               | Yes              |
-| Host-specific integrations (Claude Code / Cursor) | No               | Yes              |
+| Host-specific plugin manifests and hook files     | No               | Yes              |
 
 The plugin does not implement its own MCP server. It reuses the one started by `archcore mcp`, so both layers read the same graph.
 
@@ -67,13 +67,13 @@ The plugin does not implement its own MCP server. It reuses the one started by `
 
 Use the [plugin](/plugin/overview/) when:
 
-- You work in Claude Code or Cursor day to day.
-- You want outcome-focused slash commands (`/archcore:decide`, `/archcore:plan`, `/archcore:capture`) without explaining document types to the agent.
+- You work in Claude Code, Cursor, Codex CLI, or GitHub Copilot CLI day to day.
+- You want outcome-focused slash commands (`/archcore:document`, `/archcore:plan`, `/archcore:review`) without explaining document types to the agent.
 - You want guardrails on by default, including MCP-only writes, post-mutation validation, and cascade warnings.
 
 Use the [CLI](/cli/overview/) directly when:
 
-- Your host is Copilot, Gemini CLI, OpenCode, Roo Code, or Cline. The plugin does not target these hosts yet.
+- Your host is Gemini CLI, OpenCode, Roo Code, or Cline. The plugin does not target these hosts.
 - You script Archcore in CI, pre-commit, or other non-interactive contexts.
 - You want the smallest possible install surface.
 

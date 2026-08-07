@@ -181,11 +181,13 @@ Per-function and per-endpoint specifications with a verification matrix.
 
 | Track | Documents | Best for |
 |---|---|---|
-| Product (simple) | `prd` | Individual features, small teams, rapid prototyping, internal tools |
+| SDD (default) | `idea` -> `prd` -> `spec` -> `plan` | Individual features, small teams, rapid prototyping, internal tools |
 | Sources (discovery) | `mrd` -> `brd` -> `urd` | Product teams doing discovery, stakeholder alignment, business analysis |
 | ISO (decomposition) | `brs` -> `strs` -> `syrs` -> `srs` | Regulated systems, multi-team projects, complex distributed systems |
 
-All three tracks can coexist. For example, use `prd` for a small feature while the full ISO track covers a safety-critical subsystem.
+The Archcore plugin drives these tracks through [`/archcore:plan`](/plugin/skills/#archcoreplan). Without the plugin, create the same documents through the MCP tools in the same order.
+
+All three tracks can coexist. For example, use the SDD track for a small feature while the full ISO track covers a safety-critical subsystem.
 
 ### Sources vs specifications
 

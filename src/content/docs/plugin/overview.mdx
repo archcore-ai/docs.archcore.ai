@@ -1,6 +1,6 @@
 ---
 title: Plugin Overview
-description: The Archcore plugin adds slash commands, built-in agents, and context injection to Claude Code, Cursor, and Codex CLI.
+description: The Archcore plugin adds slash commands, built-in agents, and context injection to four AI coding hosts.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -12,15 +12,15 @@ The **Archcore plugin** puts your repository's architecture, rules, and past dec
 
 ## What you get
 
-- 7 slash commands: `/archcore:init`, `/archcore:context`, `/archcore:capture`, `/archcore:plan`, `/archcore:decide`, `/archcore:audit`, and `/archcore:help`. Each command does one thing and states its outcome first.
+- Four slash commands: `/archcore:init`, `/archcore:plan`, `/archcore:document`, and `/archcore:review`. Each command does one thing and states its outcome first.
 - Two built-in agents: a read/write assistant and a read-only auditor.
 - Automatic context: the plugin adds the relevant rules and ADRs to the conversation before the agent edits a source file.
-- Guardrails: writes to `.archcore/` go through MCP only, the plugin validates every mutation, and a cascade check flags dependents that may be stale.
+- Guardrails: writes to `.archcore/` go through MCP only, the CLI validates every mutation, and a cascade check flags dependents that may be stale.
 
 ## When to use the plugin
 
-- You work in **Claude Code**, **Cursor**, or **Codex CLI**.
-- You want guided flows (like `plan --track`) instead of explaining document types to the agent.
+- You work in **Claude Code**, **Cursor**, **Codex CLI**, or **GitHub Copilot CLI**.
+- You want guided track flows instead of explaining document types to the agent.
 - You want context injection and validation to run without being asked.
 
 If you use a different agent, or you want a minimal scriptable install, start with the [CLI](/cli/overview/) instead.
@@ -35,7 +35,7 @@ If you use a different agent, or you want a minimal scriptable install, start wi
 
 ## Next steps
 
-- [Install the plugin](/plugin/install/) in Claude Code, Cursor, or Codex CLI.
+- [Install the plugin](/plugin/install/) in Claude Code, Cursor, Codex CLI, or GitHub Copilot CLI.
 - [Supported AI agents](/plugin/supported-hosts/) lists what each host supports.
 - [How the plugin works](/plugin/how-it-works/) covers hooks, injection, MCP-only writes, and validation.
-- [Plugin skills](/plugin/skills/) documents all 7 commands.
+- [Plugin skills](/plugin/skills/) documents all four commands.

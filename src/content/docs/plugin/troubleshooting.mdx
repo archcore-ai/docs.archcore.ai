@@ -8,11 +8,11 @@ import CrossLinkCallout from '../../../components/CrossLinkCallout.astro';
 
 <PathBadge scope="plugin" />
 
-These issues appear when you run the plugin inside Claude Code, Cursor, or Codex CLI. For CLI-level issues (MCP not reachable, `.archcore/` missing, validation errors), see [CLI troubleshooting](/cli/troubleshooting/).
+These issues appear when you run the plugin inside Claude Code, Cursor, Codex CLI, or GitHub Copilot CLI. For CLI-level issues (MCP not reachable, `.archcore/` missing, validation errors), see [CLI troubleshooting](/cli/troubleshooting/).
 
 ## `/archcore:*` commands don't appear
 
-**Symptom:** Typing `/archcore:help` does nothing, or the autocomplete doesn't list Archcore skills.
+**Symptom:** Typing `/archcore:` doesn't autocomplete, or the list is missing `init`, `plan`, `document`, or `review`.
 
 **Checks, in order:**
 
@@ -36,7 +36,7 @@ These issues appear when you run the plugin inside Claude Code, Cursor, or Codex
 
 **Most common causes:**
 
-- The plugin package is missing `.claude-plugin/plugin.json` (Claude Code) or `.cursor-plugin/plugin.json` (Cursor).
+- The plugin package is missing the manifest its host reads: `.claude-plugin/plugin.json` (Claude Code), `.cursor-plugin/plugin.json` (Cursor), `.codex-plugin/plugin.json` (Codex CLI), or `.plugin/plugin.json` (GitHub Copilot CLI).
 - A skill file's YAML frontmatter is malformed.
 - A hook script is not executable.
 
@@ -53,7 +53,7 @@ For local dev installs, ensure `bin/*` scripts are executable (`chmod +x bin/*`)
 
 **Symptom:** Commands run but the agent reports "MCP tool not available" or "server not connected".
 
-The plugin ships `.mcp.json` at its root, which runs `archcore mcp` from your `PATH`. If MCP is unreachable, check these causes:
+The plugin ships `.claude.mcp.json` at its root, referenced from `.claude-plugin/plugin.json`, which runs `archcore mcp` from your `PATH`. If MCP is unreachable, check these causes:
 
 1. **Plugin didn't load cleanly.** Run `/plugin`; `archcore` should be listed. If it is not, reinstall:
 	```bash
@@ -127,12 +127,14 @@ If you need to edit `settings.json` or `.sync-state.json`, those paths are allow
 
 **Symptom:** You expected the agent to see relevant rules / ADRs before editing `src/...`, but it didn't, and no context summary was printed.
 
-The `check-code-alignment` hook (`PreToolUse` on `Write|Edit`) runs the injection. It exits silently when:
+The pre-write hook runs the injection, through `archcore hooks <host> pre-tool-use`. It stays silent when:
 
-- The edit target lives under `.archcore/` (the sister hook `check-archcore-write` handles that case).
-- The path is outside your configured source roots. Defaults: `src`, `lib`, `app`, `pkg`, `cmd`, `internal`, `apps`, `packages`, `modules`, `components`. Override via `.archcore/settings.json` → `codeAlignment.sourceRoots` (JSON array of directory names).
+- The edit target lives under `.archcore/`. That path is the write guard's business.
+- The path is outside your configured source roots. Defaults: `src`, `lib`, `app`, `pkg`, `cmd`, `internal`, `apps`, `packages`, `modules`, `components`. Set `codeAlignment.sourceRoots` in `.archcore/settings.json` to replace that list (a JSON array of directory names).
 - No `.archcore/` documents reference that path.
 - The env var `ARCHCORE_DISABLE_INJECTION=1` is set.
+- The host is GitHub Copilot, whose pre-write event carries only a permission decision.
+- The installed CLI is older than v0.7.0. The launcher exits silently rather than risk a usage error reading as a deny.
 
 To verify it's enabled, unset the env var and ensure the edited file is under one of the configured roots. To turn it off temporarily:
 
@@ -219,6 +221,32 @@ Checks, in order:
 ## Codex CLI-specific: path env var
 
 When wiring custom hooks or scripts that reference the plugin root on Codex, use `${PLUGIN_ROOT}` — the host-neutral, canonical name. There is no `${CODEX_PLUGIN_ROOT}` (and `${CLAUDE_PLUGIN_ROOT}` is Claude-only).
+
+## Copilot-specific: no Archcore MCP tools in the session
+
+**Symptom:** On GitHub Copilot CLI, the plugin loaded and the commands appear, but every Archcore operation reports that the document tools are unavailable. A session-start line says the project is not wired.
+
+On Copilot the plugin ships no MCP server, so the project-level entry is the only source of document tools. Wire the project once:
+
+```bash
+archcore init --agent copilot --project "$PWD"
+```
+
+Restart the session afterwards so Copilot connects the server. Copilot discovers `.mcp.json` from the working directory up to the git root, and also reads `${COPILOT_HOME:-~/.copilot}/mcp-config.json`, so a repository-root file wires a subdirectory session too.
+
+The advisory is rate-limited to once per 24 hours per project. Suppress it with `ARCHCORE_HIDE_WIRING_NUDGE=1`.
+
+## Copilot-specific: no context before a source edit
+
+**Symptom:** On GitHub Copilot CLI, the write guard blocks direct `.archcore/` edits, but no rules or ADRs appear before a source-file edit.
+
+Copilot's `preToolUse` event carries only a permission decision, so it cannot receive advisory context ([github/copilot-cli#2585](https://github.com/github/copilot-cli/issues/2585)). The write guard runs; the code-alignment injection does not. This is a host limitation, not a misconfiguration.
+
+## Copilot-specific: hooks appear to run twice
+
+**Symptom:** Session-start context or post-write findings are printed twice.
+
+Copilot also reads `.claude/settings.json`. A repository wired for both Copilot and Claude Code runs both configurations. The cost is duplicated output, never a wrong verdict.
 
 ## Claude Code-specific: both `Write` and `Edit` blocked
 
