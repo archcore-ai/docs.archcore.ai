@@ -1,43 +1,41 @@
 ---
 title: Mental Model
-description: CLI as compiler, plugin as runtime. The two layers of Archcore, how they fit together, and when to reach for each.
+description: The Archcore CLI compiles .archcore/ into a context graph and the plugin applies that context inside your agent.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="shared" />
 
-Archcore is one product, built from two pieces that work together. Keep this analogy in your head:
+Archcore is one product built from two pieces:
 
-- **Archcore CLI — the compiler.** Reads `.archcore/`, builds the context graph, exposes it over MCP.
-- **Archcore Plugin — the runtime.** Applies that context inside your AI agent — skills, guardrails, workflows.
-
-Result: your agent ships code aligned with your system by default, not by accident.
+- The **Archcore CLI** is the compiler. It reads `.archcore/`, builds the context graph, and exposes it over MCP.
+- The **Archcore plugin** is the runtime. It applies that context inside your AI agent through skills, guardrails, and workflows.
 
 ## Why two pieces?
 
-Because two different jobs:
+The two pieces do different jobs and change at different rates.
 
-1. **Parsing and exposing context.** Read files, validate structure, track relations, speak MCP. This is slow-changing, needs to be a rock-solid binary, and must run anywhere (CI, editor, agent subprocess).
-2. **Applying context inside a conversation.** Know when to use an ADR vs. a spec vs. a guide. Drive multi-step tracks. Block unsafe writes. Audit the knowledge base. This is fast-changing, deeply integrated with the coding agent's API (skills, hooks, prompts), and host-specific.
+1. **Parsing and exposing context.** Read files, validate structure, track relations, speak MCP. This part changes slowly, has to be a single stable binary, and must run anywhere (CI, editor, agent subprocess).
+2. **Applying context inside a conversation.** Know when to use an ADR vs. a spec vs. a guide. Drive multi-step tracks. Block unsafe writes. Audit the knowledge base. This part changes fast, is tied to the coding agent's API (skills, hooks, prompts), and is host-specific.
 
-Putting both in one package would couple shipping cadences — every plugin tweak would need a full CLI release. Splitting them lets each evolve at its own speed.
+Putting both in one package would couple their release cadences. Every plugin change would need a full CLI release. Splitting them lets each ship on its own schedule.
 
 ## Who does what
 
 | Responsibility                                    | CLI (compiler)   | Plugin (runtime) |
 | ------------------------------------------------- | ---------------- | ---------------- |
-| Initialize `.archcore/` in a repo                 | `archcore init`  | —                |
-| Parse and validate document frontmatter           | Yes              | —                |
-| Build the relation graph (`.sync-state.json`)     | Yes              | —                |
-| Expose MCP tools to agents                        | `archcore mcp`   | —                |
-| Install MCP configs and session hooks             | Yes              | —                |
-| Provide outcome-focused slash commands (`/archcore:decide`, `/archcore:plan`, …) | —                | Yes              |
-| Block direct writes to `.archcore/*.md`           | —                | Yes              |
-| Detect cascade staleness after `update_document`  | —                | Yes              |
-| Host-specific integrations (Claude Code / Cursor) | —                | Yes              |
+| Initialize `.archcore/` in a repo                 | `archcore init`  | No               |
+| Parse and validate document frontmatter           | Yes              | No               |
+| Build the relation graph (`.sync-state.json`)     | Yes              | No               |
+| Expose MCP tools to agents                        | `archcore mcp`   | No               |
+| Install MCP configs and session hooks             | Yes              | No               |
+| Provide outcome-focused slash commands (`/archcore:decide`, `/archcore:plan`, …) | No               | Yes              |
+| Block direct writes to `.archcore/*.md`           | No               | Yes              |
+| Detect cascade staleness after `update_document`  | No               | Yes              |
+| Host-specific integrations (Claude Code / Cursor) | No               | Yes              |
 
-The plugin does not duplicate MCP — it reuses the server from `archcore mcp`. One server, one graph, one source of truth.
+The plugin does not implement its own MCP server. It reuses the one started by `archcore mcp`, so both layers read the same graph.
 
 ## How they interact at runtime
 
@@ -60,29 +58,29 @@ The plugin does not duplicate MCP — it reuses the server from `archcore mcp`. 
 └─────────────────────────┘
 ```
 
-- The host spawns `archcore mcp` as a subprocess on session start.
+- On session start, the host spawns `archcore mcp` as a subprocess.
 - The plugin's session-start hook calls the CLI to emit a summary of documents and relations.
-- You issue a slash command; the plugin loads the matching skill and makes MCP calls.
-- Every MCP mutation validates the document's frontmatter before writing, and (for updates) triggers a cascade staleness check.
+- When you issue a slash command, the plugin loads the matching skill and makes MCP calls.
+- Every MCP mutation validates the document's frontmatter before writing. An update also triggers a cascade staleness check.
 
 ## When to use each path
 
-Use the **[Plugin](/plugin/overview/)** when:
+Use the [plugin](/plugin/overview/) when:
 
-- You work in **Claude Code** or **Cursor** day-to-day.
+- You work in Claude Code or Cursor day to day.
 - You want outcome-focused slash commands (`/archcore:decide`, `/archcore:plan`, `/archcore:capture`) without explaining document types to the agent.
-- You want guardrails on by default — MCP-only writes, post-mutation validation, cascade warnings.
+- You want guardrails on by default, including MCP-only writes, post-mutation validation, and cascade warnings.
 
-Use the **[CLI](/cli/overview/)** directly when:
+Use the [CLI](/cli/overview/) directly when:
 
-- Your host is **Copilot, Gemini CLI, OpenCode, Codex CLI, Roo Code, or Cline** — hosts the plugin doesn't target yet.
-- You're scripting Archcore in CI, pre-commit, or other non-interactive contexts.
+- Your host is Copilot, Gemini CLI, OpenCode, Roo Code, or Cline. The plugin does not target these hosts yet.
+- You script Archcore in CI, pre-commit, or other non-interactive contexts.
 - You want the smallest possible install surface.
 
-Both paths read and write the same `.archcore/`. You can switch between them, and you can use both simultaneously — they coexist.
+Both paths read and write the same `.archcore/`. You can switch between them or run both at once.
 
 ## Next steps
 
-- [Plugin overview](/plugin/overview/) — the runtime layer.
-- [CLI overview](/cli/overview/) — the compiler layer.
-- [Document Types](/concepts/document-types/) — the vocabulary both layers speak.
+- [Plugin overview](/plugin/overview/) describes the runtime layer.
+- [CLI overview](/cli/overview/) describes the compiler layer.
+- [Document Types](/concepts/document-types/) lists the vocabulary both layers speak.

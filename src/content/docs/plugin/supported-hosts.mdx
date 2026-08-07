@@ -1,30 +1,28 @@
 ---
 title: Supported AI agents
-description: Host support matrix for the Archcore Plugin — Claude Code (production), Cursor and Codex CLI (implemented), GitHub Copilot (planned).
+description: "Host support matrix for the Archcore plugin in Claude Code, Cursor, and Codex CLI: install, MCP wiring, and hooks."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-The plugin targets AI coding agents that implement both Agent Skills and MCP as open standards. Skills, built-in agents, and MCP tools are shared across hosts. Only **hooks** and **plugin manifests** are host-specific.
+The plugin runs on AI coding agents that implement both Agent Skills and MCP as open standards. Every host gets the same skills, built-in agents, and MCP tools. Only **hooks** and **plugin manifests** differ per host.
 
 ## Support matrix
 
 | Host             | Status       | Install                        | MCP wiring                                                  | Hooks API                                               |
 | ---------------- | ------------ | ------------------------------ | ----------------------------------------------------------- | ------------------------------------------------------- |
-| **Claude Code**  | Production   | Plugin marketplace             | Auto — plugin ships `.mcp.json` (uses `archcore` from PATH) | `SessionStart`, `PreToolUse`, `PostToolUse`             |
-| **Cursor**       | Implemented  | Plugin marketplace / local dir | User-registered from the `docs/cursor.mcp.example.json` template (scoped via `--project ${workspaceFolder}`) | `sessionStart`, `preToolUse`, `afterMCPExecution` |
-| **Codex CLI**    | Implemented  | `codex plugin marketplace add` | Auto — plugin ships `.codex.mcp.json` (uses `archcore` from PATH) | `SessionStart`, `PreToolUse`, `PostToolUse` (gated)     |
-| GitHub Copilot   | Planned      | —                              | —                                                           | —                                                       |
+| **Claude Code**  | Production   | Plugin marketplace             | Automatic, from the plugin's `.mcp.json` (uses `archcore` from PATH) | `SessionStart`, `PreToolUse`, `PostToolUse`             |
+| **Cursor**       | Implemented  | Plugin marketplace or local directory | User-registered from the `docs/cursor.mcp.example.json` template (scoped via `--project ${workspaceFolder}`) | `sessionStart`, `preToolUse`, `afterMCPExecution` |
+| **Codex CLI**    | Implemented  | `codex plugin marketplace add` | Automatic, from the plugin's `.codex.mcp.json` (uses `archcore` from PATH) | `SessionStart`, `PreToolUse`, `PostToolUse` (gated)     |
+| GitHub Copilot   | Planned      | Not available                  | Not available                                               | Not available                                           |
 
 **Production** means the plugin is deployed and used day-to-day; bug fixes and new skills ship through the marketplace.
 
-**Implemented** means every skill and agent works, and all documented hooks fire, but some host-level edge cases still surface occasionally. On Codex CLI, hooks are additionally gated by a Codex-side feature flag — see [Codex CLI](#codex-cli) below.
+**Implemented** means every skill and agent works and all documented hooks fire. Some host-level edge cases still surface. On Codex CLI, a Codex-side feature flag also gates hooks; see [Codex CLI](#codex-cli) below.
 
 ## Host-specific differences
-
-The differences are at the edges:
 
 ### Plugin manifest
 
@@ -39,7 +37,7 @@ The differences are at the edges:
 | ------------------- | ------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
 | Who registers MCP   | The plugin, via `.mcp.json` at plugin root        | The user, via `~/.cursor/mcp.json` or `.cursor/mcp.json` (copy the `docs/cursor.mcp.example.json` template) | The plugin, via `.codex.mcp.json` referenced from manifest's `mcpServers` |
 | Command points at   | `archcore mcp` (from `PATH`)                      | `archcore mcp --project ${workspaceFolder}` (from `PATH`) | `archcore mcp` (from `PATH`; Codex inherits shell `PATH`) |
-| CLI install step    | Required — install globally via `archcore.ai/install.sh` | Required — install globally via `archcore.ai/install.sh` | Required — install globally via `archcore.ai/install.sh` |
+| CLI install step    | Required. Install globally via `archcore.ai/install.sh` | Required. Install globally via `archcore.ai/install.sh` | Required. Install globally via `archcore.ai/install.sh` |
 
 ### Hook files
 
@@ -47,11 +45,11 @@ The differences are at the edges:
 | ---------------- | -------------------------------------- | ---------------------------------------- | ---------------------------------------- |
 | Hook file        | `hooks/hooks.json`                     | `hooks/cursor.hooks.json`                | `hooks/codex.hooks.json`                 |
 | Trigger names    | `SessionStart`, `PreToolUse`, `PostToolUse` | `sessionStart`, `preToolUse`, `afterMCPExecution` | `SessionStart`, `PreToolUse`, `PostToolUse` |
-| Write matcher    | `Write|Edit`                           | `Write` only                             | `Write|Edit|apply_patch`                 |
+| Write matcher    | `Write\|Edit`                          | `Write` only                             | `Write\|Edit\|apply_patch`               |
 | Output protocol  | Exit codes + structured JSON           | JSON wrapper objects                     | Exit codes + structured JSON             |
 | Path env var     | `${CLAUDE_PLUGIN_ROOT}`                | `${CURSOR_PLUGIN_ROOT}`                  | `${PLUGIN_ROOT}` (host-neutral)          |
 
-All three hook files live in the same plugin package and are selected automatically by the host.
+All three hook files ship in the same plugin package, and the host selects the right one automatically.
 
 ### Cursor: `afterMCPExecution`
 
@@ -59,33 +57,33 @@ Cursor exposes an extra `afterMCPExecution` trigger that fires after MCP tool ca
 
 ### Codex CLI
 
-Codex CLI uses the same `PostToolUse` semantics as Claude Code, plus a third write surface — Codex's `apply_patch` tool — which is added to the `PreToolUse` matcher. Codex hooks are gated by a Codex-side feature flag:
+Codex CLI uses the same `PostToolUse` semantics as Claude Code. It adds a third write surface, Codex's `apply_patch` tool, to the `PreToolUse` matcher. A Codex-side feature flag gates Codex hooks:
 
 ```bash
 codex features enable plugin_hooks
 ```
 
-This flag is currently under development in Codex (default off). Without it, hooks are inert but skills, MCP, and agents still work normally.
+The flag is under development in Codex and defaults to off. Without it, hooks are inert, and skills, MCP, and agents still work.
 
 The path env var is `${PLUGIN_ROOT}` — Codex's canonical, host-neutral name. There is no `${CODEX_PLUGIN_ROOT}` variable.
 
 ### Command surfaces
 
-Skills are surfaced differently depending on host conventions:
+Each host surfaces skills through its own convention:
 
 - **Claude Code** and **Cursor** load skills directly from `skills/<name>/SKILL.md`.
-- **Codex CLI** surfaces skills through thin `commands/<name>.md` wrappers (7 of them) — one per command.
+- **Codex CLI** surfaces skills through 7 `commands/<name>.md` wrappers, one per command.
 
 The skill content itself is the same; only the entry point differs.
 
 ### Agents
 
-Both `archcore-assistant` and `archcore-auditor` ship as `.md` (Claude Code, Cursor) and `.toml` (Codex CLI). The TOML variants translate the same tool whitelists into Codex's sandbox model — `read-only` for the auditor, `workspace-write` for the assistant. See [Built-in agents](/plugin/agents/).
+Both `archcore-assistant` and `archcore-auditor` ship as `.md` (Claude Code, Cursor) and `.toml` (Codex CLI). The TOML variants translate the same tool whitelists into Codex's sandbox model: `read-only` for the auditor, `workspace-write` for the assistant. See [Built-in agents](/plugin/agents/).
 
 ## Choosing a host
 
 **Use Claude Code if:**
-- You want the most mature path — it has the deepest testing coverage.
+- You want the host with the deepest testing coverage.
 - You're already invested in the Claude Code CLI workflow.
 
 **Use Cursor if:**
@@ -93,19 +91,19 @@ Both `archcore-assistant` and `archcore-auditor` ship as `.md` (Claude Code, Cur
 - You want `afterMCPExecution` semantics (single post-MCP hook).
 
 **Use Codex CLI if:**
-- You want a terminal-first agent with auto-registered MCP (no manual wiring).
+- You want a terminal-first agent that registers MCP for you.
 - You're comfortable enabling the `plugin_hooks` feature flag to get full hook coverage.
 
-**All three are first-class.** Skills, agents, hooks, and guardrails behave identically.
+Skills, agents, hooks, and guardrails behave identically on all three hosts.
 
 ## Unsupported hosts
 
-The plugin is not available on GitHub Copilot yet, or on any other MCP-aware CLI without a plugin runtime. Those agents work via the [CLI path](/cli/overview/) only — MCP access and agent integrations, but no plugin skills or guided flows.
+The plugin does not run on GitHub Copilot yet, or on any other MCP-aware CLI without a plugin runtime. Those agents use the [CLI path](/cli/overview/) instead, which gives them MCP access and agent integrations without plugin skills or guided flows.
 
-Track planned host support in the plugin's [repository](https://github.com/archcore-ai/plugin).
+Track planned host support in the [plugin repository](https://github.com/archcore-ai/plugin).
 
 ## Next steps
 
-- [How plugin works](/plugin/how-it-works/) — the hook lifecycle that differs per host.
-- [Install](/plugin/install/) — marketplace commands per host.
-- [Troubleshooting](/plugin/troubleshooting/) — host-specific issues.
+- [How the plugin works](/plugin/how-it-works/) describes the hook lifecycle that differs per host.
+- [Install the plugin](/plugin/install/) lists the marketplace command for each host.
+- [Plugin troubleshooting](/plugin/troubleshooting/) covers host-specific issues.

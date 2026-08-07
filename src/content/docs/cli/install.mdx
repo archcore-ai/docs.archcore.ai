@@ -23,7 +23,7 @@ The CLI is a single binary. Install it with one command for your platform.
 		irm https://archcore.ai/install.ps1 | iex
 		```
 
-		Installs `archcore.exe` under `%LOCALAPPDATA%\Programs\archcore` and adds it to your user `PATH`. Open a new PowerShell window after install so the `PATH` change is picked up. Requires PowerShell 5.1+ (ships by default on Windows 10/11).
+		The script installs `archcore.exe` under `%LOCALAPPDATA%\Programs\archcore` and adds it to your user `PATH`. Open a new PowerShell window after install to pick up the `PATH` change. The script requires PowerShell 5.1 or later, which ships with Windows 10 and 11.
 	</TabItem>
 	<TabItem label="Windows (WSL)">
 		If you prefer a Linux environment on Windows, install <a href="https://learn.microsoft.com/en-us/windows/wsl/install" target="_blank">WSL</a> and run inside it:
@@ -42,7 +42,7 @@ The install scripts accept three environment variables (same on Unix and Windows
 | ---------------------- | ----------------- | --------------------------------------- | ------------------------------------------------------------------------ |
 | `ARCHCORE_VERSION`     | latest            | latest                                  | Pin to a specific release tag (e.g. `v1.0.0`).                            |
 | `ARCHCORE_INSTALL_DIR` | `~/.local/bin`    | `%LOCALAPPDATA%\Programs\archcore`      | Override the install directory.                                          |
-| `GITHUB_TOKEN`         | —                 | —                                       | Authenticate API and download requests (private repos, rate limits).     |
+| `GITHUB_TOKEN`         | None              | None                                    | Authenticate API and download requests (private repos, rate limits).     |
 
 <Tabs>
 	<TabItem label="macOS / Linux">
@@ -65,7 +65,7 @@ The install scripts accept three environment variables (same on Unix and Windows
 archcore --version
 ```
 
-You should see a version string. If the binary isn't on your `PATH`, see [troubleshooting](/cli/troubleshooting/).
+You should see a version string. If the binary isn't on your `PATH`, see [CLI troubleshooting](/cli/troubleshooting/).
 
 ## Update
 
@@ -73,9 +73,9 @@ You should see a version string. If the binary isn't on your `PATH`, see [troubl
 archcore update
 ```
 
-This queries the GitHub release feed, downloads the binary for your OS and architecture, verifies the checksum, and updates in place.
+`archcore update` queries the GitHub release feed, downloads the binary for your OS and architecture, verifies the checksum, and updates in place.
 
 ## Next steps
 
-- [Quick start](/cli/quick-start/) — initialize a project and create your first document.
-- [Commands](/cli/commands/) — the full command reference.
+- [Quick start](/cli/quick-start/): initialize a project and create your first document.
+- [Commands](/cli/commands/): the full command reference.

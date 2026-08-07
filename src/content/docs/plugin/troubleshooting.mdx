@@ -1,6 +1,6 @@
 ---
 title: Plugin Troubleshooting
-description: Common issues with the Archcore Plugin — commands not appearing, MCP server not found, validation failures, host-specific hook problems.
+description: "Fixes for Archcore plugin issues: missing /archcore:* commands, MCP server not found, and hooks that do not fire."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -8,7 +8,7 @@ import CrossLinkCallout from '../../../components/CrossLinkCallout.astro';
 
 <PathBadge scope="plugin" />
 
-Common issues specific to running the plugin inside Claude Code, Cursor, or Codex CLI. For CLI-level issues (MCP not reachable, `.archcore/` missing, validation errors), see [CLI troubleshooting](/cli/troubleshooting/).
+These issues appear when you run the plugin inside Claude Code, Cursor, or Codex CLI. For CLI-level issues (MCP not reachable, `.archcore/` missing, validation errors), see [CLI troubleshooting](/cli/troubleshooting/).
 
 ## `/archcore:*` commands don't appear
 
@@ -26,9 +26,9 @@ Common issues specific to running the plugin inside Claude Code, Cursor, or Code
 
 2. **Host was restarted.** Plugins load at startup. After installing or updating, restart the host.
 
-3. **Session-start hook ran.** Look at the session opening messages — you should see a short "Archcore context loaded" line. If not, the hook didn't fire.
+3. **Session-start hook ran.** Look at the session opening messages for a short "Archcore context loaded" line. If it is missing, the hook didn't fire.
 
-4. **Run `archcore doctor` from your shell.** The CLI validates `.archcore/` integrity. For plugin-side install issues (missing skills, hook scripts, manifest problems), reinstall via the marketplace — see [Install](/plugin/install/).
+4. **Run `archcore doctor` from your shell.** The CLI validates `.archcore/` integrity. For plugin-side install issues (missing skills, hook scripts, manifest problems), reinstall via the marketplace. See [Install the plugin](/plugin/install/).
 
 ## "Plugin failed to load"
 
@@ -53,9 +53,9 @@ For local dev installs, ensure `bin/*` scripts are executable (`chmod +x bin/*`)
 
 **Symptom:** Commands run but the agent reports "MCP tool not available" or "server not connected".
 
-The plugin ships `.mcp.json` at its root running `archcore mcp` from your `PATH`. If MCP is unreachable, one of these is usually the cause:
+The plugin ships `.mcp.json` at its root, which runs `archcore mcp` from your `PATH`. If MCP is unreachable, check these causes:
 
-1. **Plugin didn't load cleanly.** Run `/plugin` — `archcore` should be listed. If not, reinstall:
+1. **Plugin didn't load cleanly.** Run `/plugin`; `archcore` should be listed. If it is not, reinstall:
 	```bash
 	claude plugin uninstall archcore@archcore-plugins
 	claude plugin install archcore@archcore-plugins
@@ -65,7 +65,7 @@ The plugin ships `.mcp.json` at its root running `archcore mcp` from your `PATH`
 	archcore --version
 	```
 	If this fails, install the CLI via https://docs.archcore.ai/cli/install/ and restart Claude Code so it inherits the updated `PATH`.
-3. **Duplicate-server warning in `/plugin` UI.** If `/plugin` shows "Errors (1)" with an `archcore` MCP message, a user- or project-registered `archcore` has the same command. Benign — both registrations resolve to the same binary on `PATH`. To silence it, remove the redundant user registration (`claude mcp remove archcore`) or the project `.mcp.json` entry.
+3. **Duplicate-server warning in `/plugin` UI.** If `/plugin` shows "Errors (1)" with an `archcore` MCP message, a user- or project-registered `archcore` has the same command. The warning is harmless, because both registrations resolve to the same binary on `PATH`. To silence it, remove the redundant user registration (`claude mcp remove archcore`) or the project `.mcp.json` entry.
 
 <CrossLinkCallout
 	to="/cli/troubleshooting/"
@@ -91,7 +91,7 @@ Cursor does not auto-register plugin-provided MCP. Copy `docs/cursor.mcp.example
 }
 ```
 
-**Keep the `--project ${workspaceFolder}` argument** — without it, a single registration would read one project's `.archcore/` across every Cursor window. Verify the CLI itself resolves:
+**Keep the `--project ${workspaceFolder}` argument.** Without it, a single registration reads one project's `.archcore/` across every Cursor window. Then verify that the CLI itself resolves:
 
 ```bash
 archcore --version
@@ -109,17 +109,17 @@ Your Cursor MCP registration is missing the `--project ${workspaceFolder}` argum
 
 **Symptom:** The agent tries to fix a typo in a `.archcore/` file and gets blocked. The hook says "use MCP tools instead".
 
-This is the `PreToolUse` hook doing its job. The fix is to use `update_document` with the new content instead of `Edit`. Ask the agent:
+The `PreToolUse` hook blocks that edit by design. Use `update_document` with the new content instead of `Edit`. Ask the agent:
 
 > Use `update_document` to correct the typo in the frontmatter title.
 
-If you genuinely need to edit `settings.json` or `.sync-state.json`, those paths are allowed — only document files (`*.md`) are blocked.
+If you need to edit `settings.json` or `.sync-state.json`, those paths are allowed. The hook blocks only document files (`*.md`).
 
 ## Validation fails after every write
 
 **Symptom:** Every time a skill creates or updates a document, the post-mutation hook reports a validation error.
 
-1. Run `archcore doctor` from the shell — the CLI gives a precise error.
+1. Run `archcore doctor` from the shell. The CLI reports the precise error.
 2. Common causes: slug with uppercase letters, missing `title`/`status` frontmatter, tag with forbidden characters.
 3. Skills should handle all three; if they don't, file a bug on the plugin repo.
 
@@ -140,13 +140,13 @@ To verify it's enabled, unset the env var and ensure the edited file is under on
 export ARCHCORE_DISABLE_INJECTION=1
 ```
 
-The hook is non-blocking by design — if it errors, it exits silently rather than holding up the edit. So absence of output ≠ broken hook; it usually means "nothing relevant to inject."
+The hook never blocks an edit: if it errors, it exits silently. Absence of output does not mean the hook is broken. It usually means the hook found nothing relevant to inject.
 
 ## "Update your CLI" nudge at session start
 
 **Symptom:** A session opens with a message that your `.archcore/settings.json` uses a newer setting (e.g. global sources) that the installed `archcore` CLI is too old to understand, and that MCP and context are unavailable until you update.
 
-A project that declares [global sources](/cli/global-sources/) carries a `globals` field in `settings.json`. An older, pre-globals CLI uses a strict config parser that rejects unknown fields, so every config-loading command (`mcp`, `hooks`, `doctor`) fails. The host launches `archcore mcp` directly, so the plugin can't wrap that crash — the session-start hook is the one place it can turn the cryptic failure into a clear nudge.
+A project that declares [global sources](/cli/global-sources/) carries a `globals` field in `settings.json`. An older, pre-globals CLI uses a strict config parser that rejects unknown fields, so every config-loading command (`mcp`, `hooks`, `doctor`) fails. The host launches `archcore mcp` directly, so the plugin can't wrap that crash. The session-start hook is the one place where it can turn the cryptic failure into a clear nudge.
 
 **Fix:** Update the CLI, then restart the host:
 
@@ -159,13 +159,13 @@ irm https://archcore.ai/install.ps1 | iex
 archcore --version   # verify
 ```
 
-The advisory is rate-limited to once per 24h and only fires on the strict parser's exact field-rejection signature, so a current CLI that understands `globals` never triggers it — even in projects that declare globals.
+The advisory is rate-limited to once per 24h and fires only on the strict parser's exact field-rejection signature. A current CLI that understands `globals` never triggers it, even in projects that declare globals.
 
 ## A declared global source is missing
 
 **Symptom:** The session-start context shows a warning that a global source named in `settings.json` couldn't be found, and only local documents were loaded.
 
-With a current CLI, a missing global doesn't block your session — the hook degrades to a **local-only** context summary and names the missing source so your own documents are never silently dropped. (The MCP server itself still fails fast on a missing global; see [CLI troubleshooting](/cli/troubleshooting/#missing-or-invalid-global-source).)
+With a current CLI, a missing global doesn't block your session. The hook degrades to a **local-only** context summary and names the missing source, so your own documents still load. The MCP server itself still fails fast on a missing global; see [CLI troubleshooting](/cli/troubleshooting/#missing-or-invalid-global-source).
 
 **Fix:** Clone or [vendor](/cli/global-sources/#vendoring-a-global-in-tree) the source so its `path` resolves, or remove the entry from `globals` if it's no longer needed.
 
@@ -173,18 +173,18 @@ With a current CLI, a missing global doesn't block your session — the hook deg
 
 **Symptom:** Every mutation dumps a long "cascade dependents may need review" block.
 
-This means a lot of documents are linked to the one you just changed. That's working-as-intended — but you can reduce noise by:
+Many documents link to the one you just changed. The warnings are intended. To reduce the noise:
 
-- Splitting the updated document into smaller, more focused pieces.
-- Accepting some cascade drift deliberately (status `accepted` on the dependent means "I've reviewed this").
+- Split the updated document into smaller, more focused pieces.
+- Accept some cascade drift deliberately (status `accepted` on the dependent means "I've reviewed this").
 
-There's no global mute — the warning is intentional friction.
+There is no global mute. The warning is intentional friction.
 
 ## Cursor-specific: `afterMCPExecution` not firing
 
 **Symptom:** On Cursor, validation and cascade checks don't run after MCP calls.
 
-Cursor only fires `afterMCPExecution` for successful MCP calls. If the MCP call itself failed (invalid frontmatter, for example), the hook won't fire — you'll see the MCP error directly.
+Cursor only fires `afterMCPExecution` for successful MCP calls. If the MCP call itself failed (invalid frontmatter, for example), the hook won't fire, and you'll see the MCP error directly.
 
 ## Codex CLI-specific: hooks not firing
 
@@ -196,19 +196,19 @@ Codex hooks are gated by an under-development feature flag (default off). Enable
 codex features enable plugin_hooks
 ```
 
-After enabling, restart the Codex session so the new hook configuration is picked up. If hooks still don't fire, verify your Codex version is `0.117.0` or later (`codex --version`).
+After you enable the flag, restart the Codex session so it picks up the new hook configuration. If hooks still don't fire, verify your Codex version is `0.117.0` or later (`codex --version`).
 
 ## Codex CLI-specific: `apply_patch` writes not blocked
 
 **Symptom:** On Codex CLI, you used Codex's `apply_patch` tool to edit a `.archcore/*.md` file directly and the hook didn't block it.
 
-The Codex hooks file (`hooks/codex.hooks.json`) uses the matcher `Write|Edit|apply_patch` precisely to cover all three Codex write surfaces. If the matcher doesn't appear to be catching `apply_patch`, the most likely cause is that `plugin_hooks` is not enabled (see above). Without the feature flag, none of the hooks fire — including the `PreToolUse` write guard.
+The Codex hooks file (`hooks/codex.hooks.json`) uses the matcher `Write|Edit|apply_patch` precisely to cover all three Codex write surfaces. If the matcher doesn't appear to be catching `apply_patch`, the most likely cause is that `plugin_hooks` is not enabled (see above). Without the feature flag, no hook fires, including the `PreToolUse` write guard.
 
 ## Codex CLI-specific: MCP server not found
 
 **Symptom:** On Codex CLI, MCP tool calls fail with "server not found" or similar.
 
-The plugin ships `.codex.mcp.json`, referenced from the manifest's `mcpServers` field. The `command` is `archcore` (from `PATH`) — Codex inherits the shell's `PATH` when spawning the MCP server, so the CLI must be installed globally.
+The plugin ships `.codex.mcp.json`, referenced from the manifest's `mcpServers` field. The `command` is `archcore` from `PATH`. Codex inherits the shell's `PATH` when it spawns the MCP server, so the CLI must be installed globally.
 
 Checks, in order:
 
@@ -224,10 +224,10 @@ When wiring custom hooks or scripts that reference the plugin root on Codex, use
 
 **Symptom:** On Claude Code, you can't fix a file manually even though you know what you're doing.
 
-That's deliberate — the matcher is `Write|Edit`. If you truly need to bypass (one-off rename, recovering from a corrupted state), edit the file from a separate shell with `vim`/`$EDITOR`; the plugin doesn't intercept shells.
+The matcher is `Write|Edit`, so the hook blocks both. If you need to bypass it (a one-off rename, or recovery from a corrupted state), edit the file from a separate shell with `vim` or `$EDITOR`. The plugin doesn't intercept shells.
 
 ## Next steps
 
-- [How plugin works](/plugin/how-it-works/) — understand what each hook is doing before debugging.
-- [CLI troubleshooting](/cli/troubleshooting/) — for MCP/validate issues.
-- [Supported AI agents](/plugin/supported-hosts/) — for host-specific differences.
+- [How the plugin works](/plugin/how-it-works/) explains what each hook does.
+- [CLI troubleshooting](/cli/troubleshooting/) covers MCP and validation issues.
+- [Supported AI agents](/plugin/supported-hosts/) lists host-specific differences.

@@ -1,15 +1,15 @@
 ---
 title: Built-in Agents
-description: The two Archcore Plugin agents — archcore-assistant for complex multi-document work, archcore-auditor for read-only documentation health reviews.
+description: "The Archcore plugin ships two agents: archcore-assistant for multi-document work and archcore-auditor for reviews."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-The plugin ships two built-in agents — narrow specialists with the MCP tools they need and nothing more.
+The plugin ships two built-in agents: `archcore-assistant` writes documents, and `archcore-auditor` reviews them read-only. Each agent gets only the MCP tools its role requires.
 
-You rarely invoke agents directly — skills call them, and the host can also trigger them proactively based on your intent (the auditor especially, since it runs in the background). But it helps to know what each does so you can reason about what's happening when a skill delegates.
+You rarely invoke an agent directly. Skills call them, and the host can trigger them proactively from your intent, especially the auditor, which runs in the background. Knowing what each agent does helps you follow what happens when a skill delegates.
 
 ## `archcore-assistant`
 
@@ -24,15 +24,15 @@ A universal read/write agent for complex multi-document tasks.
 
 ### When skills call it
 
-- [`/archcore:plan --track iso`](/plugin/skills/#archcoreplan) — building the full BRS → StRS → SyRS → SRS cascade.
-- [`/archcore:decide`](/plugin/skills/#archcoredecide) continuations — wiring ADR → spec → plan or ADR → rule → guide with the right relations.
+- [`/archcore:plan --track iso`](/plugin/skills/#archcoreplan) builds the full BRS → StRS → SyRS → SRS cascade.
+- [`/archcore:decide`](/plugin/skills/#archcoredecide) continuations wire ADR → spec → plan or ADR → rule → guide with the right relations.
 - Large-scope refactors of `.archcore/` across many files.
 
 ### What it's good at
 
-- Keeping the relation graph consistent across five or ten documents at once — creating relations right after the documents they connect.
-- Respecting document-type templates — filling the right sections, not just pasting prose.
-- Writing every change through MCP tools, never hand-editing files, and planning before bulk creation (it won't exceed ~10 documents in one pass without confirming).
+- Keeping the relation graph consistent across five or ten documents at once. It creates each relation right after the documents it connects.
+- Respecting document-type templates and filling the required sections.
+- Writing every change through MCP tools rather than editing files by hand. It confirms with you before creating more than about 10 documents in one pass.
 
 ## `archcore-auditor`
 
@@ -43,34 +43,34 @@ A read-only auditor for documentation health reviews.
 | **Role** | Detects coverage gaps, orphaned documents, stale statuses, consistency issues. |
 | **Tools** | `list_documents`, `get_document`, `list_relations`, plus `Read`, `Grep`, `Glob`. |
 | **Max turns** | 15 |
-| **Execution** | Runs in the background (`background: true`) and is invoked proactively — after a batch of document creations, or before a release. The audit runs non-blocking, so you keep working while it reviews. |
-| **Safety** | Read-only by design — cannot create, update, or delete documents. |
+| **Execution** | Runs in the background (`background: true`). The host invokes it proactively after a batch of document creations, or before a release. The audit is non-blocking, so you keep working while it reviews. |
+| **Safety** | Read-only by design. It cannot create, update, or delete documents. |
 
 ### When skills call it
 
-- [`/archcore:audit`](/plugin/skills/#archcoreaudit) — dashboard (default) or full audit (`--deep`); some of the dashboard numbers come from auditor queries.
-- [`/archcore:audit --drift`](/plugin/skills/#archcoreaudit) — find stale documents via code drift, cascade drift, and temporal signals.
+- [`/archcore:audit`](/plugin/skills/#archcoreaudit) returns the dashboard (default) or the full audit (`--deep`). Some dashboard numbers come from auditor queries.
+- [`/archcore:audit --drift`](/plugin/skills/#archcoreaudit) finds stale documents through code drift, cascade drift, and temporal signals.
 
 ### What it's good at
 
-- Returning structured audit reports — not prose summaries.
-- Finding orphans: documents with no incoming or outgoing relations that probably should have some.
+- Returning structured audit reports rather than prose summaries.
+- Finding orphans: documents with no incoming or outgoing relations.
 - Spotting naming inconsistencies, tag hygiene issues, and missing frontmatter.
 
 ## Host file formats
 
 Both agents ship in two file formats side by side under `agents/`:
 
-- **`.md`** (`archcore-assistant.md`, `archcore-auditor.md`) — consumed by Claude Code and Cursor.
-- **`.toml`** (`archcore-assistant.toml`, `archcore-auditor.toml`) — consumed by Codex CLI. The auditor TOML uses `sandbox_mode = "read-only"`, `model_reasoning_effort = "high"`, plus a `disabled_tools` list covering the five mutating MCP tools; the assistant TOML uses `sandbox_mode = "workspace-write"`.
+- **`.md`** (`archcore-assistant.md`, `archcore-auditor.md`) for Claude Code and Cursor.
+- **`.toml`** (`archcore-assistant.toml`, `archcore-auditor.toml`) for Codex CLI. The auditor TOML uses `sandbox_mode = "read-only"`, `model_reasoning_effort = "high"`, plus a `disabled_tools` list covering the five mutating MCP tools; the assistant TOML uses `sandbox_mode = "workspace-write"`.
 
-Tool whitelists are identical across formats — the TOML variants just translate the safety boundaries into Codex's native sandbox model.
+Tool whitelists are identical across formats. The TOML variants translate the same safety boundaries into Codex's native sandbox model.
 
 ## Why two agents, not one
 
-Separating the write-capable agent from the read-only one is a deliberate safety boundary. The auditor runs on every review, so it handles more documents and contexts per week than the assistant. Keeping it read-only means a review session can never accidentally mutate state — which is also why it can run in the background and be triggered proactively across a large knowledge base without blocking your work.
+Separating the write-capable agent from the read-only one is a deliberate safety boundary. The auditor runs on every review, so it handles more documents and contexts per week than the assistant. Because it is read-only, a review session cannot mutate state, which is why it can run in the background across a large knowledge base without blocking your work.
 
 ## Next steps
 
-- [Commands](/plugin/skills/) — the 7 user-facing commands that call these agents.
-- [Troubleshooting](/plugin/troubleshooting/) — issues you might see with agent invocations.
+- [Plugin skills](/plugin/skills/) documents the 7 commands that call these agents.
+- [Plugin troubleshooting](/plugin/troubleshooting/) covers issues with agent invocations.

@@ -86,6 +86,9 @@ export default defineConfig({
 		'/plugin/tracks/': '/plugin/skills/#archcoreplan',
 		'/reference/tracks/': '/plugin/skills/#archcoreplan',
 
+		// MCP track prompts removed in CLI v0.7.0 — track orchestration is plugin-owned
+		'/reference/mcp-prompts/': '/plugin/skills/#archcoreplan',
+
 		// `archcore init` deep-dive folded into CLI Quick Start
 		'/cli/init/': '/cli/quick-start/',
 	},
@@ -233,7 +236,6 @@ export default defineConfig({
 					items: [
 						{ label: 'Document Format', slug: 'reference/document-format' },
 						{ label: 'MCP Tools', slug: 'reference/mcp-tools' },
-						{ label: 'MCP Prompts', slug: 'reference/mcp-prompts' },
 						{ label: 'Plugin Skills', slug: 'reference/skills' },
 					],
 				},

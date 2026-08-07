@@ -1,32 +1,67 @@
 ---
 title: Agent Integrations
-description: The AI coding agents Archcore supports out of the box — Claude Code, Cursor, GitHub Copilot, Gemini CLI, OpenCode, Codex CLI, Roo Code, Cline. Support matrix and config paths.
+description: Archcore supports 8 coding agents with MCP, hooks, and an instruction hint. Support matrix and config paths.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="cli" />
 
-Archcore supports 8 coding agents out of the box. Each agent integrates through three mechanisms: **MCP servers**, **session hooks**, and an **instruction hint** — a short "use Archcore" nudge written into the agent's config files. All three are installed automatically (where supported) during `archcore init`.
+Archcore supports 8 coding agents. Each one integrates through three mechanisms: **MCP servers**, **lifecycle hooks**, and an **instruction hint** — a short "use Archcore" nudge written into the agent's config files. `archcore init` installs all three where the host supports them.
 
-The [CLI page](https://archcore.ai/cli/) has the short version of this matrix if you are still deciding.
+If you are still deciding, the [CLI page](https://archcore.ai/cli/) has the short version of this matrix.
 
 ## Support matrix
 
-| Agent          | MCP    | Hooks | Instruction File |
-| -------------- | ------ | ----- | ---------------- |
-| Claude Code    | Yes    | Yes   | `.claude/rules/` |
-| Cursor         | Yes    | Yes   | `AGENTS.md`      |
-| GitHub Copilot | Yes    | Yes   | `AGENTS.md`      |
-| Gemini CLI     | Yes    | Yes   | `GEMINI.md`      |
-| OpenCode       | Yes    | —     | `AGENTS.md`      |
-| Codex CLI      | Yes    | —     | `AGENTS.md`      |
-| Roo Code       | Yes    | —     | `AGENTS.md`      |
-| Cline          | Manual | —     | `AGENTS.md`      |
+| Agent          | MCP    | Hooks | Instruction File          |
+| -------------- | ------ | ----- | ------------------------- |
+| Claude Code    | Yes    | Yes   | `CLAUDE.md` + `AGENTS.md` |
+| Cursor         | Yes    | Yes   | `AGENTS.md`               |
+| GitHub Copilot | Yes    | Yes   | `AGENTS.md`               |
+| Gemini CLI     | Yes    | Yes   | `GEMINI.md`               |
+| Codex CLI      | Yes    | Yes   | `AGENTS.md`               |
+| OpenCode       | Yes    | No    | `AGENTS.md`               |
+| Roo Code       | Yes    | No    | `AGENTS.md`               |
+| Cline          | Manual | No    | `AGENTS.md`               |
 
-**MCP** = agent can list, search, read, create, and update documents through Archcore tools.
-**Hooks** = agent receives document context automatically at session start.
-**Instruction File** = where the "use Archcore" instruction hint is written.
+- **MCP** gives the agent tools to list, search, read, create, and update documents.
+- **Hooks** wire three lifecycle events: session start (project recap), pre-write (blocks direct writes to `.archcore/` documents and injects the documents that constrain the file being edited), and post-write (structure, relation-cascade, and precision findings after a document changes).
+- **Instruction File** is the file that receives the "use Archcore" hint.
+
+Hook install wiring covers five hosts. The other three do not get a hook config:
+
+- **OpenCode** hooks are JavaScript plugins, so they cannot be wired declaratively. The CLI ships the `archcore hooks opencode <event>` commands for a plugin to delegate to, and writes no config. This is permanent, not pending.
+- **Roo Code** supports `onSave` hooks only, which are not lifecycle events.
+- **Cline** has no hooks, and its MCP config is manual (see [MCP config locations](#mcp-config-locations)).
+
+## Host limitations
+
+A host can accept a hook config and still not run it. After a successful write, `archcore hooks install` prints whether that host can act on what was written. `archcore doctor` prints the same notes, but only for hosts whose config holds an Archcore hook command. Silence means the wiring works.
+
+Three hosts carry a known limitation.
+
+### Codex CLI
+
+Codex keeps hooks behind an experimental feature flag that is off by default. Enable it with `codex --enable hooks`, or add a `[features]` table to `~/.codex/config.toml`:
+
+```toml
+[features]
+hooks = true
+```
+
+Before Codex 0.129.0 the key is spelled `codex_hooks = true`.
+
+Two further conditions apply: hooks are unavailable on Windows, and project-local hooks load only when the `.codex/` layer is trusted.
+
+### GitHub Copilot
+
+Copilot's pre-write event carries only a permission decision, so it cannot receive context. The write guard runs there and still blocks direct writes to `.archcore/` documents. The code-alignment injection does not run.
+
+Copilot also reads `.claude/settings.json`. In a repository wired for both Copilot and Claude Code, the hooks may run twice; `hooks install` reports the possible duplicate.
+
+### Gemini CLI
+
+Gemini's tool events are wired from the published reference and are not confirmed against a running host. Its event names, tool names, and timeout unit all differ from every other host.
 
 ## Auto-detection
 
@@ -43,12 +78,13 @@ The [CLI page](https://archcore.ai/cli/) has the short version of this matrix if
 | Roo Code       | `.roo/` directory                              |
 | Cline          | `.clinerules/` directory                       |
 
-If no agents are detected, behavior depends on the terminal:
+If no agents are detected, behavior depends on the terminal.
 
-- **Interactive** — Archcore prompts you with a multi-select of every supported agent, plus a **Skip — configure later** option. Pick the agents you want to configure, or skip.
-- **Non-interactive** (no TTY, e.g. CI) — Archcore skips agent setup entirely and prints a hint to run `archcore mcp install --agent <id>` later.
+In an interactive terminal, Archcore prompts you with a multi-select of every supported agent, plus a "Skip — configure later" option. Pick the agents you want to configure, or skip.
 
-There is no default agent — nothing is installed until you pick or run a manual install.
+Without a TTY (in CI, for example), Archcore skips agent setup and prints a hint to run `archcore mcp install --agent <id>` later.
+
+There is no default agent. Archcore installs nothing until you pick an agent or run a manual install.
 
 ## MCP config locations
 
@@ -63,22 +99,40 @@ There is no default agent — nothing is installed until you pick or run a manua
 | Roo Code       | `roo-code`    | `.roo/mcp.json`                |
 | Cline          | `cline`       | VS Code globalStorage (manual) |
 
+Codex CLI is the only agent whose MCP config is TOML. Its hooks live in a separate file, `.codex/hooks.json`, so the hook writer never rewrites the `config.toml` that the MCP wiring owns.
+
+Cline stores its MCP config in VS Code's `globalStorage` rather than in a project file, so you add the Archcore server through Cline's MCP settings interface. Archcore prints a hint when it detects Cline.
+
 ## Corrupt config handling
 
 Archcore never silently overwrites a config it can't parse. When it writes an agent's MCP or hook config, the behavior depends on the file format:
 
-- **Standard JSON** — `.claude/settings.json`, `.cursor/hooks.json`, `.mcp.json`, `opencode.json`, and other strict-JSON configs. If the file is corrupt or unparseable, Archcore backs it up to `{path}.bak` and starts fresh from a valid config. You'll see a warning noting the backup.
-- **`.vscode/mcp.json`** (GitHub Copilot) — this file is JSONC, so comments and trailing commas are valid even though they aren't strict JSON. Archcore leaves it untouched and prints a manual-install hint instead of touching your other MCP servers.
+- **Standard JSON** covers `.claude/settings.json`, `.cursor/hooks.json`, `.mcp.json`, `opencode.json`, and other strict-JSON configs. If the file is corrupt or unparseable, Archcore backs it up to `{path}.bak` and starts fresh from a valid config. You'll see a warning naming the backup.
+- **`.vscode/mcp.json`** (GitHub Copilot) is JSONC, so comments and trailing commas are valid even though they aren't strict JSON. Archcore leaves the file untouched and prints a manual-install hint rather than rewrite your other MCP servers.
 
 Add `*.bak` to your `.gitignore` so these backups don't get committed.
 
 ## Instruction hint
 
-Installing the MCP server doesn't guarantee the agent will use it. The instruction hint is a short "use Archcore" nudge written into the agent's instruction file. It tells the model that Archcore's MCP tools exist and when to consult them — otherwise the tools sit idle and the agent never calls `list_documents` or `search_documents`.
+Installing the MCP server doesn't guarantee the agent will use it. The instruction hint is a short "use Archcore" nudge written into the agent's instruction file. It tells the model that Archcore's MCP tools exist and when to consult them. Without the hint, the tools sit idle and the agent never calls `list_documents` or `search_documents`.
 
-The hint is **opt-in** during interactive `archcore init` (the prompt defaults to yes). In non-interactive mode it's skipped, and Archcore points you to `archcore instructions install` instead.
+The hint is **opt-in** during interactive `archcore init` (the prompt defaults to yes). In non-interactive mode Archcore skips the hint and points you to `archcore instructions install`.
 
-For agents with shared instruction files (`AGENTS.md`, `GEMINI.md`), the hint is inserted inside a managed marker block:
+### Where the hint lands
+
+| Agent                                                        | Instruction file(s)             |
+| ------------------------------------------------------------ | ------------------------------- |
+| Claude Code                                                  | `CLAUDE.md` **and** `AGENTS.md` |
+| Gemini CLI                                                   | `GEMINI.md`                     |
+| Cursor, OpenCode, Codex CLI, Roo Code, Cline, GitHub Copilot | `AGENTS.md`                     |
+
+The six `AGENTS.md` agents share one file, written once.
+
+Claude Code gets both files. It reads `CLAUDE.md` natively and does not auto-read `AGENTS.md`, so `CLAUDE.md` is what delivers the nudge. Archcore writes the `AGENTS.md` block as well, so the repository carries the standard that the plugin and the six other hosts converge on. `CLAUDE.md` holds the full nudge body directly, with no `@import`, so the two files stay uncoupled. Claude Code loads only `CLAUDE.md`, so the second file adds no duplicated context cost.
+
+### Managed marker block
+
+Archcore inserts the hint inside a managed marker block in every target (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`):
 
 ```markdown
 <!-- archcore:start -->
@@ -86,7 +140,11 @@ For agents with shared instruction files (`AGENTS.md`, `GEMINI.md`), the hint is
 <!-- archcore:end -->
 ```
 
-The markers let Archcore update or remove the hint without clobbering your own content. Claude Code uses `.claude/rules/` instead of a shared file.
+Archcore touches only the span between the markers. Your content outside them stays untouched, and a second write is idempotent, so Claude Code and a co-installed `AGENTS.md` agent collapse into one block rather than two.
+
+:::note[Upgrading from an earlier CLI]
+Earlier versions wrote an Archcore-owned `.claude/rules/archcore.md`. That file is deprecated: re-wiring removes it, and so does `archcore instructions remove --agent claude-code`. Removing Claude Code alone strips its `CLAUDE.md` block and deletes the legacy file. The shared `AGENTS.md` block stays for the `AGENTS.md` agents' own removal.
+:::
 
 Manage the hint with [`archcore instructions`](/cli/commands/#archcore-instructions):
 
@@ -112,20 +170,22 @@ Install hooks for a specific agent:
 archcore hooks install --agent claude-code
 ```
 
-## Best experience
+The install prints any [host limitation](#host-limitations) that would keep the written config from taking effect.
 
-For the best experience, use an agent that supports both MCP and hooks. Claude Code, Cursor, GitHub Copilot, and Gemini CLI currently offer the most complete integration — agents receive context at session start and have full document management tools available.
+## Full integration vs MCP only
 
-Agents without hook support (OpenCode, Codex CLI, Roo Code, Cline) still work well through MCP tools. The main difference is that you'll need to explicitly ask the agent to check for documents rather than having context injected automatically.
+Claude Code, Cursor, GitHub Copilot, Gemini CLI, and Codex CLI support both MCP and hooks. On those hosts the agent receives context at session start, gets the documents that constrain a file before it edits the file, and has the full document management tools.
+
+OpenCode, Roo Code, and Cline work through MCP tools alone. On those hosts you ask the agent to check for documents instead of having context injected at session start.
 
 ## Plugin vs CLI integration
 
-This page lists the **CLI-level** integrations — every supported agent gets MCP and (where possible) hooks.
+This page lists the **CLI-level** integrations. Every supported agent gets MCP and, where possible, hooks.
 
-Two of these hosts (Claude Code and Cursor) additionally support the higher-level **Archcore Plugin** — skills, tracks, built-in agents, and guardrails. See [Supported AI agents](/plugin/supported-hosts/) for the plugin-specific matrix.
+Two of these hosts (Claude Code and Cursor) additionally support the higher-level **Archcore plugin** — skills, tracks, built-in agents, and guardrails. See [Supported AI agents](/plugin/supported-hosts/) for the plugin-specific matrix.
 
 ## Next steps
 
-- [MCP server](/cli/mcp-server/) — how agents connect.
-- [Hooks](/cli/hooks/) — what the session-start hook emits.
-- [Commands](/cli/commands/) — the `archcore` commands that drive integration.
+- [MCP server](/cli/mcp-server/) explains how agents connect.
+- [Hooks](/cli/hooks/) covers what the hooks emit and how to install them.
+- [Commands](/cli/commands/) lists the `archcore` commands that drive integration.

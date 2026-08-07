@@ -1,6 +1,6 @@
 ---
 title: CLI Overview
-description: Archcore CLI to build structured, git-native context for AI coding agents. The engine that reads .archcore/, validates documents, and exposes the context graph over MCP and session hooks.
+description: The Archcore CLI reads .archcore/, validates documents, and exposes the context graph over MCP and lifecycle hooks.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -8,36 +8,36 @@ import CrossLinkCallout from '../../../components/CrossLinkCallout.astro';
 
 <PathBadge scope="cli" />
 
-The **Archcore CLI** builds structured, git-native context for AI coding agents. It reads `.archcore/`, validates documents, builds the relation graph, and exposes it to every supported agent through MCP and session hooks.
+The **Archcore CLI** builds structured, git-native context for AI coding agents. It reads `.archcore/`, validates documents, builds the relation graph, and exposes it to every supported agent through MCP and lifecycle hooks.
 
-Use the CLI when you want a minimal, direct integration — or when you're using an agent the plugin doesn't support yet.
+Use the CLI on its own when you want a minimal, direct integration, or when the plugin does not ship for your agent yet.
 
 ## When to use the CLI directly
 
-- Your coding agent is **GitHub Copilot, Gemini CLI, OpenCode, Codex CLI, Roo Code, or Cline** — the plugin does not ship for these hosts yet, but the CLI's MCP integration does.
-- You want the smallest possible install (one binary, ten MCP tools, done).
+- Your coding agent is **GitHub Copilot, Gemini CLI, OpenCode, Codex CLI, Roo Code, or Cline**. The plugin does not ship for these hosts yet; the CLI's MCP integration does.
+- You want the smallest install: one binary and 10 MCP tools.
 - You're scripting Archcore in CI, pre-commit hooks, or other non-interactive contexts.
-- You want to understand how the full system works before adding the [plugin layer](/plugin/overview/) on top.
+- You want to understand the full system before adding the [plugin layer](/plugin/overview/) on top.
 
 ## How the CLI fits
 
-- **`archcore init`** — creates `.archcore/`, detects coding agents, writes MCP config and session hooks for each.
-- **`archcore mcp`** — starts the MCP server that agents launch as a subprocess.
-- **`archcore status`** / **`archcore doctor`** — check structure, frontmatter, and relation graph health.
-- **`archcore hooks`** — install/run session-start hooks per agent.
-- **`archcore config`** — read/write `.archcore/settings.json`.
+- `archcore init` creates `.archcore/`, detects coding agents, and writes MCP config and lifecycle hooks for each.
+- `archcore mcp` starts the MCP server that agents launch as a subprocess.
+- `archcore status` and `archcore doctor` check structure, frontmatter, and relation graph health.
+- `archcore hooks` installs and runs the lifecycle hooks per agent: session start, pre-write, and post-write.
+- `archcore config` reads and writes `.archcore/settings.json`.
 
 <CrossLinkCallout
 	to="/plugin/overview/"
 	label="See the Plugin path"
 	direction="cli-to-plugin"
 >
-	Want the higher-level UX with skills, tracks, and built-in agents? The plugin layers on top of the CLI.
+	The plugin layers skills, tracks, and built-in agents on top of the CLI.
 </CrossLinkCallout>
 
 ## Supported agents
 
-The CLI integrates with eight coding agents out of the box. MCP works with all eight; session hooks work with four of them.
+The CLI integrates with eight coding agents. MCP works with all eight; lifecycle hooks work with five.
 
 | Agent          | MCP    | Hooks |
 | -------------- | ------ | ----- |
@@ -45,16 +45,18 @@ The CLI integrates with eight coding agents out of the box. MCP works with all e
 | Cursor         | Yes    | Yes   |
 | GitHub Copilot | Yes    | Yes   |
 | Gemini CLI     | Yes    | Yes   |
-| OpenCode       | Yes    | —     |
-| Codex CLI      | Yes    | —     |
-| Roo Code       | Yes    | —     |
-| Cline          | Manual | —     |
+| Codex CLI      | Yes    | Yes   |
+| OpenCode       | Yes    | No    |
+| Roo Code       | Yes    | No    |
+| Cline          | Manual | No    |
 
-For the full matrix and per-agent config paths, see [Agent integrations](/cli/agent-integrations/).
+A host can accept a hook config and still not run it. Codex CLI, for example, keeps hooks behind an experimental flag. `archcore hooks install` reports that at write time, and `archcore doctor` repeats it for hosts it finds wired.
+
+For the full matrix, per-agent config paths, and the known host limitations, see [Agent integrations](/cli/agent-integrations/).
 
 ## Next steps
 
-- [Install](/cli/install/) — curl installer (macOS/Linux/WSL) or PowerShell (Windows).
-- [Quick start](/cli/quick-start/) — initialize a project and create your first document.
-- [Commands](/cli/commands/) — full reference for every `archcore` subcommand.
-- [MCP server](/cli/mcp-server/) — how agents connect and what tools they get.
+- [Install](/cli/install/): curl installer (macOS, Linux, WSL) or PowerShell (Windows).
+- [Quick start](/cli/quick-start/): initialize a project and create your first document.
+- [Commands](/cli/commands/): full reference for every `archcore` subcommand.
+- [MCP server](/cli/mcp-server/): how agents connect and what tools they get.

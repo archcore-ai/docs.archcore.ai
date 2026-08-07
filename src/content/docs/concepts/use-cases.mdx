@@ -1,21 +1,21 @@
 ---
 title: Use Cases
-description: Common ways teams use Archcore — from recording decisions to defining coding rules and planning work.
+description: Teams use Archcore to record decisions, define coding rules, plan work, and share project context.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="shared" />
 
-Archcore gives your team a single place to capture decisions, standards, plans, and project knowledge — all as structured markdown files that every AI agent discovers automatically through MCP.
+Archcore gives your team one place to record decisions, standards, plans, and project knowledge. Every entry is a structured markdown file, and AI agents discover them through MCP.
 
-Ready to set it up? Pick your entry point: the [plugin](https://archcore.ai/plugin/) for Claude Code, Cursor, and Codex CLI, or the [CLI](https://archcore.ai/cli/) for any MCP-aware agent.
+To set it up, pick your entry point: the [plugin](https://archcore.ai/plugin/) for Claude Code, Cursor, and Codex CLI, or the [CLI](https://archcore.ai/cli/) for any MCP-aware agent.
 
-## Record Architecture Decisions
+## Record architecture decisions
 
-Your team makes technical decisions every week — database choices, auth strategies, API design patterns. Without a structured record, these decisions live in Slack threads, PR comments, and people's heads. When an agent starts a new session, none of that context exists.
+Your team makes technical decisions every week: database choices, auth strategies, API design patterns. Without a structured record, these decisions live in Slack threads, PR comments, and people's heads. When an agent starts a new session, none of that context exists.
 
-Create an ADR in Archcore, and every agent discovers it automatically. No copy-pasting into prompt files.
+Create an ADR in Archcore, and every agent discovers it automatically. You do not copy it into a prompt file.
 
 Ask your agent:
 
@@ -48,7 +48,7 @@ Use PostgreSQL 16 for all persistent data storage.
 - Schema migrations required for changes
 ```
 
-The next time any agent works on database-related code, it queries `.archcore/` and finds this decision. It knows PostgreSQL is the standard — without you repeating it.
+The next time any agent works on database-related code, it queries `.archcore/` and finds this decision. You do not have to repeat that PostgreSQL is the standard.
 
 Decisions rarely stand alone. They produce rules, and rules produce guides:
 
@@ -60,11 +60,11 @@ use-postgres.adr.md
 
 The ADR records *why* PostgreSQL. The rule defines *how* to write migrations. The guide walks through the steps. Agents follow the full chain.
 
-## Define Coding Rules
+## Define coding rules
 
-Your team has coding standards — error formats, naming conventions, test patterns, commit message rules. Without Archcore, you repeat these in every `CLAUDE.md`, `.cursorrules`, and agent prompt. When a standard changes, you update multiple files across multiple tools.
+Your team has coding standards: error formats, naming conventions, test patterns, commit message rules. Without Archcore, you repeat these in every `CLAUDE.md`, `.cursorrules`, and agent prompt. When a standard changes, you update multiple files across multiple tools.
 
-Create a rule document once, and every agent picks it up through MCP — regardless of which tool your teammates use.
+Create a rule document once, and every agent picks it up through MCP, whichever tool your teammates use.
 
 ```markdown
 ---
@@ -100,16 +100,16 @@ Apply to all handlers in @src/api/. Verify in integration tests.
 
 Unlike free-text instruction files, rule documents have required sections:
 
-- **Rule statements** — imperative, unambiguous requirements
-- **Rationale** — why the rule exists (agents use this to apply it in edge cases)
-- **Good/Bad examples** — concrete patterns to follow and avoid
-- **Enforcement** — where and how the rule applies
+- Rule statements: imperative, unambiguous requirements
+- Rationale: why the rule exists, so agents can apply it in edge cases
+- Good and bad examples: concrete patterns to follow and avoid
+- Enforcement: where and how the rule applies
 
-This structure gives agents enough context to apply rules correctly, not just literally. A rule often originates from an architectural decision — use [relations](/concepts/relations/) to make that connection explicit.
+This structure gives agents enough context to apply a rule in cases its examples do not cover. A rule often originates from an architectural decision. Use [relations](/concepts/relations/) to make that connection explicit.
 
-## Plan Implementation Work
+## Plan implementation work
 
-You need to plan a feature build or a migration — phases, tasks, dependencies, acceptance criteria. Without Archcore, plans live in project management tools or Google Docs that agents cannot access. Every session, you re-explain what needs to happen and in what order.
+You need to plan a feature build or a migration: phases, tasks, dependencies, acceptance criteria. Without Archcore, plans live in project management tools or Google Docs that agents cannot access. Every session, you re-explain what needs to happen and in what order.
 
 Create a plan document, and agents see the full scope of work:
 
@@ -164,11 +164,11 @@ You don't have to write plans from scratch. Ask your agent:
 
 The agent reads the PRD, structures tasks into phases, and links the plan back to its source requirements.
 
-## Build Project Context
+## Build project context
 
-Multiple developers on your team use AI agents. Each agent starts fresh every session — no memory of past decisions, no awareness of standards. Without git-native context, every developer maintains their own instruction files and knowledge stays fragmented.
+Multiple developers on your team use AI agents. Each agent starts fresh every session, with no memory of past decisions and no awareness of standards. Without git-native context, every developer maintains their own instruction files and knowledge stays fragmented.
 
-The `.archcore/` directory lives in your repository. Every developer who clones the repo gets the same project context. Every agent — Claude Code, Cursor, Copilot, Gemini CLI — reads from the same source through MCP.
+The `.archcore/` directory lives in your repository. Every developer who clones the repo gets the same project context. Every agent (Claude Code, Cursor, Copilot, Gemini CLI) reads from the same source through MCP.
 
 ```
 your-project/
@@ -183,22 +183,22 @@ your-project/
 └── src/
 ```
 
-No syncing between tools. No copy-pasting between prompt files. One directory, version-controlled with your code.
+Every tool reads the same directory, so there is nothing to sync between tools and nothing to copy between prompt files. That directory is version-controlled with your code.
 
-Every document you add makes future agent sessions more productive. The lifecycle flows naturally:
+Every document you add becomes context for a future agent session. The lifecycle flows like this:
 
 ```
 idea → prd → plan → adr → rule → guide → task-type
 ```
 
-An **idea** becomes a **PRD** with requirements. The PRD produces a **plan** with tasks. Implementation produces **ADRs** for decisions made along the way. Decisions crystallize into **rules**. Rules get **guides** that explain how to follow them. Repeated work becomes **task-types** that agents execute consistently.
+An `idea` becomes a `prd` with requirements. The `prd` produces a `plan` with tasks. Implementation produces `adr` documents for the decisions made along the way. Those decisions become `rule` documents. Rules get `guide` documents that explain how to follow them. Repeated work becomes a `task-type` that agents follow consistently.
 
-Because documents are plain markdown files, they go through the same workflow as code — branch, review in a PR, merge, and track with `git log`. Your project context lives where your code lives.
+Because documents are plain markdown files, they go through the same workflow as code: branch, review in a pull request, merge, and track with `git log`.
 
-## What's Next
+## What's next
 
-- [Plugin quick start](/start/plugin-quick-start/) or [CLI quick start](/cli/quick-start/) — set up Archcore in under 2 minutes
-- [How It Works](/concepts/how-it-works/) — the design principles behind Archcore
-- [Document Types](/concepts/document-types/) — formats and required sections for each type
-- [Relations](/concepts/relations/) — how to link documents into a knowledge graph
-- [MCP Server](/cli/mcp-server/) — connect agents to your project context
+- The [Plugin quick start](/start/plugin-quick-start/) and the [CLI quick start](/cli/quick-start/) set up Archcore in under 2 minutes.
+- [How Archcore Works](/concepts/how-it-works/) covers the design principles behind Archcore.
+- [Document Types](/concepts/document-types/) lists formats and required sections for each type.
+- [Relations](/concepts/relations/) explains how to link documents into a knowledge graph.
+- [MCP Server](/cli/mcp-server/) connects agents to your project context.

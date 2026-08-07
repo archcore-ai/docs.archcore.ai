@@ -1,11 +1,11 @@
 ---
 title: Document Types
-description: All 19 document types — ADRs, RFCs, rules, guides, PRDs, R&D notes, market/business/user requirement docs, ISO specifications, and more. When to use each, required sections, and templates.
+description: Archcore has 19 document types, including ADR, RFC, rule, guide, spec, doc, PRD, plan, and ISO specifications.
 ---
 
-Archcore has 19 document types organized into 3 layers. Each type has a template with required sections that the CLI generates automatically. Install it from the [CLI page](https://archcore.ai/cli/) if you have not yet.
+Archcore has 19 document types organized into 3 layers. Each type has a template with required sections that the Archcore CLI generates. If you have not installed the CLI yet, get it from the [CLI page](https://archcore.ai/cli/).
 
-## Choosing the Right Type
+## Choosing the right type
 
 ```
 Need to record a final decision?           → adr
@@ -30,20 +30,20 @@ Need to record a coding pattern change?    → cpat
 ```
 
 :::tip[Let agents choose]
-When working with an AI agent, just describe what you want to document. The agent picks the right type from these rules — they're embedded in the MCP server instructions.
+When you work with an AI agent, describe what you want to document. The agent picks the type from these same rules, which are embedded in the MCP server instructions.
 :::
 
 ---
 
 ## Vision
 
-Where the product and project are heading. Vision documents are organized into three **requirement tracks** — pick the one that matches your team's complexity and process.
+Where the product and project are heading. Vision documents are organized into three **requirement tracks**. Pick the one that matches your team's complexity and process.
 
-### Product Track (Simple)
+### Product track (simple)
 
-The starting point for most teams. Three types that cover the full lifecycle from idea to implementation.
+The starting point for most teams. Four types that cover the lifecycle from investigation through implementation.
 
-#### PRD — Product Requirements Document
+#### PRD (Product Requirements Document)
 
 Product requirements with goals, scope, and acceptance criteria.
 
@@ -53,9 +53,9 @@ Product requirements with goals, scope, and acceptance criteria.
 | **When to use** | Product requirements with goals and acceptance criteria are defined |
 | **Required sections** | Vision, Problem Statement, Goals & Success Metrics, Requirements |
 
-#### Idea — Concept to Explore
+#### Idea
 
-A product or technical concept that needs capturing before it's fully formed.
+A product or technical concept that needs capturing before it is fully formed.
 
 | | |
 |---|---|
@@ -63,9 +63,9 @@ A product or technical concept that needs capturing before it's fully formed.
 | **When to use** | A concept needs capturing for future evaluation |
 | **Required sections** | Idea, Value, Possible Implementation, Risks & Constraints |
 
-#### RnD — Research & Investigation
+#### RnD
 
-A bounded investigation that answers an open question before a decision is made or work begins. Every `rnd` ends with a **Recommendation** — `proceed`, `refine`, `defer`, or `stop` — plus the single next action that follows from it.
+A bounded investigation that answers an open question before a decision is made or work begins. Every `rnd` ends with a **Recommendation** (`proceed`, `refine`, `defer`, or `stop`) plus the single next action that follows from it.
 
 | | |
 |---|---|
@@ -75,17 +75,17 @@ A bounded investigation that answers an open question before a decision is made 
 
 An `rnd` is the **Research Gate** in front of the committing tracks (`rnd` -> `idea`, `rnd` -> `adr` -> `spec` -> `plan`). Its status maps to the verdict:
 
-- `draft` — still investigating
-- `accepted` — recommendation adopted, proceed or refine
-- `rejected` — defer or stop
+- `draft`: still investigating
+- `accepted`: recommendation adopted, proceed or refine
+- `rejected`: defer or stop
 
-A rejected `rnd` is a first-class outcome, not a failure. "We investigated and decided not to" stays visible as a record of the dead end — keep it, don't delete it. By convention, `prd`/`plan`/`adr` `depends_on` an `rnd`, and an `rfc` may `extend` one; `rnd` never uses [`implements`](/concepts/relations/).
+A rejected `rnd` is a first-class outcome. Keep it in the repository, because "we investigated and decided not to" stays visible as a record of the dead end. By convention, `prd`/`plan`/`adr` `depends_on` an `rnd`, and an `rfc` may `extend` one; `rnd` never uses [`implements`](/concepts/relations/).
 
 :::note[RnD vs Idea vs ADR vs RFC]
-An **rnd** investigates an open question and must conclude with a recommendation — use it for "should we / which way." An **idea** proposes a concept worth exploring — "we could." An **adr** records a decision already made; gather evidence in an `rnd`, then record the resulting decision as an `adr`. An **rfc** puts a concrete proposal up for review. If there's nothing to propose yet, use `rnd`.
+An **rnd** investigates an open question and must conclude with a recommendation. Use it for "should we" and "which way." An **idea** proposes a concept worth exploring, the "we could" case. An **adr** records a decision already made; gather evidence in an `rnd`, then record the resulting decision as an `adr`. An **rfc** puts a concrete proposal up for review. If there is nothing to propose yet, use `rnd`.
 :::
 
-#### Plan — Implementation Plan
+#### Plan
 
 An actionable plan with phased tasks and acceptance criteria.
 
@@ -95,11 +95,11 @@ An actionable plan with phased tasks and acceptance criteria.
 | **When to use** | An implementation plan with tasks is formed |
 | **Required sections** | Goal, Tasks (phased), Acceptance Criteria, Dependencies |
 
-### Sources Track (Discovery)
+### Sources track (discovery)
 
-Captures **where** requirements come from — market, business, and users. Documents flow naturally: MRD (market landscape) -> BRD (business justification) -> URD (user needs).
+Captures where requirements come from: the market, the business, and users. Documents flow naturally from MRD (market landscape) to BRD (business justification) to URD (user needs).
 
-#### MRD — Market Requirements Document
+#### MRD (Market Requirements Document)
 
 Market analysis covering TAM/SAM/SOM, competitive landscape, market needs, and timing.
 
@@ -109,7 +109,7 @@ Market analysis covering TAM/SAM/SOM, competitive landscape, market needs, and t
 | **When to use** | Market analysis is needed before proposing a solution |
 | **Required sections** | Market Overview, TAM/SAM/SOM, Competitive Landscape, Market Needs, Timing |
 
-#### BRD — Business Requirements Document
+#### BRD (Business Requirements Document)
 
 Business justification with objectives, ROI, stakeholders, budget, and constraints.
 
@@ -119,7 +119,7 @@ Business justification with objectives, ROI, stakeholders, budget, and constrain
 | **When to use** | Business justification and organizational impact need documenting |
 | **Required sections** | Objectives, ROI, Stakeholders, Budget, Constraints |
 
-#### URD — User Requirements Document
+#### URD (User Requirements Document)
 
 User needs captured through personas, journeys, usability requirements, and acceptance criteria.
 
@@ -129,11 +129,11 @@ User needs captured through personas, journeys, usability requirements, and acce
 | **When to use** | User needs, personas, and journeys need capturing during discovery |
 | **Required sections** | Personas, User Journeys, Usability Requirements, Acceptance Criteria |
 
-### ISO Track (Decomposition)
+### ISO track (decomposition)
 
-Decomposes requirements through progressively detailed levels, following [ISO/IEC/IEEE 29148:2018 — Systems and software engineering — Life cycle processes — Requirements engineering](https://www.iso.org/standard/72089.html). BRS (why the business needs it) -> StRS (what stakeholders need) -> SyRS (how the system behaves) -> SRS (how the software works).
+Decomposes requirements through progressively detailed levels, following [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) on requirements engineering. BRS (why the business needs it) -> StRS (what stakeholders need) -> SyRS (how the system behaves) -> SRS (how the software works).
 
-#### BRS — Business Requirements Specification
+#### BRS (Business Requirements Specification)
 
 Mission, goals, operational concept, and success criteria.
 
@@ -144,7 +144,7 @@ Mission, goals, operational concept, and success criteria.
 | **When to use** | Business requirements need formalizing into ISO-structured specification |
 | **Required sections** | Mission, Business Goals, Operational Concept, Success Criteria |
 
-#### StRS — Stakeholder Requirements Specification
+#### StRS (Stakeholder Requirements Specification)
 
 Per-stakeholder-class requirements with concept of operations and compliance.
 
@@ -155,7 +155,7 @@ Per-stakeholder-class requirements with concept of operations and compliance.
 | **When to use** | Stakeholder requirements need structuring per class with ConOps |
 | **Required sections** | Stakeholder Classes, Per-Class Requirements, ConOps, Compliance |
 
-#### SyRS — System Requirements Specification
+#### SyRS (System Requirements Specification)
 
 System boundary, interfaces, modes, and verification approach.
 
@@ -166,7 +166,7 @@ System boundary, interfaces, modes, and verification approach.
 | **When to use** | The whole system boundary, interfaces, and verification need specifying |
 | **Required sections** | System Boundary, Interfaces, Modes of Operation, Verification Approach |
 
-#### SRS — Software Requirements Specification
+#### SRS (Software Requirements Specification)
 
 Per-function and per-endpoint specifications with a verification matrix.
 
@@ -177,31 +177,31 @@ Per-function and per-endpoint specifications with a verification matrix.
 | **When to use** | Detailed software requirements need per-function/per-endpoint specification |
 | **Required sections** | Functional Requirements, Interface Requirements, Verification Matrix |
 
-### Choosing the Right Requirements Track
+### Choosing the right requirements track
 
-| Track | Documents | Best For |
+| Track | Documents | Best for |
 |---|---|---|
 | Product (simple) | `prd` | Individual features, small teams, rapid prototyping, internal tools |
 | Sources (discovery) | `mrd` -> `brd` -> `urd` | Product teams doing discovery, stakeholder alignment, business analysis |
 | ISO (decomposition) | `brs` -> `strs` -> `syrs` -> `srs` | Regulated systems, multi-team projects, complex distributed systems |
 
-All three tracks can coexist — e.g. `prd` for a small feature while the full ISO track covers a safety-critical subsystem.
+All three tracks can coexist. For example, use `prd` for a small feature while the full ISO track covers a safety-critical subsystem.
 
-### Requirements Layers — Sources vs Specifications
+### Sources vs specifications
 
-Sources and Specifications serve **separate purposes**:
+Sources and specifications have separate purposes:
 
-- **Layer A (Sources):** `mrd`, `brd`, `urd`, `prd` -- capture raw requirements from market, business, and user perspectives
-- **Layer B (Specifications):** `brs`, `strs`, `syrs`, `srs` -- formalize what sources capture informally, connected via the `implements` [relation](/concepts/relations/)
+- **Layer A (sources)**: `mrd`, `brd`, `urd`, and `prd` capture raw requirements from market, business, and user perspectives.
+- **Layer B (specifications)**: `brs`, `strs`, `syrs`, and `srs` formalize what sources capture informally. The `implements` [relation](/concepts/relations/) connects the two layers.
 
 :::tip[When types look similar]
 The Sources and ISO tracks overlap in subject matter but differ in formality:
-- **MRD vs PRD** -- MRD analyzes the market (TAM/SAM/SOM, competitors, timing) without proposing a solution. PRD proposes a product with requirements and solution overview.
-- **BRD vs PRD** -- BRD focuses on business justification (ROI, budget, organizational impact). PRD focuses on product definition (features, user stories, solution).
-- **URD vs PRD** -- URD captures user needs via personas and journeys (discovery-oriented). PRD defines product requirements with acceptance criteria (specification-oriented).
-- **BRS vs BRD** -- BRS is an ISO specification (formalized structure). BRD is an informal source (business justification, ROI). BRS formalizes what BRD captures.
-- **StRS vs URD** -- StRS is an ISO specification (per-class requirements with ConOps). URD is an informal source (personas, journeys). StRS formalizes what URD captures.
-- **SyRS vs SRS** -- SyRS defines the whole system boundary. SRS specifies a single component's detailed behavior.
+- **MRD vs PRD**: MRD analyzes the market (TAM/SAM/SOM, competitors, timing) without proposing a solution. PRD proposes a product with requirements and solution overview.
+- **BRD vs PRD**: BRD focuses on business justification (ROI, budget, organizational impact). PRD focuses on product definition (features, user stories, solution).
+- **URD vs PRD**: URD captures user needs via personas and journeys (discovery-oriented). PRD defines product requirements with acceptance criteria (specification-oriented).
+- **BRS vs BRD**: BRS is an ISO specification (formalized structure). BRD is an informal source (business justification, ROI). BRS formalizes what BRD captures.
+- **StRS vs URD**: StRS is an ISO specification (per-class requirements with ConOps). URD is an informal source (personas, journeys). StRS formalizes what URD captures.
+- **SyRS vs SRS**: SyRS defines the whole system boundary. SRS specifies a single component's detailed behavior.
 :::
 
 ---
@@ -210,7 +210,7 @@ The Sources and ISO tracks overlap in subject matter but differ in formality:
 
 Decisions, standards, and reference material.
 
-### ADR — Architecture Decision Record
+### ADR (Architecture Decision Record)
 
 Records a decision that has been made.
 
@@ -244,7 +244,7 @@ Use PostgreSQL 16 for all persistent storage...
 - Schema migrations required for changes
 ```
 
-### RFC — Request for Comments
+### RFC (Request for Comments)
 
 Proposes a significant change for team review.
 
@@ -254,7 +254,7 @@ Proposes a significant change for team review.
 | **When to use** | A significant change is being proposed |
 | **Required sections** | Summary, Motivation, Detailed Design, Drawbacks, Alternatives |
 
-### Rule — Standard or Required Behavior
+### Rule
 
 Imperative statements that the team must follow.
 
@@ -287,9 +287,9 @@ Consistent error format enables clients to handle errors programmatically...
 ...
 ```
 
-### Guide — Step-by-Step Instructions
+### Guide
 
-How-to instructions for completing a specific task.
+Step-by-step instructions for completing a specific task.
 
 | | |
 |---|---|
@@ -297,9 +297,9 @@ How-to instructions for completing a specific task.
 | **When to use** | Step-by-step instructions need to be documented |
 | **Required sections** | Prerequisites, Steps (numbered), Verification, Common Issues |
 
-### Spec — Normative Contract
+### Spec
 
-Normative behavior contract of something others rely on — a boundary (API/interface/schema/protocol) or a feature/subsystem — captured after code or specified ahead of it.
+A normative behavior contract for something others rely on: a boundary (API/interface/schema/protocol) or a feature/subsystem. You can capture a spec after the code exists or specify it ahead of the code.
 
 | | |
 |---|---|
@@ -348,12 +348,12 @@ invariants, and all failure rules above.
 ```
 
 :::note[Spec vs Doc vs Rule]
-A **spec** defines a normative contract for a specific technical boundary — how a component *must* behave. A **doc** is non-behavioral reference material (registries, glossaries, lookup tables). A **rule** sets a cross-cutting team standard ("Always do X"). If you're documenting how one system works → `spec`. If you're describing what exists → `doc`. If you're prescribing how engineers must act → `rule`.
+A **spec** defines a normative contract for a specific technical boundary: how a component *must* behave. A **doc** is non-behavioral reference material (registries, glossaries, lookup tables). A **rule** sets a cross-cutting team standard ("Always do X"). If you are documenting how one system works → `spec`. If you are describing what exists → `doc`. If you are prescribing how engineers must act → `rule`.
 :::
 
-### Doc — Reference Documentation
+### Doc
 
-Non-behavioral reference material — registries, glossaries, lookup tables, component lists.
+Non-behavioral reference material: registries, glossaries, lookup tables, and component lists.
 
 | | |
 |---|---|
@@ -369,9 +369,9 @@ A **rule** contains imperative statements ("Always do X", "Never do Y") with enf
 
 ## Experience
 
-Patterns learned from doing the work. You can ignore these types at first — they become useful once your team has enough practice to recognize repeatable patterns.
+Patterns learned from doing the work. You can ignore these types at first. They become useful once your team has enough practice to recognize repeatable patterns.
 
-### Task Type — Recurring Task Pattern
+### Task type
 
 A proven workflow for a recurring implementation task.
 
@@ -381,9 +381,9 @@ A proven workflow for a recurring implementation task.
 | **When to use** | A proven workflow for a recurring task is documented |
 | **Required sections** | What, When to Use, Steps, Example, Things to Watch Out For |
 
-### CPAT — Code Pattern Change
+### CPAT (Code Pattern Change)
 
-Documents how and why a coding convention or pattern changed.
+Records how and why a coding convention or pattern changed.
 
 | | |
 |---|---|

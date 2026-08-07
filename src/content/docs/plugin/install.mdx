@@ -8,9 +8,9 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-The plugin runs inside your coding agent (Claude Code, Cursor, or Codex CLI). It invokes `archcore` from your `PATH` — so **install the CLI first** (see the [CLI install guide](/cli/install/): one curl line on macOS/Linux, one PowerShell line on Windows), then install the plugin.
+The plugin runs inside your coding agent (Claude Code, Cursor, or Codex CLI) and invokes `archcore` from your `PATH`. Install the CLI first, then install the plugin. The [CLI install guide](/cli/install/) has one curl line for macOS and Linux and one PowerShell line for Windows.
 
-For Cursor, you additionally register MCP yourself — see the Cursor tab below.
+On Cursor you also register MCP yourself. See the Cursor tab below.
 
 ## Install the plugin
 
@@ -30,7 +30,7 @@ For Cursor, you additionally register MCP yourself — see the Cursor tab below.
 		/plugin install archcore@archcore-plugins
 		```
 
-		Open your project and run `/archcore:help` — the plugin spawns `archcore mcp` from your `PATH`, and initializes `.archcore/` on the first MCP call if missing.
+		Open your project and run `/archcore:help`. The plugin spawns `archcore mcp` from your `PATH`. If `.archcore/` does not exist yet, the first MCP call initializes it.
 
 		If `archcore` isn't on `PATH`, the session-start hook prints install instructions and links to the [CLI install guide](/cli/install/).
 	</TabItem>
@@ -59,7 +59,7 @@ For Cursor, you additionally register MCP yourself — see the Cursor tab below.
 
 		**Keep the `--project ${workspaceFolder}` argument.** It scopes MCP to the active project; without it, a single registration would read one project's `.archcore/` across every Cursor window.
 
-		Cursor support is implemented but has a slightly different hooks API — see [Supported AI agents](/plugin/supported-hosts/).
+		Cursor support is implemented, and its hooks API differs from the Claude Code one. [Supported AI agents](/plugin/supported-hosts/) lists the differences.
 	</TabItem>
 	<TabItem label="Codex CLI">
 		Requires Codex 0.117.0+. Install from the marketplace:
@@ -68,9 +68,9 @@ For Cursor, you additionally register MCP yourself — see the Cursor tab below.
 		codex plugin marketplace add archcore-ai/plugin
 		```
 
-		MCP is registered automatically — the plugin's manifest references `.codex.mcp.json`, which runs `archcore mcp` from your `PATH`. No env-var substitution and no plugin-relative paths.
+		Codex registers MCP automatically. The plugin's manifest references `.codex.mcp.json`, which runs `archcore mcp` from your `PATH`. That config uses no env-var substitution and no plugin-relative paths.
 
-		**Enable hooks (recommended).** Codex hooks are gated by an under-development feature flag (default off):
+		Enable hooks. Codex gates them behind an under-development feature flag that defaults to off:
 
 		```bash
 		codex features enable plugin_hooks
@@ -78,7 +78,7 @@ For Cursor, you additionally register MCP yourself — see the Cursor tab below.
 
 		Without this flag, skills, MCP tools, and agents work normally, but the validation, cascade, precision, and pre-edit context-injection hooks won't fire.
 
-		Codex CLI surfaces skills as 7 thin `commands/<name>.md` wrappers. After install, run `/archcore:help` to list them.
+		Codex CLI surfaces skills as 7 `commands/<name>.md` wrappers. After install, run `/archcore:help` to list them.
 	</TabItem>
 	<TabItem label="Local development (any host)">
 		Clone the plugin repo:
@@ -87,36 +87,36 @@ For Cursor, you additionally register MCP yourself — see the Cursor tab below.
 		git clone https://github.com/archcore-ai/plugin
 		```
 
-		**Claude Code** — load the cloned directory for the session:
+		On **Claude Code**, load the cloned directory for the session:
 
 		```bash
 		claude --plugin-dir /path/to/archcore-plugin
 		```
 
-		**Cursor** — Cursor has no `--plugin-dir` flag. Symlink the repo into Cursor's local plugins directory and reload the window:
+		**Cursor** has no `--plugin-dir` flag. Symlink the repo into Cursor's local plugins directory, then reload the window:
 
 		```bash
 		ln -s /path/to/archcore-plugin ~/.cursor/plugins/local/archcore
 		# then in Cursor: Cmd/Ctrl+Shift+P → "Developer: Reload Window"
 		```
 
-		**Codex CLI** — point the marketplace at a local path:
+		On **Codex CLI**, point the marketplace at a local path:
 
 		```bash
 		codex plugin marketplace add /path/to/archcore-plugin
 		```
 
-		Don't forget `codex features enable plugin_hooks` if you want hooks active.
+		If you want hooks active, run `codex features enable plugin_hooks`.
 
 		All three manifests (`.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.codex-plugin/plugin.json`) sit at the repo root.
 
-		Use local mode when hacking on skills or hooks. The plugin calls `archcore` from `PATH` — to test against a locally-built CLI binary, put it ahead of the installed one on `PATH` (e.g. `export PATH="$(pwd)/cli/bin:$PATH"`).
+		Use local mode when you work on skills or hooks. The plugin calls `archcore` from `PATH`. To test against a locally built CLI binary, put its directory ahead of the installed one on `PATH` (e.g. `export PATH="$(pwd)/cli/bin:$PATH"`).
 	</TabItem>
 </Tabs>
 
 ## Offline / pinned CLI
 
-The plugin always runs whichever `archcore` is on your shell's `PATH`. For offline or air-gapped environments, install the CLI via any supported method (curl, PowerShell, build from source) — see the [CLI install guide](/cli/install/) — and ensure it's on `PATH` before launching your coding agent.
+The plugin always runs whichever `archcore` is on your shell's `PATH`. In an offline or air-gapped environment, install the CLI by any supported method (curl, PowerShell, or build from source), then put it on `PATH` before you launch your coding agent. The [CLI install guide](/cli/install/) covers each method.
 
 To pin a specific binary, install it to a directory you control and put that directory first on `PATH`.
 
@@ -142,29 +142,29 @@ To pin a specific binary, install it to a directory you control and put that dir
 	/archcore:decide use PostgreSQL as the primary database
 	```
 
-	The agent picks the right document type (an ADR), creates a draft in `.archcore/` via MCP — not via direct file writes — and offers a rule + guide follow-up.
+	The agent picks the right document type (an ADR), creates a draft in `.archcore/` through MCP rather than a direct file write, and offers a rule and guide follow-up.
 
 If `/archcore:*` commands don't appear, check [Troubleshooting](/plugin/troubleshooting/).
 
 ## Uninstall
 
-**Claude Code:**
+On Claude Code:
 
 ```bash
 /plugin uninstall archcore@archcore-plugins
 ```
 
-**Cursor:** remove Archcore from plugin settings, and remove the `archcore` entry from your Cursor MCP config.
+On Cursor, remove Archcore from plugin settings and delete the `archcore` entry from your Cursor MCP config.
 
-**Codex CLI:**
+On Codex CLI:
 
 ```bash
 codex plugin uninstall archcore
 ```
 
-The `archcore` CLI is a separate install — uninstall via the same script that installed it, if desired.
+The `archcore` CLI is a separate install. To remove it as well, use the same script that installed it.
 
 ## Next steps
 
-- [Supported AI agents](/plugin/supported-hosts/) — confirm your host supports the features you need.
-- [All 7 commands](/plugin/skills/) — outcome, examples, and flags for each.
+- [Supported AI agents](/plugin/supported-hosts/) confirms which features your host supports.
+- [Plugin skills](/plugin/skills/) documents the outcome, examples, and flags for each command.

@@ -1,6 +1,6 @@
 ---
 title: Plugin Quick Start
-description: Install the Archcore CLI, add the plugin to Claude Code, Cursor, or Codex CLI, and run your first command in under three minutes.
+description: Install the Archcore plugin in Claude Code, Cursor, or Codex CLI, verify it, and record your first decision.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -8,9 +8,9 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-Get the full Archcore experience inside Claude Code, Cursor, or Codex CLI. Seven outcome-focused slash commands, built-in agents, and guardrails — all on top of your repo.
+The Archcore plugin adds seven slash commands, built-in agents, and write guardrails to Claude Code, Cursor, and Codex CLI.
 
-**Prerequisite (all hosts):** install the Archcore CLI globally — one curl line on macOS/Linux, one PowerShell line on Windows. See the [CLI install guide](/cli/install/). The plugin calls `archcore` from your `PATH` in every supported host.
+**Prerequisite (all hosts):** install the Archcore CLI globally. That is one curl line on macOS/Linux and one PowerShell line on Windows. See the [CLI install guide](/cli/install/). The plugin calls `archcore` from your `PATH` in every supported host.
 
 Then install the plugin (below). Cursor users do one extra step: register MCP from the `docs/cursor.mcp.example.json` template (Cursor doesn't auto-register plugin-provided MCP).
 
@@ -47,7 +47,7 @@ Then install the plugin (below). Cursor users do one extra step: register MCP fr
 		}
 		```
 
-		Keep the `--project ${workspaceFolder}` argument — without it, one project's `.archcore/` is read across every other Cursor window.
+		Keep the `--project ${workspaceFolder}` argument. Without it, every other Cursor window reads one project's `.archcore/`.
 	</TabItem>
 	<TabItem label="Codex CLI">
 		Requires Codex 0.117.0+.
@@ -62,7 +62,7 @@ Then install the plugin (below). Cursor users do one extra step: register MCP fr
 		codex features enable plugin_hooks
 		```
 
-		`plugin_hooks` is currently under development in Codex (default off). Without it, commands, MCP tools, and agents work normally, but validation, cascade, precision, and pre-edit injection hooks won't fire.
+		`plugin_hooks` is under development in Codex (default off). Without it, commands, MCP tools, and agents work normally, but validation, cascade, precision, and pre-edit injection hooks won't fire.
 	</TabItem>
 </Tabs>
 
@@ -80,7 +80,7 @@ You should see a list of the seven `/archcore:*` commands with their outcomes. I
 
 ## 3. Make your repo legible (optional)
 
-If `.archcore/` doesn't exist yet, the fastest way to seed something useful is:
+If `.archcore/` doesn't exist yet, run:
 
 ```
 /archcore:init
@@ -98,12 +98,12 @@ Use `/archcore:decide` for an actual decision you've already made:
 /archcore:decide use PostgreSQL as our primary database
 ```
 
-If `.archcore/` doesn't exist yet, MCP initializes it on the first call — no `archcore init` needed.
+If `.archcore/` doesn't exist yet, the MCP server initializes it on the first call, so you do not run `archcore init` yourself.
 
 The skill creates an ADR with rationale and consequences, then **offers a follow-up cascade**:
 
-- **Standard chain** (`adr → rule → guide`) — if PostgreSQL becomes the mandated database, codify it as a rule and write the how-to guide.
-- **Architecture chain** (`adr → spec → plan`) — if the decision needs formal specification and an implementation plan.
+- **Standard chain** (`adr → rule → guide`): if PostgreSQL becomes the mandated database, codify it as a rule and write the how-to guide.
+- **Architecture chain** (`adr → spec → plan`): if the decision needs formal specification and an implementation plan.
 
 Accept whichever cascade fits. Each step pauses for your review.
 
@@ -117,13 +117,13 @@ You should see one or more linked documents, all validated.
 
 ## 5. See the context the agent now has
 
-Before touching some code, ask Archcore what already applies:
+Before you change code, ask Archcore what already applies:
 
 ```
 /archcore:context src/db/
 ```
 
-The skill loads the rules, ADRs, and patterns tied to `src/db/` — so the agent edits inside the lines your team has already drawn. The same context is also injected automatically before each source-file edit; this command shows you the full set on demand.
+The skill loads the rules, ADRs, and patterns tied to `src/db/`, so the agent works inside the constraints your team already recorded. The plugin also injects the same context automatically before each source-file edit; this command shows you the full set on demand.
 
 ## 6. Try a multi-step plan
 
@@ -133,23 +133,23 @@ For something bigger, drive a full cascade with `/archcore:plan`:
 /archcore:plan --track feature event-driven orders
 ```
 
-This walks you through a PRD, a spec, a plan, and a task-type — one document per step, with the right relations between them. You review each step before the next. Pick a different track when you need a different depth:
+This walks you through a PRD, a spec, a plan, and a task-type, one document per step, with the relations wired between them. You review each step before the next. Pick a different track when you need a different depth:
 
-- `--track product` (idea → prd → plan) — lightweight.
-- `--track sources` (mrd → brd → urd) — discovery-focused.
-- `--track iso` (brs → strs → syrs → srs) — formal ISO 29148 cascade.
+- `--track product` (idea → prd → plan): lightweight.
+- `--track sources` (mrd → brd → urd): discovery-focused.
+- `--track iso` (brs → strs → syrs → srs): formal ISO 29148 cascade.
 
 Default (no `--track`) routes a single `/archcore:plan` ask to the `product` flow.
 
 ## What you get
 
-- **7 outcome-focused commands** — each one routes to the right document type for you. See [Skills](/plugin/skills/) for the full catalog.
-- **Automatic context injection** — before any source-file edit, the plugin greps `.archcore/` for relevant rules, ADRs, specs, and patterns and injects them into context.
-- **Built-in agents** — `archcore-assistant` for multi-document flows, `archcore-auditor` for reviews.
-- **Guardrails** — direct `.archcore/*.md` writes are blocked; every mutation is validated; cascade staleness is flagged.
+- Seven commands route to the right document type for you. See [Skills](/plugin/skills/) for the full catalog.
+- Before any source-file edit, the plugin greps `.archcore/` for relevant rules, ADRs, specs, and patterns, and injects them into context.
+- Two built-in agents ship with the plugin: `archcore-assistant` for multi-document flows and `archcore-auditor` for reviews.
+- Guardrails block direct `.archcore/*.md` writes, validate every mutation, and flag cascade staleness.
 
 ## Next steps
 
-- [Plugin overview](/plugin/overview/) — what ships in the box.
-- [Skills](/plugin/skills/) — outcome, examples, and flags for each of the 7 commands.
-- [Document types](/concepts/document-types/) — the vocabulary you're using.
+- [Plugin overview](/plugin/overview/): what ships in the box.
+- [Skills](/plugin/skills/): outcome, examples, and flags for each of the 7 commands.
+- [Document types](/concepts/document-types/): the vocabulary you're using.

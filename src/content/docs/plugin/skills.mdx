@@ -1,26 +1,26 @@
 ---
 title: Plugin Skills
-description: All 7 Archcore Plugin commands — outcome-first one-liners for /archcore:* slash commands.
+description: "The 7 /archcore:* slash commands in the Archcore plugin: what each one produces and when to use it."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="plugin" />
 
-**The plugin is 7 slash commands.** Each one tells you up front what you get — not what's happening inside.
+**The plugin is 7 slash commands.** Each one names the outcome it produces before it runs.
 
-Describe what you want in plain English ("before I touch `src/auth/`, what rules apply here?") — Archcore routes it. The `/archcore:*` commands below are just shortcuts to the same workflows.
+You can also describe what you want in plain English: "before I touch `src/auth/`, what rules apply here?" Archcore routes the request to the same workflow, and the `/archcore:*` commands below are shortcuts to it.
 
 ## All 7 commands at a glance
 
 | Command              | Outcome                                                | When to use                                                                                                                       |
 | -------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `/archcore:init`     | Make your repo legible to AI agents                    | First-time setup — seeds a stack rule, a run-the-app guide, and imports your `CLAUDE.md` / `AGENTS.md` / `.cursorrules` if present |
-| `/archcore:context`  | Load what's already decided before you change code     | Daily, before editing — pulls relevant rules, decisions, specs, and patterns for a file, directory, or topic; `--git-changes` scopes to your uncommitted changes |
+| `/archcore:init`     | Make your repo legible to AI agents                    | First-time setup. Seeds a stack rule and a run-the-app guide, and imports your `CLAUDE.md`, `AGENTS.md`, or `.cursorrules` if present |
+| `/archcore:context`  | Load what's already decided before you change code     | Daily, before editing. Pulls relevant rules, decisions, specs, and patterns for a file, directory, or topic; `--git-changes` scopes to your uncommitted changes |
 | `/archcore:capture`  | Document what already lives in code                    | A module, API, pipeline, or integration has tribal knowledge but no doc yet                                                       |
-| `/archcore:plan`     | Turn an idea into a scoped implementation plan         | New feature, refactor, or initiative — pick depth with `--track product\|feature\|sources\|iso`                                   |
-| `/archcore:decide`   | Record a decision and (optionally) make it a team rule | A decision was made — capture rationale, consequences, and turn it into an enforced standard                                      |
-| `/archcore:audit`    | Find stale, missing, or drifting docs                  | Health check — add `--deep` for a full audit, `--drift` for code/doc staleness                                                    |
+| `/archcore:plan`     | Turn an idea into a scoped implementation plan         | New feature, refactor, or initiative. Pick depth with `--track product\|feature\|sources\|iso`                                   |
+| `/archcore:decide`   | Record a decision and (optionally) make it a team rule | A decision was made. Capture rationale and consequences, then turn it into an enforced standard                                   |
+| `/archcore:audit`    | Find stale, missing, or drifting docs                  | Health check. Add `--deep` for a full audit, `--drift` for code/doc staleness                                                     |
 | `/archcore:help`     | Navigate the skill catalog                             | When you forget which command fits                                                                                                |
 
 ## `/archcore:init`
@@ -32,11 +32,11 @@ Describe what you want in plain English ("before I touch `src/auth/`, what rules
 /archcore:init --mode=medium  # force the scale mode, overriding auto-detection
 ```
 
-Run once per project. Detects repo scale (small / medium / large) and seeds scale-appropriate documents: a stack rule, a run-the-app guide, an entry-point inventory (medium+), a top-level domain map (large), and a list of hotspot capture candidates.
+Run this command once per project. It detects repo scale (small, medium, or large) and seeds scale-appropriate documents: a stack rule, a run-the-app guide, an entry-point inventory (medium+), a top-level domain map (large), and a list of hotspot capture candidates.
 
-Pass `--mode=small|medium|large` to force the scale mode, overriding auto-detection.
+Pass `--mode=small|medium|large` to force the scale mode instead of auto-detection.
 
-If you already have `CLAUDE.md`, `AGENTS.md`, or `.cursorrules`, `init` also offers to import them — no existing context is lost.
+If you already have `CLAUDE.md`, `AGENTS.md`, or `.cursorrules`, `init` offers to import them, so your existing context carries over.
 
 After `init`, `/archcore:capture` and `/archcore:decide` take over for day-to-day work.
 
@@ -51,11 +51,11 @@ After `init`, `/archcore:capture` and `/archcore:decide` take over for day-to-da
 /archcore:context --git-changes  # rules governing your uncommitted changes
 ```
 
-Pulls the rules, ADRs, specs, and patterns tied to a path or topic — grouped by type, ranked by specificity — so the agent edits inside the lines your team has already drawn.
+Pulls the rules, ADRs, specs, and patterns tied to a path or topic, grouped by type and ranked by specificity, so the agent edits inside the lines your team has already drawn.
 
-Pass `--git-changes` to surface the rules, decisions, specs, and patterns that govern your uncommitted git changes — "what rules apply to what I just edited." Leave the command empty for current-focus pickup.
+Pass `--git-changes` to surface the rules, decisions, specs, and patterns that govern your uncommitted git changes. Leave the command empty for current-focus pickup.
 
-The same context is also injected automatically before any source-file edit (see [How it works](/plugin/how-it-works/)). Run the command explicitly when you want to see the full set, not just the top picks.
+The plugin also injects the same context automatically before any source-file edit (see [How the plugin works](/plugin/how-it-works/)). Run the command when you want the full set rather than the top matches.
 
 ## `/archcore:capture`
 
@@ -66,7 +66,7 @@ The same context is also injected automatically before any source-file edit (see
 /archcore:capture src/orders/inventory-sync.ts
 ```
 
-Picks the right document type for you: `adr` if it's a decision, `spec` if it's a contract, `doc` if it's reference material, `guide` if it's a how-to. You approve before anything is written.
+The skill picks the document type for you: `adr` for a decision, `spec` for a contract, `doc` for reference material, `guide` for a how-to. You approve before it writes anything.
 
 Use this when a module, API, pipeline, or integration has tribal knowledge but no doc yet.
 
@@ -83,14 +83,14 @@ Use this when a module, API, pipeline, or integration has tribal knowledge but n
 
 Small ask → a single `plan` document. Bigger ask → a cascade you can drive to completion. Pick a depth with `--track`:
 
-#### Track flows
+### Track flows
 
 | `--track`  | Flow                                  | Use when                                                                |
 | ---------- | ------------------------------------- | ----------------------------------------------------------------------- |
-| `product`  | idea → prd → plan                     | Lightweight product flow — simple, fast, single feature or small team.   |
+| `product`  | idea → prd → plan                     | Lightweight product flow for a single feature or a small team.           |
 | `feature`  | prd → spec → plan → task-type         | Full feature lifecycle with formal spec and a repeatable delivery pattern. |
-| `sources`  | mrd → brd → urd                       | Discovery-focused — market, business, then user inputs.                  |
-| `iso`      | brs → strs → syrs → srs               | Formal ISO 29148 cascade with full traceability — regulated systems.     |
+| `sources`  | mrd → brd → urd                       | Discovery flow: market, business, then user inputs.                     |
+| `iso`      | brs → strs → syrs → srs               | Formal ISO 29148 cascade with full traceability, for regulated systems. |
 
 Each step creates a document through MCP, wires `implements` / `related` relations automatically, and pauses for your review before moving on. Stop at any step.
 
@@ -107,12 +107,12 @@ Default (no `--track`) routes a single `/archcore:plan` ask to the `product` flo
 
 Creates an ADR with rationale, options considered, and consequences. After the ADR is recorded, the skill offers two continuations:
 
-- **Standard chain** (`adr → rule → guide`, optionally `+ cpat`) — when the decision implies a team standard that everyone needs to follow. Codifies the rule and writes the how-to guide.
-- **Architecture chain** (`adr → spec → plan`) — when the decision needs formal specification and an implementation plan.
+- **Standard chain** (`adr → rule → guide`, optionally `+ cpat`) for a decision that implies a team standard. The skill codifies the rule and writes the how-to guide.
+- **Architecture chain** (`adr → spec → plan`) for a decision that needs a formal specification and an implementation plan.
 
-You approve each step. The relation graph is wired automatically (`rule implements adr`, `guide related rule`, `spec implements adr`, `plan implements spec`).
+You approve each step. The skill wires the relation graph automatically (`rule implements adr`, `guide related rule`, `spec implements adr`, `plan implements spec`).
 
-Use this whenever a decision was made — even a small one. Decisions stop dying in chat scrollback.
+Use this whenever a decision was made, even a small one. The decision then lives in `.archcore/` instead of chat scrollback.
 
 ## `/archcore:audit`
 
@@ -128,7 +128,7 @@ Use this whenever a decision was made — even a small one. Decisions stop dying
 
 Default returns a one-screen dashboard: counts by category, status, type, relation coverage, and a one-line issues summary. The dashboard is project-wide by design.
 
-- `--deep` switches to the full audit — gaps, staleness, orphans, missing relations, prioritized recommendations.
+- `--deep` switches to the full audit: gaps, staleness, orphans, missing relations, and prioritized recommendations.
 - `--drift` looks for staleness signals: code drift (a doc references source that changed), cascade drift (a dependency was updated without the dependent being reviewed), and temporal drift (a doc hasn't been touched in a long time).
 
 Run the dashboard regularly; run `--deep` before a release or audit; run `--drift` after a big refactor.
@@ -147,13 +147,13 @@ Lists every command with a one-line outcome. Use when you forget which command f
 
 1. You type a slash command (`/archcore:context`) or describe an intent in plain English ("what rules apply to `src/auth/`?").
 2. The host matches your request to a skill definition shipped with the plugin.
-3. The skill is loaded into the conversation — its description, guardrails, and relation rules become part of the agent's working context.
+3. The host loads the skill into the conversation. Its description, guardrails, and relation rules become part of the agent's working context.
 4. The agent executes the skill, calling MCP tools as needed.
 
-Every command ultimately resolves to **MCP tool calls**. The plugin never writes to `.archcore/` directly — `Write` / `Edit` on `.archcore/*.md` is blocked by a `PreToolUse` hook, so all mutations go through `create_document` / `update_document` / `add_relation`.
+Every command resolves to **MCP tool calls**. The plugin never writes to `.archcore/` directly: a `PreToolUse` hook blocks `Write` and `Edit` on `.archcore/*.md`, so every mutation goes through `create_document`, `update_document`, or `add_relation`.
 
 ## Next steps
 
-- [Built-in agents](/plugin/agents/) — the two agents that back commands for complex multi-document flows.
-- [Document types](/concepts/document-types/) — the 19 types these commands route to.
-- [Skills reference](/reference/skills/) — one-page lookup of all 7 commands.
+- [Built-in agents](/plugin/agents/) covers the two agents that back complex multi-document flows.
+- [Document types](/concepts/document-types/) lists the 19 types these commands route to.
+- [Skills reference](/reference/skills/) is a one-page lookup of all 7 commands.

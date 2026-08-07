@@ -1,6 +1,6 @@
 ---
 title: CLI Configuration
-description: Complete reference for .archcore/settings.json — sync types (none, cloud, on-prem), language, and validation rules.
+description: "Every field in .archcore/settings.json: sync, language, globals, and codeAlignment, with validation rules for each."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -9,7 +9,7 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 ## Settings file
 
-Configuration is stored in `.archcore/settings.json`. This file is created during `archcore init` and managed through `archcore config`.
+Archcore stores configuration in `.archcore/settings.json`. `archcore init` creates the file, and `archcore config` reads and updates it.
 
 ### Minimal config (local only)
 
@@ -37,10 +37,11 @@ Configuration is stored in `.archcore/settings.json`. This file is created durin
 | `archcore_url` | string | No | Server URL for on-prem sync |
 | `language` | string | No | Language code for document content |
 | `globals` | array | No | Read-only external knowledge bases to mount. See [Global sources](#global-sources) |
+| `codeAlignment` | object | No | Tunes the pre-write code-alignment advisory. See [Code alignment](#code-alignment) |
 
 ## Sync types
 
-### `none` — local only
+### `none` (local only)
 
 Documents stay local. No server communication.
 
@@ -50,10 +51,10 @@ Documents stay local. No server communication.
 }
 ```
 
-**Allowed fields:** `sync`, `language`, `globals`
+**Allowed fields:** `sync`, `language`, `globals`, `codeAlignment`
 **Forbidden fields:** `project_id`, `archcore_url`
 
-### `cloud` — cloud sync
+### `cloud` (cloud sync)
 
 Syncs to `https://app.archcore.ai`.
 
@@ -64,14 +65,14 @@ Syncs to `https://app.archcore.ai`.
 }
 ```
 
-**Allowed fields:** `sync`, `project_id`, `language`, `globals`
+**Allowed fields:** `sync`, `project_id`, `language`, `globals`, `codeAlignment`
 **Forbidden fields:** `archcore_url`
 
 :::note
-Cloud sync is not yet available. The `sync` field is currently locked to `none`.
+Cloud sync is not yet available. `archcore config` refuses to set `sync`, and refuses to read or write `project_id` and `archcore_url`, while sync features are unreleased.
 :::
 
-### `on-prem` — self-hosted server
+### `on-prem` (self-hosted server)
 
 Syncs to a self-hosted Archcore server.
 
@@ -83,7 +84,7 @@ Syncs to a self-hosted Archcore server.
 }
 ```
 
-**Allowed fields:** `sync`, `project_id`, `archcore_url`, `language`, `globals`
+**Allowed fields:** `sync`, `project_id`, `archcore_url`, `language`, `globals`, `codeAlignment`
 **Required fields:** `archcore_url`
 
 :::note
@@ -92,7 +93,7 @@ On-prem sync is not yet available.
 
 ## Global sources
 
-The `globals` array mounts other `.archcore/` knowledge bases — company standards, platform conventions, a monorepo root — into your project **read-only**. It is allowed for every sync type.
+The `globals` array mounts other `.archcore/` knowledge bases into your project as read-only sources: company standards, platform conventions, or a monorepo root. Every sync type allows it.
 
 ```json
 {
@@ -108,18 +109,86 @@ The `globals` array mounts other `.archcore/` knowledge bases — company standa
 | `id` | Yes | Stable identifier; becomes the document `source_id`. Lowercase alphanumeric with hyphens (`^[a-z0-9][a-z0-9-]*$`), not the reserved value `local`, unique within the array |
 | `path` | Yes | Points at the global's `.archcore` directory. Relative (including `../`), absolute, or in-tree under `.archcore/global/` |
 
-Every declared global is **mandatory** — if its directory is absent, the MCP server fails fast at startup. Globals are read-only everywhere outside the MCP read tools, and local documents take precedence over a same-topic global.
+Every declared global is mandatory. If its directory is absent, the MCP server fails fast at startup. Globals are read-only everywhere outside the MCP read tools, and local documents take precedence over a same-topic global.
 
 See [Global sources](/cli/global-sources/) for the full model, vendoring, and the monorepo-root pattern.
+
+## Code alignment
+
+The `codeAlignment` object tunes the **code-alignment advisory**, which runs on the pre-write hook event and names the documents that constrain the source file an agent is about to edit. Every sync type allows it, as with `globals`.
+
+```json
+{
+  "sync": "none",
+  "codeAlignment": {
+    "sourceRoots": ["src", "services"]
+  }
+}
+```
+
+`sourceRoots` decides what counts as code: a file outside every root gets no advisory. The defaults are `src`, `lib`, `app`, `pkg`, `cmd`, `internal`, `apps`, `packages`, `modules`, `components`.
+
+:::caution
+A declared list **replaces** the defaults — it does not extend them. Writing `"sourceRoots": ["services"]` means files under `src/` stop producing advisories. List every root you want, including the defaults you still need.
+:::
+
+How roots are matched and validated:
+
+- Roots are normalized on load, so `./src`, `src/`, and `src` name one root.
+- A root matches only when a separator follows it, so a file named `src` is not inside `src/`.
+- Nested roots work: `packages/app`.
+- Each entry must be a relative path inside the project. Absolute paths, `..` traversal, `.`, and empty strings are rejected with an error naming `codeAlignment.sourceRoots`.
+- An empty array behaves like no array at all: the defaults apply.
+- If `settings.json` cannot be read, the advisory falls back to the defaults rather than going silent.
+
+Read the effective value. The CLI prints the defaults when the field is unset:
+
+```bash
+archcore config get codeAlignment.sourceRoots
+```
+
+```text
+src, lib, app, pkg, cmd, internal, apps, packages, modules, components
+```
+
+`codeAlignment.sourceRoots` is readable but not writable through `archcore config`. Edit `.archcore/settings.json` by hand to change it.
+
+See [Hooks](/cli/hooks/) for what the advisory emits and when it fires.
 
 ## Validation rules
 
 - `sync` must be one of: `none`, `cloud`, `on-prem`
 - Fields must be consistent with the sync type (e.g., `archcore_url` is forbidden for `cloud`)
-- `language` must not contain spaces
+- `project_id` must be `null` or a number
+- `language` must be a non-empty string without spaces
 - `archcore_url` must not be empty when sync is `on-prem`
 - Each `globals` entry must have a non-empty `id` (lowercase alphanumeric with hyphens, not `local`) and non-empty `path`; `id` must be unique across the array
-- Optional fields use `omitempty` — omitted fields use code-level defaults
+- `codeAlignment` must be an object and `codeAlignment.sourceRoots` an array of relative paths inside the project
+- Optional fields use `omitempty`, so omitted fields take code-level defaults
+
+## Unknown fields
+
+A field this CLI does not recognize is tolerated on read and preserved on write. Config keys from a newer version, and keys you added by hand, survive an older binary rewriting `settings.json`.
+
+Three cases:
+
+| Case | Outcome |
+|------|---------|
+| Field unknown to this binary | Captured, load succeeds, written back verbatim |
+| Known field in the wrong sync mode | Hard error. `archcore_url` under `sync: "cloud"` still fails |
+| Known field with a malformed value | Hard error. Value validation stays strict |
+
+The same protection applies one level down: an unrecognized key nested inside `codeAlignment` survives the round trip too.
+
+`archcore mcp`, `archcore config`, `archcore doctor`, and `archcore sync` warn about unrecognized fields on stderr, so `config get` output and the MCP server's stdout stay clean:
+
+```text
+  ! settings.json has unrecognized field(s): somethingNewer — this archcore may be older than the project's config (or a typo). Consider 'archcore update'.
+```
+
+:::note
+This tolerance is a deliberate trade: the parser no longer catches a typo in a field name. The stderr warning is the only signal you get.
+:::
 
 ## Managing config
 
@@ -134,7 +203,9 @@ archcore config get language
 archcore config set language en
 ```
 
+`language` is the only key `set` accepts today. `get` also reads `sync` and `codeAlignment.sourceRoots`. Edit `globals` and `codeAlignment` by hand in `.archcore/settings.json`.
+
 ## Next steps
 
-- [Commands](/cli/commands/) — every `archcore config` flag and subcommand.
-- [Troubleshooting](/cli/troubleshooting/) — settings-related errors.
+- [Commands](/cli/commands/): every `archcore config` flag and subcommand.
+- [CLI troubleshooting](/cli/troubleshooting/): settings-related errors.

@@ -1,6 +1,6 @@
 ---
 title: CLI Commands
-description: Complete reference for every archcore subcommand — init, status, doctor, config, mcp, hooks, update, --version, --help.
+description: "Every archcore subcommand: init, status, doctor, config, mcp, instructions, hooks, update, plus --version and --help."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -20,14 +20,14 @@ archcore init
 1. Creates `.archcore/` directory with `settings.json`
 2. Auto-detects installed coding agents
 3. Installs MCP server config for detected agents
-4. Installs session hooks for supported agents
+4. Installs lifecycle hooks for supported agents
 5. Offers to write the "use Archcore" instruction hint into detected agent configs (interactive only)
 
-If no agents are detected, behavior depends on the environment. In an interactive terminal, `init` prompts a multi-select of all supported agents plus a "Skip — configure later" option. In non-interactive contexts (no TTY), it installs nothing and prints a hint to run `archcore mcp install --agent <id>` later.
+If no agents are detected in an interactive terminal, `init` prompts a multi-select of all supported agents plus a "Skip — configure later" option. In non-interactive contexts (no TTY), it installs nothing and prints a hint to run `archcore mcp install --agent <id>` later.
 
-Re-running `init` prompts "Reinitialize?". Confirming overwrites `.archcore/settings.json` back to `{"sync":"none"}`, discarding any `language` or `globals` you had set; declining leaves it untouched. MCP and hook writes are always idempotent.
+Re-running `init` prompts "Reinitialize?". Confirming overwrites `.archcore/settings.json` back to `{"sync":"none"}` and discards any `language` or `globals` you had set. Declining leaves it untouched. MCP and hook writes are always idempotent.
 
-In non-interactive contexts (no TTY) the instruction hint is skipped — add it later with [`archcore instructions install`](#archcore-instructions).
+In non-interactive contexts (no TTY), `init` skips the instruction hint. Add it later with [`archcore instructions install`](#archcore-instructions).
 
 For a step-by-step walkthrough, see the [CLI Quick Start](/cli/quick-start/).
 
@@ -52,31 +52,50 @@ archcore status
 - Sync manifest JSON structure
 - Orphaned relations (documents referenced but not on disk)
 
-When orphaned relations are found, status hints: "Run 'archcore doctor --fix' to remove orphaned relations"
+When `status` finds orphaned relations, it hints: "Run 'archcore doctor --fix' to remove orphaned relations"
 
 ---
 
 ## archcore doctor
 
-Comprehensive health check with optional fix.
+Full health check, with an optional fix pass.
 
 ```bash
-archcore doctor [--fix]
+archcore doctor [--fix] [--agent <id>] [--project <path>]
 ```
 
-Runs all validation checks plus:
+`doctor` runs all validation checks plus:
 
 - Verifies `settings.json` exists and is valid
 - Checks server reachability (if server URL is configured)
 - Reports tag hygiene issues (invalid format, singleton tags that may be typos)
+- Reports whether each wired host can act on its hook config
 
-Returns a non-zero exit code if any issues are found.
+If `doctor` finds any issue, it returns a non-zero exit code.
+
+A host counts as wired only when its config file holds a hook command Archcore wrote. `doctor` skips a host that is detected but was never wired, and when no host is wired it says nothing about hooks rather than reporting them healthy. See [`archcore hooks`](#archcore-hooks) for what the notes cover.
 
 **Flags:**
 
-| Flag    | Description                                                         |
-| ------- | ------------------------------------------------------------------- |
-| `--fix` | Remove orphaned relations from the manifest before running checks   |
+| Flag               | Description                                                                                                              |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| `--fix`            | Fix what can be fixed automatically (orphaned relations and host-wiring drift) before running the checks.                 |
+| `--agent <id>`     | With `--fix`: converge host wiring for the named agent only. Repeatable. Defaults to every auto-detected agent.           |
+| `--project <path>` | Project root to check.                                                                                                   |
+
+`--agent` requires `--fix`. On its own it fails with `--agent requires --fix`.
+
+`doctor` resolves the project root in order: the `--project` flag, then the `ARCHCORE_PROJECT_ROOT` environment variable, then the current working directory.
+
+**What `--fix` writes:**
+
+`--fix` writes to your agents' config files, not just the manifest. It removes orphaned relations from the manifest, then converges host wiring by re-running the hook and MCP installers for each agent: a stale `archcore hooks …` command is rewritten in place, duplicate entries are healed, a drifted MCP entry is rewritten to its current shape, and the managed instruction block is refreshed. Fields Archcore does not own are preserved — the installers only touch what they wrote.
+
+```bash
+archcore doctor --fix                        # Every auto-detected agent
+archcore doctor --fix --agent cursor         # One agent
+archcore doctor --fix --agent cursor --agent claude-code   # Several
+```
 
 ---
 
@@ -95,8 +114,8 @@ archcore config set <key> <value>  # Set a config value
 | Key            | Values                     | Description                                      |
 | -------------- | -------------------------- | ------------------------------------------------ |
 | `sync`         | `none`, `cloud`, `on-prem` | Sync type. Read-only via `get`; `set` is locked  |
-| `project_id`   | integer                    | Project ID for sync (locked — `get` and `set` both return "not available yet") |
-| `archcore_url` | URL                        | Server URL for on-prem (locked — `get` and `set` both return "not available yet") |
+| `project_id`   | integer                    | Project ID for sync. Locked: `get` and `set` both return "not available yet" |
+| `archcore_url` | URL                        | Server URL for on-prem. Locked: `get` and `set` both return "not available yet" |
 | `language`     | language code              | Language for document content (e.g., `en`, `ru`) |
 
 **Examples:**
@@ -118,7 +137,7 @@ archcore mcp install       # Install MCP config for all detected agents
 archcore mcp install --agent <id>  # Install for a specific agent
 ```
 
-Coding agents connect to this stdio server. It's not meant to be run manually — agents launch it as a subprocess.
+Coding agents connect to this stdio server and launch it as a subprocess. You do not run it by hand.
 
 **Agent IDs:** `claude-code`, `cursor`, `copilot`, `gemini-cli`, `opencode`, `codex-cli`, `roo-code`, `cline`
 
@@ -128,7 +147,7 @@ Coding agents connect to this stdio server. It's not meant to be run manually �
 | ------------------ | ----------------------------------------------------------- |
 | `--project <path>` | Project root to serve. Overrides the current directory.     |
 
-The project root is resolved in order: the `--project` flag, then the `ARCHCORE_PROJECT_ROOT` environment variable, then the current working directory. This is useful when an agent launches the server from a fixed location instead of the project directory.
+`archcore mcp` resolves the project root in order: the `--project` flag, then the `ARCHCORE_PROJECT_ROOT` environment variable, then the current working directory. Use `--project` when an agent launches the server from a fixed location instead of the project directory.
 
 See [MCP server](/cli/mcp-server/) for details.
 
@@ -149,61 +168,96 @@ archcore instructions remove    # Remove the hint
 
 | Subcommand | Description                                                                                                  |
 | ---------- | ------------------------------------------------------------------------------------------------------------ |
-| `install`  | Writes the "use Archcore" hint into the instruction files of detected agents (e.g. `AGENTS.md`, `.claude/rules`). |
+| `install`  | Writes the "use Archcore" hint into the instruction files of detected agents (`CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). |
 | `remove`   | Removes the hint previously written by `instructions install` or `init`. Works even after the project is de-initialized. |
 
 **Flags:**
 
-| Flag             | Description                                                          |
-| ---------------- | ------------------------------------------------------------------- |
-| `--agent <id>` | Target a single agent host (e.g. `claude-code`, `cursor`, `gemini-cli`, `codex-cli`) instead of all detected ones. |
+| Flag               | Description                                                                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--agent <id>`     | Target a single agent host (e.g. `claude-code`, `cursor`, `gemini-cli`, `codex-cli`) instead of all detected ones. Accepted by both subcommands; not repeatable, so the last value wins. |
+| `--project <path>` | Project root containing `.archcore/`. Accepted by `install` only.                                                                                |
 
-For shared files (`AGENTS.md`, `GEMINI.md`) the hint is inserted inside a managed marker block:
+The two subcommands resolve the project root differently, and the difference is easy to trip over:
 
-```
+- `install` resolves it in order: the `--project` flag, then the `ARCHCORE_PROJECT_ROOT` environment variable, then the current working directory.
+- `remove` honors neither. It always operates on the current working directory, so run it from the project root.
+
+Every target file (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`) receives the hint inside a managed marker block:
+
+```markdown
 <!-- archcore:start -->
 …
 <!-- archcore:end -->
 ```
 
-This lets Archcore update or remove the hint without touching your own content — `remove` deletes only the marker block and leaves the rest of the file intact.
+The marker block lets Archcore update or remove the hint without touching your own content. `remove` deletes only the marker block and leaves the rest of the file intact. A second write is idempotent, so the agents that share `AGENTS.md` collapse into a single block.
 
 **Instruction file locations:**
 
-| Agent                                                 | Location         |
-| ----------------------------------------------------- | ---------------- |
-| Claude Code                                           | `.claude/rules/` |
-| Gemini CLI                                            | `GEMINI.md`      |
-| Cursor, Codex CLI, OpenCode, Roo Code, Cline, Copilot | `AGENTS.md`      |
+| Agent                                                        | Instruction file(s)             |
+| ------------------------------------------------------------ | ------------------------------- |
+| Claude Code                                                  | `CLAUDE.md` **and** `AGENTS.md` |
+| Gemini CLI                                                   | `GEMINI.md`                     |
+| Cursor, OpenCode, Codex CLI, Roo Code, Cline, GitHub Copilot | `AGENTS.md`                     |
+
+Claude Code gets both files. It reads `CLAUDE.md` natively and does not auto-read `AGENTS.md`, so `CLAUDE.md` carries the hint; the `AGENTS.md` block keeps the repository on the standard the other hosts converge on.
 
 **Examples:**
 
 ```bash
-archcore instructions install                  # All detected agents
+archcore instructions install                       # All detected agents
 archcore instructions install --agent claude-code   # Claude Code only
+archcore instructions remove                        # Strip the hint from every target
 ```
+
+`archcore instructions remove --agent claude-code` strips the `CLAUDE.md` block and deletes the legacy `.claude/rules/archcore.md` written by earlier CLI versions. That command leaves the shared `AGENTS.md` block to the `AGENTS.md` agents' own remove. `archcore instructions remove` without `--agent` covers every target.
 
 ---
 
 ## archcore hooks
 
-Manage agent hooks.
+Install agent hooks and serve hook events. Hooks intercept three host lifecycle events:
+
+| Event            | What it does                                                                                                     |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `session-start`  | Injects the project recap into a new session.                                                                    |
+| `pre-tool-use`   | Blocks a direct write to an `.archcore/` document, and injects the documents that constrain the file being edited. |
+| `post-tool-use`  | Reports structure problems, relation cascades, and precision findings after a document mutation.                  |
 
 ```bash
-archcore hooks install                  # Install hooks for all detected agents
-archcore hooks install --agent <id>     # Install for a specific agent
+archcore hooks install                  # Every detected agent
+archcore hooks install --agent cursor   # One agent only
 ```
 
-**Agent hook commands** (called by agents, not manually):
+`install` writes hooks for every detected agent, then installs the MCP config for those same agents.
+
+**Flags:**
+
+| Flag               | Description                                                             |
+| ------------------ | ----------------------------------------------------------------------- |
+| `--agent <id>`     | Install for a single agent. Not repeatable, so the last value wins.     |
+| `--project <path>` | Project root containing `.archcore/`.                                   |
+
+`archcore hooks` resolves the project root in order: the `--project` flag, then the `ARCHCORE_PROJECT_ROOT` environment variable, then the current working directory.
+
+Agent selection goes through `--agent`, never a positional argument. A mistyped `archcore hooks install cursor` is rejected instead of falling back to auto-detect.
+
+After a successful install, the command prints notes on whether each host can run what was written. Silence means the wiring works.
+
+**Per-event commands** (invoked by the host, not by you):
 
 ```bash
 archcore hooks claude-code session-start
-archcore hooks cursor <event>
-archcore hooks gemini-cli <event>
-archcore hooks copilot <event>
+archcore hooks cursor pre-tool-use
+archcore hooks copilot post-tool-use
 ```
 
-See [hooks](/cli/hooks/) for details.
+**Hosts with command leaves:** `claude-code`, `cursor`, `gemini-cli`, `copilot`, `codex-cli`, `opencode`
+
+Every leaf is hidden. An unrecognized host or event writes empty stdout and exits 0, because stdout is the hook protocol channel: anything else printed there would land in the agent's context.
+
+See [Hooks](/cli/hooks/) for the full guard and advisory detail.
 
 ---
 
@@ -231,7 +285,7 @@ archcore --version
 
 ## archcore --help
 
-Show help with all available commands.
+Show help for every command.
 
 ```bash
 archcore --help

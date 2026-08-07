@@ -1,35 +1,35 @@
 ---
 title: Flat Files vs Archcore
-description: How Archcore compares to CLAUDE.md, .cursorrules, and other flat-file approaches — and when each makes sense.
+description: Archcore differs from CLAUDE.md and .cursorrules in structure, scale, lifecycle, and links between documents.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="shared" />
 
-Most teams start with flat instruction files — `CLAUDE.md`, `.cursorrules`, a `docs/` folder, or a wiki. These work for small projects. This page explains where they stop working and what Archcore does differently.
+Most teams start with flat instruction files: `CLAUDE.md`, `.cursorrules`, a `docs/` folder, or a wiki. These work for small projects. This page explains where they stop working and what Archcore does differently.
 
-For the category-level version of this comparison — repo memory against cloud agent memory, RAG, and instruction files — see [What is repo memory?](https://archcore.ai/learn/repo-memory/).
+[What is repo memory?](https://archcore.ai/learn/repo-memory/) makes the same comparison at the category level, covering repo memory against cloud agent memory, RAG, and instruction files.
 
 ## Where flat files break down
 
-- **The file keeps growing.** A `CLAUDE.md` that starts at 20 lines reaches 200. The agent reads the entire file every session but can't prioritize what matters — everything looks equally important.
+- **The file keeps growing.** A `CLAUDE.md` that starts at 20 lines reaches 200. The agent reads the entire file every session but cannot prioritize what matters, because everything looks equally important.
 - **Multiple agents, multiple files.** You maintain `CLAUDE.md` and `.cursorrules` with overlapping content. One gets updated, the other drifts.
 - **No structure to query.** Decisions, standards, how-tos, and plans are all paragraphs in the same file. There's no way to ask "show me all coding rules" or "what decisions were made about auth."
-- **No lifecycle.** Last month's decision to use REST sits next to this week's switch to GraphQL. Both look equally valid. No way to mark something as superseded.
+- **No lifecycle.** Last month's decision to use REST sits next to this week's switch to GraphQL. Both look equally valid. Nothing marks a decision as superseded.
 - **No connections.** A database decision produced a migration rule, which led to a guide. In a flat file, these are unrelated paragraphs.
 
 ## What Archcore does differently
 
 ### Typed documents instead of undifferentiated text
 
-In a flat file, a decision and a coding standard are just paragraphs. Archcore gives each piece of knowledge an explicit type: `adr` for decisions, `rule` for standards, `guide` for how-tos, `plan` for implementation tasks — [19 types](/concepts/document-types/) total. Each type has a template. Agents query by type instead of parsing everything.
+In a flat file, a decision and a coding standard are both paragraphs. Archcore gives each piece of knowledge an explicit type, out of [19 types](/concepts/document-types/) total: `adr` for decisions, `rule` for standards, `guide` for how-tos, `plan` for implementation tasks. Each type has a template. Agents query by type instead of parsing everything.
 
 A flat file is a bag of text. Typed documents are a queryable knowledge base.
 
 ### Free-form directory structure
 
-Archcore does not impose a directory layout. The `.archcore/` directory is entirely yours — organize by domain, by team, flat, nested, or however makes sense:
+Archcore does not impose a directory layout. Organize `.archcore/` by domain, by team, flat, or nested:
 
 ```text
 .archcore/
@@ -41,7 +41,7 @@ Archcore does not impose a directory layout. The `.archcore/` directory is entir
     └── stripe-integration.adr.md
 ```
 
-The type comes from the filename (`slug.type.md`), not from where the file lives. Reorganize anytime without changing semantics.
+The type comes from the filename (`slug.type.md`), not from where the file lives. Moving a document never changes its type.
 
 ### Relations add meaning
 
@@ -53,23 +53,23 @@ auth-redesign.plan.md ──depends_on──→ jwt-strategy.adr.md
 jwt-strategy.adr.md ──related──→ session-handling.rule.md
 ```
 
-When an agent reads a document, it sees the full graph — the decision that motivated it, the rules that constrain it, the plan it belongs to.
+When an agent reads a document, it sees the full graph: the decision that motivated it, the rules that constrain it, and the plan it belongs to.
 
 ### Status lifecycle
 
-Every document has a status: `draft`, `accepted`, or `rejected`. Superseded decisions stay in history but agents know they're no longer current.
+Every document has a status: `draft`, `accepted`, or `rejected`. Superseded decisions stay in history, and agents know they're no longer current.
 
 ### Cross-agent, agent-native
 
-One `.archcore/` directory works with [Claude Code, Cursor, Copilot, Gemini CLI, and more](/cli/agent-integrations/). Agents don't just read — they query by type and status, create documents from templates, and add relations through [MCP](/cli/mcp-server/).
+One `.archcore/` directory works with [Claude Code, Cursor, Copilot, Gemini CLI, and more](/cli/agent-integrations/). Agents also query by type and status, create documents from templates, and add relations through [MCP](/cli/mcp-server/).
 
 ## When to switch
 
-**Stay with flat files if** your project is small, you use one agent, and your instruction file is under ~50 lines.
+Stay with flat files if your project is small, you use one agent, and your instruction file is under ~50 lines.
 
-**Consider Archcore when** your instructions keep growing, you use multiple agents, you want status tracking, or you need connections between decisions, rules, and plans.
+Consider Archcore when your instructions keep growing, you use multiple agents, you want status tracking, or you need connections between decisions, rules, and plans.
 
-**You don't have to choose.** Archcore is additive — keep your `CLAUDE.md` for quick agent-specific tweaks, use `.archcore/` for structured project knowledge.
+You don't have to choose. Archcore is additive: keep `CLAUDE.md` for quick agent-specific tweaks and use `.archcore/` for structured project knowledge.
 
 ## Side-by-side
 
@@ -84,6 +84,6 @@ One `.archcore/` directory works with [Claude Code, Cursor, Copilot, Gemini CLI,
 
 ## Next steps
 
-- [Plugin quick start](/start/plugin-quick-start/) — get the full UX in Claude Code or Cursor.
-- [CLI quick start](/cli/quick-start/) — install the CLI and create your first document.
-- [Document Types](/concepts/document-types/) — the 19 types and when to use each.
+- The [Plugin quick start](/start/plugin-quick-start/) covers the full UX in Claude Code or Cursor.
+- The [CLI quick start](/cli/quick-start/) installs the CLI and creates your first document.
+- [Document Types](/concepts/document-types/) lists the 19 types and when to use each.

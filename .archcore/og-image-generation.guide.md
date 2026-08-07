@@ -12,13 +12,23 @@ The build-time OG technique (Satori → SVG → resvg → PNG, fonts, Satori CSS
 
 ## How docs OG works
 
-Each docs page gets a unique OG image (1200×630). The prebuild script walks `src/content/docs/**/*.{md,mdx}` and `src/content/changelog/*.md`, extracts `title`/`description` from frontmatter, and emits per-page images to `public/og/<slug>.png` plus `public/og-image.png` as a root fallback. A custom `src/components/Head.astro` injects per-page `og:image` from the route ID — no per-page frontmatter, new pages auto-discovered. Palette is the warm-cream `DESIGN.md` set (`#f8f1e8` bg, `#11100e` text) over a 70px grid.
+Each docs page gets a unique OG image (1200×630). The prebuild script walks `src/content/docs/**/*.{md,mdx}` and `src/content/changelog/*.md`, extracts `title`/`description` from frontmatter, and emits per-page images to `public/og/<slug>.png` plus `public/og-image.png` as a root fallback. A custom `src/components/Head.astro` injects per-page `og:image` from the route ID, so no per-page frontmatter is needed and new pages are auto-discovered. Palette is the warm-cream `DESIGN.md` set (`#f8f1e8` bg, `#11100e` text) over a 70px grid.
+
+## Description length
+
+The card renders the description unchanged when it is **120 characters or fewer**. From 121 characters the script cuts it to 117 and appends `...`:
+
+```js
+description.length > 120 ? description.slice(0, 117) + "..." : description
+```
+
+The HTML meta description is unaffected either way; Starlight passes the full frontmatter string to it. The limit therefore constrains the card, not the search snippet. The `plain-language-and-seo` rule states the authoring obligation that follows.
 
 ## Common tasks
 
 - **Generate manually:** `npm run og:generate` → images in `public/og/`. Build runs it via `prebuild` (`npm run build`).
-- **Edit design:** `scripts/generate-og-image.mts` — `createOgNode(title, description, breadcrumb)`, title 48px, description 22px (truncated 120 chars), colors from `DESIGN.md`, and `SECTION_MAP` (slug-prefix → breadcrumb; `plugin/*` and `cli/*` are unmapped, so they render with no breadcrumb unless added).
-- **Add a page:** create the `.md`/`.mdx` with a `title` in frontmatter — auto-discovered; Head builds the `og:image` URL from the route ID.
+- **Edit design:** `scripts/generate-og-image.mts`, holding `createOgNode(title, description, breadcrumb)`, title 48px, description 22px (see the length rule above), colors from `DESIGN.md`, and `SECTION_MAP` (slug-prefix → breadcrumb; `plugin/*` and `cli/*` are unmapped, so they render with no breadcrumb unless added).
+- **Add a page:** create the `.md`/`.mdx` with a `title` in frontmatter. It is auto-discovered, and Head builds the `og:image` URL from the route ID.
 
 ## Per-page meta (Astro)
 

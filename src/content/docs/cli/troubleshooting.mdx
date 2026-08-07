@@ -1,13 +1,13 @@
 ---
 title: CLI Troubleshooting
-description: Common CLI-level issues with Archcore — agent visibility, MCP server startup, validation errors. Diagnostic steps and fixes.
+description: Fixes for common Archcore CLI problems with agent visibility, MCP server startup, and document validation.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="cli" />
 
-Common CLI-level issues. For plugin-specific problems (commands not appearing, host-specific hooks), see [plugin troubleshooting](/plugin/troubleshooting/).
+This page covers CLI-level issues. For plugin-specific problems (commands not appearing, host-specific hooks), see [plugin troubleshooting](/plugin/troubleshooting/).
 
 For a quick all-in-one check, run:
 
@@ -15,7 +15,7 @@ For a quick all-in-one check, run:
 archcore doctor
 ```
 
-This validates your project context — `settings.json`, document structure, MCP configuration, and server reachability — in one pass. The output tells you what's wrong and how to fix it.
+This validates your project context in one pass: `settings.json`, document structure, MCP configuration, and server reachability. The output names what is wrong and how to fix it.
 
 ## Agent cannot see documents
 
@@ -93,7 +93,7 @@ See [Agent integrations](/cli/agent-integrations/) for config file locations per
 
 ### Archcore not in PATH
 
-The MCP server runs as a subprocess — your agent executes `archcore mcp` behind the scenes. If the `archcore` binary isn't in your shell PATH, the agent can't launch it and reports "command not found."
+The MCP server runs as a subprocess: your agent executes `archcore mcp`. If the `archcore` binary isn't in your shell PATH, the agent can't launch it and reports "command not found."
 
 **Check:**
 
@@ -106,7 +106,7 @@ If this returns nothing, the binary isn't in your PATH.
 **Fix:** Add the directory containing `archcore` to your PATH. The exact location depends on how you installed it:
 
 - **macOS / Linux (install.sh):** typically `~/.local/bin/archcore` or `/usr/local/bin/archcore`. Add to your shell profile (`~/.bashrc`, `~/.zshrc`, or equivalent).
-- **Windows (install.ps1):** typically `%LOCALAPPDATA%\Programs\archcore\archcore.exe`. The installer adds this directory to your user `PATH` automatically — if it's missing, open a new PowerShell window or re-run the installer.
+- **Windows (install.ps1):** typically `%LOCALAPPDATA%\Programs\archcore\archcore.exe`. The installer adds this directory to your user `PATH` automatically. If it's missing, open a new PowerShell window or re-run the installer.
 
 Then verify:
 
@@ -179,13 +179,15 @@ This installs hooks for all detected agents. See [Hooks](/cli/hooks/) for agent-
 
 Some agents or agent modes don't support the Model Context Protocol. If your agent isn't in the [agent integrations](/cli/agent-integrations/) list, it can't connect to the Archcore MCP server.
 
-**Supported agents:** Claude Code, Cursor, GitHub Copilot, Gemini CLI, OpenCode, Codex CLI, Roo Code, Cline.
+**Supported agents:** Claude Code, Cursor, GitHub Copilot, Gemini CLI, OpenCode, Codex CLI, and Roo Code. Archcore writes the MCP config for each of these.
 
-If your agent isn't listed, you can still use Archcore documents manually — they're standard Markdown files in `.archcore/` that any tool can read.
+Cline is also supported, but its MCP config lives in VS Code `globalStorage` rather than a project file, so `archcore mcp install` cannot write it. Add the Archcore server through Cline's own MCP settings interface.
+
+If your agent isn't listed, you can still use Archcore documents manually. They are standard Markdown files in `.archcore/` that any tool can read.
 
 ### Documents exist but agent says none found
 
-The agent connects to MCP successfully but reports zero documents. This usually means your documents have validation errors and are being skipped.
+The agent connects to MCP successfully but reports zero documents. This usually means your documents have validation errors, so the scan skips them.
 
 **Check:**
 
@@ -250,7 +252,7 @@ archcore mcp install
 
 ### Missing or invalid global source
 
-If your `settings.json` declares a [global source](/cli/global-sources/) whose directory isn't on disk, the server refuses to start — every declared global is mandatory.
+If your `settings.json` declares a [global source](/cli/global-sources/) whose directory isn't on disk, the server refuses to start. Every declared global is mandatory.
 
 **What you see:**
 
@@ -260,7 +262,7 @@ global source "company-standards" not found at "../company-standards/.archcore" 
 
 **Fix:** Clone or vendor the source so the `path` resolves, or remove the entry from `globals` if you no longer need it. For a source that ships with the repo, [vendor it in-tree](/cli/global-sources/#vendoring-a-global-in-tree) under `.archcore/global/`.
 
-A different message — `invalid .archcore/settings.json: …` — means the file itself is malformed; the server aborts rather than start with globals silently dropped. Run `archcore doctor` to see the exact parse or validation error.
+The message `invalid .archcore/settings.json: …` means the file itself is malformed. The server aborts rather than start with globals silently dropped. Run `archcore doctor` to see the exact parse or validation error.
 
 On non-server surfaces a missing global never blocks you: the session-start hook degrades to a local-only context summary with a warning naming the source, and `archcore status` reports it as a visible failure while still running its local checks.
 
@@ -268,7 +270,7 @@ On non-server surfaces a missing global never blocks you: the session-start hook
 
 **What you see:** A write tool (`create_document`, `update_document`, `remove_document`) or `add_relation` is rejected because the target is a global document.
 
-This is working as intended — globals are read-only and are never relation endpoints. Make the change upstream in the source repository, and link **local → local** documents instead of linking to a global. See [Read-only everywhere](/cli/global-sources/#read-only-everywhere).
+This is working as intended: globals are read-only and are never relation endpoints. Make the change upstream in the source repository, and link **local → local** documents instead of linking to a global. See [Read-only everywhere](/cli/global-sources/#read-only-everywhere).
 
 ## Validation errors
 
@@ -278,7 +280,7 @@ This is working as intended — globals are read-only and are never relation end
 
 **What you see:** The file doesn't match the `slug.type.md` pattern.
 
-**Why it happens:** Slugs must be lowercase alphanumeric with hyphens only. The filename must follow the exact format `slug.type.md` — no extra dots, no spaces, no underscores.
+**Why it happens:** Slugs must be lowercase alphanumeric with hyphens only. The filename must follow the exact format `slug.type.md`, with no extra dots, spaces, or underscores.
 
 **Examples of invalid names:**
 
@@ -349,7 +351,7 @@ Both fields are required:
 
 **What you see:** The `status` field contains an unrecognized value.
 
-**Why it happens:** Status must be exactly one of three values. Not `active`, not `approved`, not `archived`.
+**Why it happens:** Status must be exactly one of three values. Archcore rejects `active`, `approved`, and `archived`.
 
 | Status     | Meaning                                      |
 | ---------- | -------------------------------------------- |
@@ -385,7 +387,7 @@ This automatically removes orphaned relations from the manifest before running c
 | `my tag`    | Spaces                   |
 | `123-start` | Must start with a letter |
 
-**Fix:** Correct the tag value. Archcore shows a "did you mean?" hint when a tag is rejected.
+**Fix:** Correct the tag value. When Archcore rejects a tag, it prints a "did you mean?" hint.
 
 ### Invalid YAML
 
@@ -413,7 +415,7 @@ status: draft
 - Removes orphaned relations from `.sync-state.json` before running checks
 - Saves the cleaned manifest
 
-It does **not** auto-fix invalid filenames, missing frontmatter, unknown document types, or YAML syntax — you have to correct those manually.
+It does **not** auto-fix invalid filenames, missing frontmatter, unknown document types, or YAML syntax. Correct those manually.
 
 For a full project health check:
 

@@ -11,7 +11,7 @@ Every documentation page **must** belong to exactly one of 5 sidebar groups:
 2. **Plugin** — The Claude Code / Cursor / Codex CLI plugin product (overview, install, supported hosts, how it works, skills, built-in agents, troubleshooting)
 3. **CLI** — The standalone CLI product (overview, install, quick start, `archcore init`, commands, MCP server, hooks, agent integrations, configuration, troubleshooting)
 4. **Concepts** — Mental model and conceptual content (what is archcore, mental model, how it works, document types, documents & layout, relations, flat files vs archcore, use cases)
-5. **Reference** — Lookup material (document format, MCP tools, MCP prompts, plugin skills, tracks)
+5. **Reference** — Lookup material (document format, MCP tools, plugin skills)
 
 Every new page **must** be registered in the sidebar array in `astro.config.mjs`.
 
@@ -31,6 +31,10 @@ This structure keeps each product self-contained while concept and reference mat
 | Concepts | `concepts/` | Shared between products |
 | Reference | `reference/` | Shared between products |
 
+## Track cascades are plugin-owned
+
+Track orchestration (the PRD → plan, ADR → spec → plan, ISO 29148, and sources cascades) belongs to the **Plugin** group, not Reference. The CLI removed its five MCP track prompts in v0.7.0 so that Layer 2 has a single owner, so `reference/mcp-prompts.mdx` and `reference/tracks.mdx` no longer exist — both redirect to `/plugin/skills/#archcoreplan`. A new page about a cascade or track goes under `plugin/`.
+
 ## Examples
 
 ### Good
@@ -38,13 +42,14 @@ This structure keeps each product self-contained while concept and reference mat
 - New page documenting a plugin command → **Plugin**
 - New page documenting a CLI flag → **CLI**
 - New page explaining how relations work → **Concepts** (shared mental model)
-- New page documenting an MCP tool or prompt → **Reference** (lookup material)
+- New page documenting an MCP tool → **Reference** (lookup material)
 - New page introducing the project to a first-time visitor → **Start Here**
 
 ### Bad
 
 - A plugin-specific install page placed in **Start Here** — installs belong with their product (Plugin or CLI)
-- A CLI command reference placed in **Reference** — CLI surface area lives under **CLI**; Reference is for cross-cutting lookup tables (MCP tools, document format, plugin skills, tracks)
+- A CLI command reference placed in **Reference** — CLI surface area lives under **CLI**; Reference is for cross-cutting lookup tables (MCP tools, document format, plugin skills)
+- A page about a track cascade placed in **Reference** — tracks are a plugin surface and belong under **Plugin**
 - A concept explanation placed in **Reference** — Reference is for lookup, not learning
 - A new troubleshooting page placed at the top level — each product has its own `troubleshooting.mdx` under `plugin/` or `cli/`
 

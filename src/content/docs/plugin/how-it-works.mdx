@@ -1,6 +1,6 @@
 ---
 title: How the Plugin Works
-description: The session-start hook, MCP-only principle, post-mutation validation, and cascade staleness detection that run behind every plugin-powered conversation.
+description: "Six mechanisms run behind every plugin session: context loading, pre-edit injection, MCP-only writes, and validation."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -8,7 +8,7 @@ import CrossLinkCallout from '../../../components/CrossLinkCallout.astro';
 
 <PathBadge scope="plugin" />
 
-The plugin is invisible most of the time. Six mechanisms run underneath every conversation:
+Six mechanisms run underneath every conversation:
 
 - Load project context at session start.
 - Inject relevant rules and ADRs before each source-file edit.
@@ -22,96 +22,98 @@ The plugin is invisible most of the time. Six mechanisms run underneath every co
 1. **Session starts.** The host fires `SessionStart` (Claude Code) or `sessionStart` (Cursor). The plugin's hook loads your project's document index and relations into the conversation before you type anything.
 2. **You ask for something.** "Create an ADR for the caching decision", "audit our rule coverage", "plan the auth redesign".
 3. **A command activates.** The agent matches your request to one of the seven `/archcore:*` skills. Each one carries document-type knowledge, required sections, and relation guidance.
-4. **MCP tools execute.** Every read and write goes through `archcore mcp`. Direct `Write`/`Edit` calls targeting `.archcore/` are blocked by the `PreToolUse` hook.
-5. **Pre-edit context injection.** When you ask the agent to edit a source file, the plugin greps `.archcore/` for documents referencing that path and injects the top matches (rules, ADRs, specs, cpats) into context — automatically, before the edit runs.
+4. **MCP tools execute.** Every read and write goes through `archcore mcp`. The `PreToolUse` hook blocks direct `Write` and `Edit` calls that target `.archcore/`.
+5. **Pre-edit context injection.** When you ask the agent to edit a source file, the plugin greps `.archcore/` for documents that reference that path and injects the top matches (rules, ADRs, specs, cpats) into context before the edit runs.
 6. **Hooks validate.** After every MCP mutation, the plugin runs `archcore doctor`. If the updated document has dependents (via `implements`, `extends`, `depends_on`), a cascade check warns you that they may need review. A separate precision check emits soft warnings for vague language, missing sections, frontmatter gaps, and stub bodies.
 
-## Mechanism 1 — session-start context
+## Mechanism 1: session-start context
 
-The session-start hook runs `archcore hooks <host> session-start` (or equivalent) directly. There is no bundled launcher and no auto-download: the plugin invokes whichever `archcore` is on the host's `PATH`. If the binary isn't found, the hook prints install instructions linking to https://docs.archcore.ai/cli/install/ and exits — skills, MCP tools, and agents won't function until you install the CLI.
+The session-start hook runs `archcore hooks <host> session-start` (or equivalent) directly. The plugin bundles no launcher and downloads nothing: it invokes whichever `archcore` is on the host's `PATH`. If the hook cannot find the binary, it prints install instructions that link to https://docs.archcore.ai/cli/install/ and exits. Skills, MCP tools, and agents do not work until you install the CLI.
 
-The hook returns a document index plus a summary of existing relations. This is the agent's starting point for the conversation — it knows what already exists before you ask the first question.
+The hook returns a document index and a summary of existing relations. The agent starts the conversation knowing what already exists.
 
-What gets loaded:
-- List of documents with type, title, status, tags.
-- Summary of relations (which documents reference which).
-- Drift signal if any `.archcore/` document references source code that has changed since the last check.
+The hook loads:
+- The list of documents with type, title, status, and tags.
+- A summary of relations (which documents reference which).
+- A drift signal if any `.archcore/` document references source code that has changed since the last check.
 
-If `.archcore/` doesn't exist yet, session-start instead emits guidance that routes the agent to call `mcp__archcore__init_project` on the first Archcore operation. No manual `archcore init` required.
+If `.archcore/` does not exist yet, session-start emits guidance that routes the agent to call `mcp__archcore__init_project` on the first Archcore operation. You do not have to run `archcore init` yourself.
 
-## Mechanism 2 — pre-edit context injection
+## Mechanism 2: pre-edit context injection
 
 Before any `Write` or `Edit` call on a source file (anything outside `.archcore/`), the `check-code-alignment` hook runs. It greps `.archcore/` for documents that reference the edit path and injects a compact top-3 summary into the agent's context as `additionalContext`.
 
 Ranking is specificity-first: the longest matching directory prefix wins, with a type-priority tiebreaker (`rule` > `cpat` > `adr` > `spec` > `guide`).
 
-Source roots default to a sensible set: `src`, `lib`, `app`, `pkg`, `cmd`, `internal`, `apps`, `packages`, `modules`, `components`. Override via `.archcore/settings.json` → `codeAlignment.sourceRoots`.
+Source roots default to `src`, `lib`, `app`, `pkg`, `cmd`, `internal`, `apps`, `packages`, `modules`, and `components`. Override via `.archcore/settings.json` → `codeAlignment.sourceRoots`.
 
-This is the automatic version of [`/archcore:context`](/plugin/skills/#archcorecontext) — instead of asking "what applies before I touch `src/auth/`", the relevant rules and decisions are already in the agent's working context the moment it starts editing.
+This is the automatic version of [`/archcore:context`](/plugin/skills/#archcorecontext). You never have to ask what applies before you touch `src/auth/`, because the relevant rules and decisions are in the agent's working context the moment it starts editing.
 
-Non-blocking by design: any error or empty result exits silently. To turn it off globally, set `ARCHCORE_DISABLE_INJECTION=1`.
+The hook never blocks an edit: on any error or empty result it exits silently. To turn it off globally, set `ARCHCORE_DISABLE_INJECTION=1`.
 
-## Mechanism 3 — the MCP-only principle
+## Mechanism 3: the MCP-only principle
 
 The plugin treats `.archcore/*.md` as a schema-validated knowledge base, not a free text directory. Every change is:
 
-- **Templated** — new documents are generated from the right template for their type.
-- **Validated** — required frontmatter, slug format, and allowed statuses are checked.
-- **Graph-aware** — relations are added/removed through `add_relation` / `remove_relation` so the sync manifest stays consistent.
+- **Templated.** The plugin generates each new document from the template for its type.
+- **Validated.** The CLI checks required frontmatter, slug format, and allowed statuses.
+- **Graph-aware.** Relations go through `add_relation` and `remove_relation`, so the sync manifest stays consistent.
 
 Direct writes bypass all three. The `PreToolUse` hook therefore blocks `Write` and `Edit` on anything matching `.archcore/*.md` and tells the agent to use the MCP tool instead.
 
-Config files under `.archcore/` (`settings.json`, `.sync-state.json`) are allowed through because they are managed by the CLI, not by the agent.
+Config files under `.archcore/` (`settings.json`, `.sync-state.json`) are allowed through, because the CLI manages them rather than the agent.
 
-## Mechanism 4 — post-mutation validation
+## Mechanism 4: post-mutation validation
 
-After any MCP operation that writes to disk, the `PostToolUse` hook runs `archcore doctor` with a short timeout. If validation fails — invalid frontmatter, broken relation, forbidden tag — the failure is reported back to the agent as tool output, so the agent can react in the same turn.
+After any MCP operation that writes to disk, the `PostToolUse` hook runs `archcore doctor` with a short timeout. If validation fails (invalid frontmatter, broken relation, forbidden tag), the hook reports the failure to the agent as tool output, so the agent can react in the same turn.
 
-On Claude Code and Codex CLI this is wired to `PostToolUse` with multiple matchers — `mcp__archcore__create_document|update_document|remove_document|add_relation|remove_relation` — each running its own dedicated script (`validate-archcore`, `check-cascade`, `check-precision`). On Cursor, the equivalent work fires via `afterMCPExecution`, which bundles all three checks into a single hook invocation.
+On Claude Code and Codex CLI, the checks are wired to `PostToolUse` with multiple matchers: `mcp__archcore__create_document|update_document|remove_document|add_relation|remove_relation`. Three dedicated scripts run behind them: `validate-archcore`, `check-cascade`, and `check-precision`. On Cursor, the equivalent work fires via `afterMCPExecution`, which bundles all three checks into a single hook invocation.
 
-## Mechanism 5 — cascade staleness detection
+## Mechanism 5: cascade staleness detection
 
-When you update a document (via `update_document`), the plugin reads the relation graph from `.sync-state.json` and finds every document linked through one of the three structural relations — `implements`, `extends`, or `depends_on`. Each one becomes a cascade hint — a gentle warning that it may now be out of step with its source of truth. The check intentionally does **not** follow `related` — that relation is associative, not structural, so changes don't propagate through it.
+When you update a document with `update_document`, the plugin reads the relation graph from `.sync-state.json` and finds every document linked through one of the three structural relations: `implements`, `extends`, or `depends_on`. Each of those documents becomes a cascade hint — a warning that it may now be out of step with its source of truth.
+
+The check does not follow `related`. That relation is associative rather than structural, so changes do not propagate through it.
 
 Example:
 
 You accept an updated `jwt-strategy.adr.md`. The plugin finds:
 
-- `auth-redesign.plan.md` — `depends_on` the ADR.
-- `token-refresh.spec.md` — `implements` the ADR.
+- `auth-redesign.plan.md`, which `depends_on` the ADR.
+- `token-refresh.spec.md`, which `implements` the ADR.
 
-Both show up as cascade warnings on your next turn. You can resolve them, ignore them, or add them to a todo list — the plugin just surfaces the signal.
+Both show up as cascade warnings on your next turn. Resolve them, ignore them, or add them to a todo list. The plugin only surfaces the signal.
 
-## Mechanism 6 — precision warnings
+## Mechanism 6: precision warnings
 
 After every `create_document` or `update_document`, the `check-precision` hook runs alongside validate and cascade. It applies the shared rules from `skills/_shared/precision-rules.md` and the ADR contract from `skills/_shared/adr-contract.md`, and emits soft warnings on:
 
-- **Vague language** — words like "various", "etc.", "maybe", "should consider" in places that need a concrete commitment.
-- **Missing sections** — required sections for the document type (e.g., `Decision`, `Context`, `Consequences` for ADRs) absent or empty.
-- **Frontmatter gaps** — missing `status`, `tags`, or other required fields beyond the strict-validation set.
-- **Stub bodies** — placeholder content like `TODO`, `TBD`, or single-sentence sections in documents marked as `accepted`.
+- **Vague language.** Words such as "various", "etc.", "maybe", and "should consider" in places that need a concrete commitment.
+- **Missing sections.** Required sections for the document type are absent or empty (`Decision`, `Context`, and `Consequences` for ADRs).
+- **Frontmatter gaps.** A missing `status`, `tags`, or another required field beyond the strict-validation set.
+- **Stub bodies.** Placeholder content such as `TODO` or `TBD`, or single-sentence sections in documents marked `accepted`.
 
-This is part of the Phase 1 Precision Initiative. The hook is **always** non-blocking — it exits 0 even when warnings are emitted, and surfaces the findings as agent-visible output for the agent to address in the next turn. Nothing is rejected; nothing is auto-fixed. The signal is for you and the agent to use.
+This check is part of the Phase 1 Precision Initiative. The hook never blocks: it exits 0 even when it emits warnings, and it surfaces the findings as agent-visible output for the agent to address in the next turn. The hook rejects nothing and fixes nothing on its own.
 
 ## Hook guarantees
 
-The `PreToolUse` / `PostToolUse` hooks run on every relevant tool call. They are:
+The `PreToolUse` and `PostToolUse` hooks run on every relevant tool call. They are:
 
-- **Fast** — validation, cascade, and context-injection checks are capped at 1–3 seconds.
-- **Non-blocking for reads** — only writes trigger the MCP-only guard.
-- **Non-blocking for source edits** — the context-injection hook only adds context; it never blocks an edit (and exits silently on error).
-- **Recoverable** — a failed validate doesn't undo the write; it tells the agent to fix the file.
+- **Fast.** The validation, cascade, and context-injection checks are capped at 1–3 seconds.
+- **Non-blocking for reads.** Only writes trigger the MCP-only guard.
+- **Non-blocking for source edits.** The context-injection hook only adds context. It never blocks an edit, and it exits silently on error.
+- **Recoverable.** A failed validation does not undo the write; it tells the agent to fix the file.
 
 <CrossLinkCallout
 	to="/cli/hooks/"
 	label="See CLI hook internals"
 	direction="plugin-to-cli"
 >
-	Want to see what the hook scripts actually do, or wire them up outside the plugin?
+	See what the hook scripts do, or wire them up outside the plugin.
 </CrossLinkCallout>
 
 ## Next steps
 
-- [Skills](/plugin/skills/) — the 7 commands that activate once context is loaded.
-- [Built-in agents](/plugin/agents/) — `archcore-assistant` and `archcore-auditor`.
-- [Troubleshooting](/plugin/troubleshooting/) — common hook and session issues.
+- [Plugin skills](/plugin/skills/) covers the 7 commands that activate once context is loaded.
+- [Built-in agents](/plugin/agents/) describes `archcore-assistant` and `archcore-auditor`.
+- [Plugin troubleshooting](/plugin/troubleshooting/) lists common hook and session issues.

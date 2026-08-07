@@ -161,6 +161,36 @@
       "source": "adding-changelog-entry.guide.md",
       "target": "changelog-content-structure.rule.md",
       "type": "depends_on"
+    },
+    {
+      "source": "plain-language-and-seo.rule.md",
+      "target": "docs-from-cli-context.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "plain-language-and-seo.rule.md",
+      "target": "content-structure.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "adding-docs-page.guide.md",
+      "target": "plain-language-and-seo.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "adding-changelog-entry.guide.md",
+      "target": "plain-language-and-seo.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "plain-language-and-seo.rule.md",
+      "target": "og-image-generation.guide.md",
+      "type": "related"
+    },
+    {
+      "source": "archcore-docs-site.doc.md",
+      "target": "plain-language-and-seo.rule.md",
+      "type": "related"
     }
   ]
 }
