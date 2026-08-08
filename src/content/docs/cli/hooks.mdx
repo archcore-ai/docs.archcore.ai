@@ -28,7 +28,7 @@ Everything except the write guard is **advisory**: it adds text to the agent's c
 The recap goes into the agent's working context before you type anything. Its sections, in order:
 
 1. Header and the MCP tool line.
-2. Global-source warnings, when a declared [global source](/cli/global-sources/) is unreadable or `settings.json` is invalid.
+2. Global-source warnings, when a declared [global source](/cli/global-sources/) is in a fatal state (missing, not a directory, unreadable, self-overlapping, or a duplicate path), contains no documents, or `settings.json` is invalid.
 3. `CORPUS`: document counts by category and by status, including rejected.
 4. `BRANCH`: the checked-out branch, when it resolves.
 5. `IN PROGRESS`: drafts, newest first.
@@ -73,10 +73,10 @@ The recap is a budgeted summary, not an index of your knowledge base:
 
 Output length follows that budget, not corpus size. A 300-document project and a 3000-document project produce recaps that differ only by the width of the `CORPUS` counters.
 
-Global documents are surfaced through the MCP read tools only, never in the recap.
+Global documents are surfaced through the MCP read tools and the code-alignment injection, never in the recap.
 
 :::note
-The recap degrades rather than fails. An unreadable global source falls back to a local-only scan with a visible warning, and an invalid `settings.json` emits a warning and continues. Outside a git tree, or on a detached `HEAD`, the `BRANCH` line is omitted rather than filled with a placeholder.
+The recap degrades rather than fails. A global source in any fatal state falls back to a local-only scan with a visible warning naming the source, an empty source adds a warning, and an invalid `settings.json` warns with `invalid .archcore/settings.json: … — global sources not loaded` and continues. Outside a git tree, or on a detached `HEAD`, the `BRANCH` line is omitted rather than filled with a placeholder.
 :::
 
 ### Staleness advisory
@@ -189,7 +189,7 @@ archcore hooks install --project /path    # a project root other than the cwd
 
 `hooks install` also writes the MCP config for the same agents.
 
-Re-installing updates the Archcore entry in place and keeps every field Archcore does not own. A `timeout` you added to the hook, or a key written by a newer Archcore, survives. An entry that differs only by such a field stays untouched, and the file keeps its bytes and its mtime.
+Re-installing updates the Archcore entry in place and keeps every field Archcore does not own. A `timeout` you added on a host where Archcore writes none, or a key written by a newer Archcore, survives; a timeout Archcore does own (Gemini CLI, GitHub Copilot) is reset to Archcore's value. An entry that differs only by a field Archcore does not own stays untouched, and the file keeps its bytes and its mtime.
 
 ### Installed wiring
 
@@ -204,6 +204,8 @@ Five hosts receive install wiring:
 | GitHub Copilot | `.github/hooks/archcore.json` | `sessionStart` | `preToolUse`, `create\|edit\|str_replace_editor\|apply_patch` | `postToolUse`, MCP document tools |
 
 The MCP document-tool matcher covers `create_document`, `update_document`, `remove_document`, `add_relation`, and `remove_relation` under every name spelling a host may deliver.
+
+Archcore writes a 1-second timeout on the pre-write event and a 3-second timeout on the session and post-write events. GitHub Copilot takes those values in seconds (`timeoutSec`) and Gemini CLI takes them in milliseconds (`timeout`); Claude Code, Codex CLI, and Cursor entries carry no timeout field.
 
 **OpenCode** is not wired. Its hooks are JavaScript plugins and cannot be declared in a config file, so Archcore ships the `archcore hooks opencode <event>` leaves for a plugin to delegate to but writes nothing. **Roo Code** and **Cline** get no hooks at all. Roo Code supports `onSave` only, which is not a lifecycle event. All three still work through [MCP](/cli/mcp-server/).
 
@@ -269,12 +271,12 @@ The same reasoning drives the rest of the failure behavior: empty, truncated, or
 
 ## Removed hooks
 
-Archcore removed the `Stop` and `UserPromptSubmit` families, and they have not returned. They matched keywords against natural language: phrases like "step 1:", "always", and "root cause" fired in ordinary conversation, and agents were blocked or handed instructions they did not need.
+Archcore removed the `Stop` and prompt-time hook families, and they have not returned. The prompt-time family covered the `UserPromptSubmit`, `BeforeSubmitPrompt`, and `BeforeAgent` event spellings. They matched keywords against natural language: phrases like "step 1:", "always", and "root cause" fired in ordinary conversation, and agents were blocked or handed instructions they did not need.
 
 `PreToolUse` and `PostToolUse` match on tool names and file paths, not on message text.
 
 :::caution
-A config written by an older Archcore may still carry `Stop` or `UserPromptSubmit` entries pointing at commands that no longer exist. Re-running `archcore hooks install` will not add them back, but it will not remove them either. Delete them by hand.
+A config written by an older Archcore may still carry `Stop`, `UserPromptSubmit`, `BeforeSubmitPrompt`, or `BeforeAgent` entries pointing at commands that no longer exist. Re-running `archcore hooks install` will not add them back, but it will not remove them either. Delete them by hand.
 :::
 
 ## Do you need hooks?

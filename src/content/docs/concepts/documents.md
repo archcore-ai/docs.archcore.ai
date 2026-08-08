@@ -21,6 +21,8 @@ Every document follows the pattern:
 
 **Invalid:** `JWT_Strategy` (uppercase), `use postgres` (spaces), `my.decision` (dots in slug), `jwt_strategy` (underscores)
 
+If a filename has no recognized type segment, the scanner categorizes the document as `knowledge`.
+
 ### Examples
 
 ```
@@ -35,14 +37,17 @@ callbacks-to-async.cpat.md    # code pattern change
 
 The directory structure inside `.archcore/` is free-form. Organize documents by domain, feature, team, or any structure that fits your project.
 
-Layers (**vision**, **knowledge**, **experience**) are virtual. Archcore derives them from the document type in the filename, not from the physical directory. Moving a file between directories never changes its layer.
+Categories (**vision**, **knowledge**, **experience**) are virtual. Archcore derives them from the document type in the filename, not from the physical directory. Moving a file between directories never changes its category.
 
 Other rules:
 
 - Hidden directories (starting with `.`) are ignored
 - Nesting depth is unlimited
-- Two documents can share a slug if they live in different directories
 - Directory names have no restrictions (lowercase with hyphens recommended)
+
+The legacy layout with `vision/`, `knowledge/`, and `experience/` directories still works. The scanner treats them as ordinary directories with no special meaning, so no migration is needed.
+
+Run `archcore status` to check the filename format and the type validity of every document, or call the MCP tool `list_documents` to see documents with their virtual categories, independent of the directory layout.
 
 :::tip[Start flat]
 You don't need to design the perfect directory tree upfront. Put documents in the root of `.archcore/`. Organize into subdirectories when you have 10+ documents and want to group them.
@@ -110,7 +115,7 @@ You can also organize by team (`backend/`, `frontend/`, `platform/`) or mix appr
 | File | Purpose |
 |------|---------|
 | `settings.json` | Required. Sync configuration and language settings |
-| `.sync-state.json` | Auto-generated. Stores document relations and sync state |
+| `.sync-state.json` | Auto-generated and tracked in git, so it is shared with the team. Stores document relations and sync hashes |
 
 The [CLI](/cli/commands/) manages both files and skips them when scanning documents.
 

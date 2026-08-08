@@ -3,7 +3,7 @@ title: Document Types
 description: Archcore has 19 document types, including ADR, RFC, rule, guide, spec, doc, PRD, plan, and ISO specifications.
 ---
 
-Archcore has 19 document types organized into 3 layers. Each type has a template with required sections that the Archcore CLI generates. If you have not installed the CLI yet, get it from the [CLI page](https://archcore.ai/cli/).
+Archcore has 19 document types organized into 3 categories. Each type has a template with required sections that the Archcore CLI generates. If you have not installed the CLI yet, get it from the [CLI page](https://archcore.ai/cli/).
 
 ## Choosing the right type
 
@@ -107,27 +107,27 @@ Market analysis covering TAM/SAM/SOM, competitive landscape, market needs, and t
 |---|---|
 | **File extension** | `.mrd.md` |
 | **When to use** | Market analysis is needed before proposing a solution |
-| **Required sections** | Market Overview, TAM/SAM/SOM, Competitive Landscape, Market Needs, Timing |
+| **Required sections** | Market Landscape, TAM/SAM/SOM, Competitive Analysis, Market Needs, Opportunity and Timing |
 
 #### BRD (Business Requirements Document)
 
-Business justification with objectives, ROI, stakeholders, budget, and constraints.
+Business justification with objectives, stakeholders, constraints, and ROI.
 
 | | |
 |---|---|
 | **File extension** | `.brd.md` |
 | **When to use** | Business justification and organizational impact need documenting |
-| **Required sections** | Objectives, ROI, Stakeholders, Budget, Constraints |
+| **Required sections** | Business Objectives, Stakeholders, Business Rules and Constraints, Success Metrics and ROI |
 
 #### URD (User Requirements Document)
 
-User needs captured through personas, journeys, usability requirements, and acceptance criteria.
+User needs captured through personas, journeys, user requirements, usability, and acceptance criteria.
 
 | | |
 |---|---|
 | **File extension** | `.urd.md` |
 | **When to use** | User needs, personas, and journeys need capturing during discovery |
-| **Required sections** | Personas, User Journeys, Usability Requirements, Acceptance Criteria |
+| **Required sections** | User Personas, User Journeys, User Requirements, Usability Requirements, Acceptance Criteria |
 
 ### ISO track (decomposition)
 
@@ -135,36 +135,36 @@ Decomposes requirements through progressively detailed levels, following [ISO/IE
 
 #### BRS (Business Requirements Specification)
 
-Mission, goals, operational concept, and success criteria.
+Mission and goals, operational concept, business constraints, and traceability.
 
 | | |
 |---|---|
 | **File extension** | `.brs.md` |
 | **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.3 |
 | **When to use** | Business requirements need formalizing into ISO-structured specification |
-| **Required sections** | Mission, Business Goals, Operational Concept, Success Criteria |
+| **Required sections** | Mission and Goals, Operational Concept, Business Constraints, Traceability |
 
 #### StRS (Stakeholder Requirements Specification)
 
-Per-stakeholder-class requirements with concept of operations and compliance.
+Per-stakeholder-class requirements with concept of operations and traceability.
 
 | | |
 |---|---|
 | **File extension** | `.strs.md` |
 | **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.4 |
 | **When to use** | Stakeholder requirements need structuring per class with ConOps |
-| **Required sections** | Stakeholder Classes, Per-Class Requirements, ConOps, Compliance |
+| **Required sections** | Stakeholder Classes, ConOps, Stakeholder Requirements, Traceability |
 
 #### SyRS (System Requirements Specification)
 
-System boundary, interfaces, modes, and verification approach.
+System boundary, system requirements, interfaces, and verification approach.
 
 | | |
 |---|---|
 | **File extension** | `.syrs.md` |
 | **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.5 |
 | **When to use** | The whole system boundary, interfaces, and verification need specifying |
-| **Required sections** | System Boundary, Interfaces, Modes of Operation, Verification Approach |
+| **Required sections** | System Boundary, System Requirements, System Interfaces, Verification Approach |
 
 #### SRS (Software Requirements Specification)
 
@@ -175,19 +175,21 @@ Per-function and per-endpoint specifications with a verification matrix.
 | **File extension** | `.srs.md` |
 | **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.6 |
 | **When to use** | Detailed software requirements need per-function/per-endpoint specification |
-| **Required sections** | Functional Requirements, Interface Requirements, Verification Matrix |
+| **Required sections** | Scope, Software Requirements, External Interfaces, Verification Matrix |
 
 ### Choosing the right requirements track
 
 | Track | Documents | Best for |
 |---|---|---|
-| SDD (default) | `idea` -> `prd` -> `spec` -> `plan` | Individual features, small teams, rapid prototyping, internal tools |
+| Product (`prd`) | `idea` -> `prd` -> `spec` -> `plan` | Individual features, small teams, rapid prototyping, internal tools |
 | Sources (discovery) | `mrd` -> `brd` -> `urd` | Product teams doing discovery, stakeholder alignment, business analysis |
 | ISO (decomposition) | `brs` -> `strs` -> `syrs` -> `srs` | Regulated systems, multi-team projects, complex distributed systems |
 
-The Archcore plugin drives these tracks through [`/archcore:plan`](/plugin/skills/#archcoreplan). Without the plugin, create the same documents through the MCP tools in the same order.
+Default to the Product track; move to Sources or ISO only when the project demands it.
 
-All three tracks can coexist. For example, use the SDD track for a small feature while the full ISO track covers a safety-critical subsystem.
+The Archcore plugin drives these tracks through [`/archcore:plan`](/plugin/skills/#archcoreplan). In the plugin, the Product track runs as the `sdd` track of `/archcore:plan`. Without the plugin, create the same documents through the MCP tools in the same order.
+
+All three tracks can coexist. For example, use the Product track for a small feature while the full ISO track covers a safety-critical subsystem.
 
 ### Sources vs specifications
 
@@ -195,6 +197,10 @@ Sources and specifications have separate purposes:
 
 - **Layer A (sources)**: `mrd`, `brd`, `urd`, and `prd` capture raw requirements from market, business, and user perspectives.
 - **Layer B (specifications)**: `brs`, `strs`, `syrs`, and `srs` formalize what sources capture informally. The `implements` [relation](/concepts/relations/) connects the two layers.
+
+Formalization runs one way: from source to specification, never the reverse.
+
+PRD is a hybrid. It belongs to the sources layer, but it can substitute for the full ISO cascade. Link a PRD to ISO types with `related`, not `implements`.
 
 :::tip[When types look similar]
 The Sources and ISO tracks overlap in subject matter but differ in formality:
@@ -301,13 +307,24 @@ Step-by-step instructions for completing a specific task.
 
 ### Spec
 
-A normative behavior contract for something others rely on: a boundary (API/interface/schema/protocol) or a feature/subsystem. You can capture a spec after the code exists or specify it ahead of the code.
+A normative behavior contract for something others rely on: a boundary (API/interface/schema/protocol) or a feature/subsystem. You can capture a spec after the code exists or specify it ahead of the code. If the implementation diverges from the spec, the spec takes precedence.
+
+A spec covers one subject and is not a general reference dump. Keep the body at or under 80 lines.
 
 | | |
 |---|---|
 | **File extension** | `.spec.md` |
 | **When to use** | A normative contract with behavior, constraints, and conformance criteria is being formalized |
 | **Required sections** | Purpose & Scope, Surface, Normative Behavior, Constraints & Invariants, Failure Behavior, Conformance |
+
+Write each Normative Behavior item as a numbered requirement in EARS clause order, with one uppercase BCP 14 keyword (MUST, SHOULD, or MAY, defined by RFC 2119 and RFC 8174) per requirement. EARS has four forms:
+
+- Ubiquitous: `The <subject> MUST <response>.`
+- Event-driven: `WHEN <trigger>, the <subject> MUST <response>.`
+- State-driven: `WHILE <state>, the <subject> MUST <response>.`
+- Unwanted behavior: `IF <condition>, THEN the <subject> MUST <response>.`
+
+Failure Behavior items use the same notation, but each one takes the `IF ..., THEN ...` form, never `WHEN`.
 
 ```markdown
 ---
@@ -342,7 +359,7 @@ don't copy interface or struct bodies; copies go stale.
 
 ## Failure Behavior
 1. IF all retries are exhausted, THEN the system MUST mark the delivery `failed` and stop.
-2. WHEN a subscriber endpoint times out, the system MUST re-queue the delivery for retry.
+2. IF a subscriber endpoint times out, THEN the system MUST re-queue the delivery for retry.
 
 ## Conformance
 An implementation conforms when it satisfies all MUST requirements, all
@@ -350,7 +367,7 @@ invariants, and all failure rules above.
 ```
 
 :::note[Spec vs Doc vs Rule]
-A **spec** defines a normative contract for a specific technical boundary: how a component *must* behave. A **doc** is non-behavioral reference material (registries, glossaries, lookup tables). A **rule** sets a cross-cutting team standard ("Always do X"). If you are documenting how one system works → `spec`. If you are describing what exists → `doc`. If you are prescribing how engineers must act → `rule`.
+A **spec** defines a normative contract for a specific technical boundary: how a component *must* behave. A **doc** is non-behavioral reference material (registries, glossaries, lookup tables). A **rule** sets a cross-cutting team standard ("Always do X"). If you are documenting how one system works → `spec`. If you are describing what exists → `doc`. If you are prescribing how engineers must act → `rule`. If the document answers "what should we build and why" (user stories, priorities, success metrics) → `prd` or an ISO type, not a spec.
 :::
 
 ### Doc

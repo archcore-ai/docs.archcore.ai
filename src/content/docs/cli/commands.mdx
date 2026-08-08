@@ -29,6 +29,13 @@ Re-running `init` prompts "Reinitialize?". Confirming overwrites `.archcore/sett
 
 In non-interactive contexts (no TTY), `init` skips the instruction hint. Add it later with [`archcore instructions install`](#archcore-instructions).
 
+**Flags:**
+
+| Flag               | Description                                                                                                                                              |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--agent <id>`     | Non-interactive: initialize and install hooks, MCP config, and the usage hint for the given agent id (e.g. `claude-code`, `cursor`, `codex-cli`, `copilot`). Repeatable. |
+| `--project <path>` | Project root to initialize. Defaults to the current directory; env: `ARCHCORE_PROJECT_ROOT`.                                                              |
+
 For a step-by-step walkthrough, see the [CLI Quick Start](/cli/quick-start/).
 
 ---
@@ -51,6 +58,7 @@ archcore status
 - Frontmatter is valid YAML
 - Sync manifest JSON structure
 - Orphaned relations (documents referenced but not on disk)
+- Global source health: a fatal state (missing, unreadable, or not a directory) is a failure, an empty source is a warning, and a healthy source prints `global source "<id>" (<N> document(s))`
 
 When `status` finds orphaned relations, it hints: "Run 'archcore doctor --fix' to remove orphaned relations"
 
@@ -269,7 +277,13 @@ Check for and install the latest version.
 archcore update
 ```
 
-Queries GitHub releases, compares versions, downloads the binary for your OS/architecture, verifies the checksum, and updates in place.
+Reads the latest release tag from the `https://github.com/archcore-ai/cli/releases/latest` redirect (not the GitHub API), compares versions, downloads the binary for your OS/architecture, verifies the checksum, and updates in place.
+
+**Flags:**
+
+| Flag      | Description                                                                                                                          |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `--check` | Quietly report whether a newer version exists. Caches the result for 24 hours, uses a short network timeout, and always exits 0. Built for hooks and advisories. |
 
 ---
 

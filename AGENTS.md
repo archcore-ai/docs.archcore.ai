@@ -96,6 +96,8 @@ These are the defaults for every reader-facing page.
 - Archcore MCP server
 - MCP tool
 - document type
+- document category (vision, knowledge, experience; the API field `category` — not "layer", which
+  names the requirements layers A and B)
 - relation type
 - host wiring
 - lifecycle hook (`SessionStart`, `PreToolUse`, `PostToolUse`)

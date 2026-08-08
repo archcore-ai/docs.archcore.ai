@@ -17,8 +17,8 @@ Once MCP is configured, agents interact with your documents through 10 always-re
 
 | Action        | Tool                  | Description                                            |
 | ------------- | --------------------- | ------------------------------------------------------ |
-| Browse        | `list_documents`      | List documents filtered by type, layer, or status      |
-| Search        | `search_documents`    | Full-text and path-reference search across bodies      |
+| Browse        | `list_documents`      | List documents filtered by type, category, or status   |
+| Search        | `search_documents`    | Substring and path-reference search across bodies      |
 | Read          | `get_document`        | Get full document content with relations               |
 | Create        | `create_document`     | Create new documents from templates                    |
 | Update        | `update_document`     | Modify title, status, or content                       |
@@ -76,10 +76,15 @@ The instructions describe document **types**, not workflows. The Archcore plugin
 
 If your `.archcore/settings.json` declares a `globals` array, the MCP server mounts those external knowledge bases **read-only** and surfaces them through the read tools (`list_documents`, `get_document`, `search_documents`) alongside your local documents. Each global document is tagged `source_kind: "global"`, `read_only: true`, and a `source_id` so the agent can tell it apart from local content. The write tools (`create_document`, `update_document`, `remove_document`) and `add_relation` refuse global paths.
 
-Every declared global is **mandatory**. Before serving, the server validates each one:
+Every declared global is **mandatory**. Before serving, the server checks each one and aborts startup on any of:
 
-- A missing source aborts startup with `global source "<id>" not found at "<path>" — clone it before starting the MCP server`.
-- An invalid `settings.json` aborts startup rather than serving with globals silently dropped.
+- a missing directory, with `global source "<id>" not found at "<path>" — clone it before starting the MCP server`;
+- a path that exists but is not a directory;
+- a directory that cannot be read;
+- a path that resolves to the project's own `.archcore/` or an ancestor of it;
+- two sources that resolve to the same path.
+
+An existing, readable source with zero recognized documents is a startup warning on stderr, not an error. An invalid `settings.json` also aborts startup rather than serving with globals silently dropped.
 
 This fail-fast keeps the agent from running against silently incomplete context. See [Global sources](/cli/global-sources/) for declaration, vendoring, and precedence rules.
 
@@ -131,7 +136,9 @@ By default `archcore mcp` reads documents from the current working directory. So
 - Flag: `archcore mcp --project /absolute/path/to/repo`
 - Environment variable: `ARCHCORE_PROJECT_ROOT=/absolute/path/to/repo archcore mcp`
 
-Precedence: `--project` > `ARCHCORE_PROJECT_ROOT` > current working directory. The path must exist. It does not need to contain `.archcore/` yet, because `init_project` can bootstrap it from the session.
+Precedence: `--project` > `ARCHCORE_PROJECT_ROOT` > current working directory. The named path must exist and be a directory. It does not need to contain `.archcore/` yet, because `init_project` can bootstrap it from the session.
+
+`--project` is trusted as given. When an implicitly resolved root (`ARCHCORE_PROJECT_ROOT` or the working directory) sits inside an AI-host plugin install cache, the server refuses to start, and the error tells you to pass `--project` with the real project root. Some hosts launch the server from their plugin cache instead of your workspace, and treating that cache as the project would read the plugin's bundled files as your project.
 
 Example MCP config that pins an absolute project root:
 

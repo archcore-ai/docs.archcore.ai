@@ -1,6 +1,6 @@
 ---
 title: Plugin Skills
-description: "The four /archcore:* slash commands in the Archcore plugin: what each one produces and when to use it."
+description: "The four /archcore:* slash commands in the Archcore plugin, the tracks they route to, and when to use each."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -18,9 +18,13 @@ Everyday context needs no command at all. Lifecycle hooks inject the applicable 
 | Command              | Outcome                                             | When to use                                                                                                      |
 | -------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `/archcore:init`     | Make your repo legible to AI agents                 | First-time setup. Detects repo scale, composes a first-day seed in one preview, and wires host configs           |
-| `/archcore:plan`     | Turn an idea into a scoped implementation plan      | New feature, refactor, or initiative. Name `sdd`, `sources`, or `iso` to run that track directly                 |
+| `/archcore:plan`     | Turn an idea into a scoped implementation plan      | New feature, refactor, or initiative. Name `sdd`, `sources`, `iso`, or `research` to run that track directly     |
 | `/archcore:document` | Record a decision or document what lives in code    | A decision was made, or a module, API, or integration has tribal knowledge but no doc yet                        |
 | `/archcore:review`   | Check your changes and your docs against each other | Before merge. Add `--drift` for staleness, `--deep` for a full documentation audit                               |
+
+Each command routes your request into a track, a gated flow that creates documents step by step.
+
+![Diagram of how the three work commands route to tracks. /archcore:plan runs sdd by default, research for investigations, and the requirements cascade for sources or ISO 29148. /archcore:document runs decision, decision.resolve on an open proposal, or describe. /archcore:review runs branch review by default, actualize with --drift, closeout, or experience capture.](../../../assets/plugin-command-tracks.png)
 
 ## `/archcore:init`
 
@@ -34,7 +38,7 @@ Everyday context needs no command at all. Lifecycle hooks inject the applicable 
 /archcore:init --refresh
 ```
 
-Run this command once per project. It detects repo scale (small, medium, or large) and repo shape, composes a scale-appropriate seed of `.archcore/` documents, shows them in one preview, and creates them on a single confirm. Nothing is written before you confirm.
+Run this command once per project. It detects repo scale (small, medium, or large) and repo shape, composes a scale-appropriate seed of `.archcore/` documents, shows them in one preview, and creates them on a single confirm. It writes nothing before you confirm.
 
 Depending on the detected mode, the seed covers a stack rule, a run-the-app guide, the data model, integrations, config, entry points, the public surface, a linked architecture overview, and specs for the top hotspot modules.
 
@@ -60,6 +64,7 @@ After `init`, `/archcore:document` and `/archcore:plan` take over for day-to-day
 /archcore:plan sdd auth redesign
 /archcore:plan sources payment market research
 /archcore:plan iso payment gateway compliance
+/archcore:plan research vector store options
 ```
 
 The skill runs one gated track. Each gate creates a document through MCP, wires the `implements` relation to the document before it, and pauses for your review before the next gate opens. Stop at any gate.
@@ -71,6 +76,7 @@ The skill runs one gated track. Each gate creates a document through MCP, wires 
 | `sdd` (default)   | idea → prd → spec → plan | A feature, refactor, initiative, or roadmap.                                   |
 | `sources`         | mrd → brd → urd          | Market research, discovery, competitive analysis, or stakeholder alignment.    |
 | `iso`             | brs → strs → syrs → srs  | Regulated systems and formal ISO 29148 requirements with traceability.         |
+| `research`        | questions → evidence → rnd | Technical research: investigate an unknown or compare alternatives before planning or deciding. |
 
 Name a track in the invocation to run it directly. Without a name, the skill routes from your request wording and from the documents that already exist in `.archcore/`.
 
@@ -101,6 +107,8 @@ A settled decision becomes an `adr`. An open proposal ("should we switch to Kube
 
 The ADR alone is a valid endpoint. The skill creates continuation documents only after you confirm the cascade.
 
+An open `rfc` resolves through the same track. Say "we accepted the proposal" or "resolve the RFC", and the skill enters at `decision.resolve`: the proposal becomes an `adr` or is marked rejected. The status changes only after you confirm the verdict.
+
 ### Describe track
 
 For code documentation, the skill reads the subject first, then picks the type from that evidence: `spec` for behavior others rely on, `doc` for reference material, `guide` for how-to instructions.
@@ -125,6 +133,8 @@ On the default branch, or with an empty diff, `review` reports project health in
 - `--drift` runs the actualize track over the scope: code drift (a document references source that changed), cascade drift (a dependency was updated without the dependent being reviewed), and temporal drift.
 - `--deep` widens the scope to every document and adds coverage gaps, relation health, and consistency findings alongside the drift verdicts.
 - A path, tag, or scope argument narrows or replaces the branch scope.
+
+Say "close out the feature" and `review` runs the closeout track: it verifies the plan against the branch diff, merges the document updates you approve, and moves the finished drafts to `accepted`. A document status changes only after you confirm the transition.
 
 When the reviewed changes repeat a pattern that no document records, `review` offers to capture it as a `cpat` or a `task-type`. It asks once, and a decline writes nothing.
 

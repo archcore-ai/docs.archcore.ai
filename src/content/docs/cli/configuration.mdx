@@ -109,7 +109,7 @@ The `globals` array mounts other `.archcore/` knowledge bases into your project 
 | `id` | Yes | Stable identifier; becomes the document `source_id`. Lowercase alphanumeric with hyphens (`^[a-z0-9][a-z0-9-]*$`), not the reserved value `local`, unique within the array |
 | `path` | Yes | Points at the global's `.archcore` directory. Relative (including `../`), absolute, or in-tree under `.archcore/global/` |
 
-Every declared global is mandatory. If its directory is absent, the MCP server fails fast at startup. Globals are read-only everywhere outside the MCP read tools, and local documents take precedence over a same-topic global.
+Every declared global is mandatory. If its directory is absent, the MCP server fails fast at startup. Globals are read-only everywhere outside the MCP read tools, and local documents take precedence over a same-topic global. An older `settings.json` that still carries a per-entry `"required"` key keeps working; the key is accepted and ignored.
 
 See [Global sources](/cli/global-sources/) for the full model, vendoring, and the monorepo-root pattern.
 
@@ -180,7 +180,7 @@ Three cases:
 
 The same protection applies one level down: an unrecognized key nested inside `codeAlignment` survives the round trip too.
 
-`archcore mcp`, `archcore config`, `archcore doctor`, and `archcore sync` warn about unrecognized fields on stderr, so `config get` output and the MCP server's stdout stay clean:
+`archcore mcp`, `archcore config`, and `archcore doctor` warn about unrecognized fields on stderr, so `config get` output and the MCP server's stdout stay clean:
 
 ```text
   ! settings.json has unrecognized field(s): somethingNewer — this archcore may be older than the project's config (or a typo). Consider 'archcore update'.

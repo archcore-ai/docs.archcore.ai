@@ -20,7 +20,9 @@ Relations are **directed**. Each relation has a source and a target, and the dir
 
 ## Creating relations
 
-### Via your agent (recommended)
+The MCP tool `add_relation` is the only way to create a relation. No CLI command creates relations, and Archcore never creates them automatically.
+
+### Via your agent
 
 ```
 You: "Link the auth plan to the auth PRD — the plan implements the PRD"
@@ -29,9 +31,15 @@ Agent: [calls add_relation tool]
 
 The agent uses the `add_relation` MCP tool with source, target, and relation type.
 
-### Via CLI
+### Linking new documents
 
-`archcore status` validates relations. It flags orphaned relations, which point to documents that no longer exist, and `archcore doctor --fix` removes them.
+`create_document` does not link the new document to anything. When other documents share its directory, the response includes a `nearby_documents` hint: up to 5 paths from the same directory, sorted alphabetically. The agent reviews each candidate and calls `add_relation` explicitly when a semantic link exists.
+
+A document created without a follow-up `add_relation` call stays unlinked. `archcore doctor` surfaces orphaned documents.
+
+### Validating relations with the CLI
+
+`archcore status` flags orphaned relations, which point to documents that no longer exist, and `archcore doctor --fix` removes them.
 
 ## Viewing relations
 
@@ -47,14 +55,16 @@ The agent sees how a document connects in both directions.
 ### Decision flow
 
 ```
-idea ──implements──→ prd
-prd  ──implements──→ plan
+prd  ──implements──→ idea
+plan ──implements──→ prd
 plan ──depends_on──→ adr
 adr  ──related─────→ rule
 rule ──related─────→ guide
 ```
 
 *"We had an idea, wrote requirements, planned the work, made decisions during implementation, derived rules from those decisions, and wrote guides to follow the rules."*
+
+The more specific document is the `implements` source, and the more general document is the target: the PRD implements the idea, and the plan implements the PRD.
 
 ### RFC to ADR
 
@@ -73,20 +83,26 @@ cpat      ──extends────→ rule    (pattern change updates a rule)
 ### Requirements track
 
 ```
-mrd ──implements──→ brs   (market analysis formalized into business requirements)
-urd ──implements──→ strs  (user needs formalized into stakeholder requirements)
-strs ──implements──→ syrs (stakeholder requirements refined into system requirements)
-syrs ──implements──→ srs  (system requirements refined into software requirements)
+brs  ──implements──→ mrd  (business requirements spec formalizes the market analysis)
+strs ──implements──→ urd  (stakeholder requirements spec formalizes the user needs)
+syrs ──implements──→ strs (system requirements spec decomposes the stakeholder spec)
+srs  ──implements──→ syrs (software requirements spec decomposes the system spec)
 ```
 
 *"Requirements flow from informal sources to formal specifications. Each specification formalizes what the source captures informally."*
 
+Three conventions govern the [requirements layers](/concepts/document-types/):
+
+- Same-layer documents link with `related`, not `implements`. An `mrd` and a `brd` are peers, so `mrd related brd`.
+- A `prd` links to an ISO type with `related`, because the PRD is an alternative path.
+- Partial cascades are valid. A project that skips the StRS and SyRS levels links `srs implements brs` directly.
+
 ## Storage
 
-Archcore stores relations in `.archcore/.sync-state.json` alongside sync metadata. It manages this file automatically, so do not edit it by hand. Change relations through the MCP tools (`add_relation`, `remove_relation`, `list_relations`) or the CLI.
+Archcore stores relations in `.archcore/.sync-state.json` alongside sync metadata. The file is tracked in git, so relations are shared with the team automatically. Archcore manages the file itself; do not edit it by hand. Change relations through the MCP tools `add_relation`, `remove_relation`, and `list_relations`.
 
 ## Next steps
 
 - [Document Types](/concepts/document-types/) lists the 19 types you can link.
 - [MCP Tools](/reference/mcp-tools/) documents the arguments `add_relation`, `remove_relation`, and `list_relations` take.
-- [How Archcore Works](/concepts/how-it-works/) shows where relations sit in the three context layers.
+- [How Archcore Works](/concepts/how-it-works/) shows where relations sit in the three virtual categories.

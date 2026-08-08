@@ -108,8 +108,4 @@ For example, an ADR template includes:
 ## Implementation Notes
 
 [Key implementation details]
-
-## References
-
-- [Link 1]
 ```

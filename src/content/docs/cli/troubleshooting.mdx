@@ -1,6 +1,6 @@
 ---
 title: CLI Troubleshooting
-description: Fixes for common Archcore CLI problems with agent visibility, MCP server startup, and document validation.
+description: "Fixes for common Archcore CLI problems: agent visibility, MCP startup, document validation, installs, and updates."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -68,6 +68,8 @@ The MCP config JSON tells the agent what command to run. If the `command` or `ar
   }
 }
 ```
+
+Cursor is the exception: in `.cursor/mcp.json` the CLI writes `"args": ["mcp", "--project", "${workspaceFolder}"]` on purpose, because Cursor does not guarantee the working directory it launches MCP servers with. Do not replace it with the bare `["mcp"]` template.
 
 For GitHub Copilot, the format is slightly different:
 
@@ -175,6 +177,29 @@ archcore hooks install
 
 This installs hooks for all detected agents. See [Hooks](/cli/hooks/) for agent-specific details.
 
+If hooks are installed but still not firing:
+
+1. Re-run `archcore hooks install` and read the notes it prints. A host that cannot run the written config says so, with the reason and the fix.
+2. Verify the config file holds archcore entries.
+3. Ensure `archcore` is on your `PATH`.
+4. On Codex CLI, enable the hooks feature (`[features]` with `hooks = true` in `~/.codex/config.toml`; `codex_hooks = true` before Codex 0.129.0) and trust the project's `.codex/` layer.
+5. Check the agent's logs for hook execution errors.
+
+### Config was reset after an install
+
+**What you see:** After `archcore init`, `archcore hooks install`, or `archcore mcp install`, an agent config file lost its previous content, and the install warned that the file was backed up.
+
+**Why it happens:** The file held invalid JSON, so Archcore backed it up to `{path}.bak` and started from a fresh config. When the backup write itself fails, the install aborts instead: the original is never overwritten without a confirmed backup.
+
+**Fix:** Restore the backup, correct the JSON, and re-run the installer:
+
+```bash
+cp .cursor/hooks.json.bak .cursor/hooks.json
+archcore hooks install --agent cursor
+```
+
+`.codex/config.toml` is TOML and sits outside the `.bak` policy; Codex hook wiring lives in a separate `.codex/hooks.json`. See [corrupt config handling](/cli/agent-integrations/#corrupt-config-handling) for the full policy per file.
+
 ### Agent doesn't support MCP
 
 Some agents or agent modes don't support the Model Context Protocol. If your agent isn't in the [agent integrations](/cli/agent-integrations/) list, it can't connect to the Archcore MCP server.
@@ -266,11 +291,51 @@ The message `invalid .archcore/settings.json: …` means the file itself is malf
 
 On non-server surfaces a missing global never blocks you: the session-start hook degrades to a local-only context summary with a warning naming the source, and `archcore status` reports it as a visible failure while still running its local checks.
 
+### Server refuses to start inside a plugin cache
+
+**What you see:**
+
+```text
+refusing project root "…": path is inside an AI-host plugin install cache, not a user project
+```
+
+**Why it happens:** The host launched `archcore mcp` from a plugin install cache (for example `~/.copilot/installed-plugins/…`), and the server resolved that directory as the implicit project root. Serving a cache would read the plugin's bundled documents as if they were yours and write your documents into a directory the next plugin update deletes, so the server refuses loudly.
+
+**Fix:** Pass the real project root explicitly. `--project` is trusted as given:
+
+```bash
+archcore mcp --project /absolute/path/to/repo
+```
+
+Or register a project-level server with `archcore init --agent <agent> --project <path>`.
+
 ### "Cannot update a read-only global source document"
 
 **What you see:** A write tool (`create_document`, `update_document`, `remove_document`) or `add_relation` is rejected because the target is a global document.
 
 This is working as intended: globals are read-only and are never relation endpoints. Make the change upstream in the source repository, and link **local → local** documents instead of linking to a global. See [Read-only everywhere](/cli/global-sources/#read-only-everywhere).
+
+## Context appears twice
+
+**What you see:** The session recap or a hook advisory shows up twice in one session.
+
+**Why it happens:** An older Archcore plugin still ships its own hooks, so both its entries and the CLI's fire.
+
+**Fix:** Update the plugin. Until then the duplication costs extra output, never a wrong verdict.
+
+## Install and update failures
+
+Errors from the install scripts and `archcore update`:
+
+| Message | Cause and fix |
+| ------- | ------------- |
+| `Could not reach https://github.com/…/releases/latest` | A network, proxy, or DNS problem. No API rate limit is involved, so `GITHUB_TOKEN` does not help. Pin a version instead: `ARCHCORE_VERSION=v1.0.0`. |
+| `Checksum verification failed` / `Checksum mismatch` | The download was corrupted. Run the install or `archcore update` again. |
+| `Unsupported operating system/architecture` | Prebuilt binaries cover `darwin`, `linux`, and `windows` on `amd64` and `arm64` only. Build from source with `go install github.com/archcore-ai/cli@latest`. |
+| `this installer requires bash` | The script was piped into `sh` or another POSIX shell. Pipe into `bash` instead. |
+| `Update failed` with a permission error | The binary sits in a directory without write access. Reinstall it to a writable location, or run `archcore update` with `sudo`. |
+
+See [Install the CLI](/cli/install/) for the install options and prerequisites.
 
 ## Validation errors
 
@@ -412,8 +477,10 @@ status: draft
 
 `archcore doctor --fix` automates what it can:
 
-- Removes orphaned relations from `.sync-state.json` before running checks
-- Saves the cleaned manifest
+- Removes orphaned relations from `.sync-state.json` and saves the cleaned manifest before running checks
+- Converges host wiring by re-running the hook and MCP installers per agent; `--agent <id>` narrows the pass to the named agents
+
+The installers touch only the fields Archcore owns: a stale hook command or a drifted MCP entry is rewritten, and your own fields survive. See [`archcore doctor`](/cli/commands/#archcore-doctor) for what `--fix` writes.
 
 It does **not** auto-fix invalid filenames, missing frontmatter, unknown document types, or YAML syntax. Correct those manually.
 

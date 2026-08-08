@@ -7,7 +7,7 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="cli" />
 
-Archcore supports 8 coding agents. Each one integrates through three mechanisms: **MCP servers**, **lifecycle hooks**, and an **instruction hint** — a short "use Archcore" nudge written into the agent's config files. `archcore init` installs all three where the host supports them.
+Archcore supports 8 coding agents. Each one integrates through three mechanisms: **MCP servers**, **lifecycle hooks**, and an **instruction hint** — a short "use Archcore" nudge written into the agent's config files. `archcore init` installs MCP config and hooks where the host supports them; the instruction hint is opt-in on interactive runs and skipped non-interactively (see [Instruction hint](#instruction-hint)).
 
 If you are still deciding, the [CLI page](https://archcore.ai/cli/) has the short version of this matrix.
 
@@ -107,10 +107,17 @@ Cline stores its MCP config in VS Code's `globalStorage` rather than in a projec
 
 Archcore never silently overwrites a config it can't parse. When it writes an agent's MCP or hook config, the behavior depends on the file format:
 
-- **Standard JSON** covers `.claude/settings.json`, `.cursor/hooks.json`, `.mcp.json`, `opencode.json`, and other strict-JSON configs. If the file is corrupt or unparseable, Archcore backs it up to `{path}.bak` and starts fresh from a valid config. You'll see a warning naming the backup.
+- **Standard JSON** covers `.claude/settings.json`, `.cursor/hooks.json`, `.mcp.json`, `opencode.json`, and other strict-JSON configs. If the file is corrupt or unparseable, Archcore backs it up to `{path}.bak` and starts fresh from a valid config. You'll see a warning naming the backup. When the backup write itself fails, the install aborts: the original is never overwritten without a confirmed backup.
 - **`.vscode/mcp.json`** (GitHub Copilot) is JSONC, so comments and trailing commas are valid even though they aren't strict JSON. Archcore leaves the file untouched and prints a manual-install hint rather than rewrite your other MCP servers.
+- **`.codex/config.toml`** (Codex CLI) is TOML and sits outside the `.bak` policy. Codex hook wiring lives in a separate `.codex/hooks.json`, so one writer owns each file.
+
+All config writes are atomic (temp file plus rename), so a crash mid-write cannot truncate a live config.
 
 Add `*.bak` to your `.gitignore` so these backups don't get committed.
+
+## Wrapped hook commands
+
+Archcore recognizes its own hook entries by the literal `archcore hooks ` command prefix. A command you wrapped, for example `sh -c 'archcore hooks cursor session-start 2>/dev/null'`, no longer starts with that prefix, so Archcore classifies it as foreign: re-runs and `doctor --fix` leave it untouched, and it stops receiving automatic command updates. You own what you wrapped.
 
 ## Instruction hint
 

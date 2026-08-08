@@ -1,6 +1,6 @@
 ---
 title: How Archcore Works
-description: Archcore keeps project context local and git-versioned, in three layers named Vision, Knowledge, and Experience.
+description: Archcore keeps project context local and git-versioned, in three categories named Vision, Knowledge, and Experience.
 ---
 
 ## Core principles
@@ -37,12 +37,12 @@ Archcore has a small surface area by design:
 
 An agent that encounters an Archcore project has few rules to learn. You can [start with three types](/concepts/document-types/) and add more as needed.
 
-## Context layers
+## Document categories
 
-Every document belongs to exactly one of three **layers**. The layer comes from the document type, not from configuration.
+Every document belongs to exactly one of three **categories**. The category comes from the document type, not from configuration.
 
-:::note[You can ignore layers at first]
-If you create an `adr`, it is in the Knowledge layer. If you create a `plan`, it is in Vision. Layers become useful when you want to browse documents by category or understand the lifecycle of your project context.
+:::note[You can ignore categories at first]
+If you create an `adr`, it is in the Knowledge category. If you create a `plan`, it is in Vision. Categories become useful when you want to browse documents or understand the lifecycle of your project context.
 :::
 
 ### Vision: what to build and why
@@ -77,7 +77,7 @@ Patterns crystallized from repeated work.
 | `task-type` | Proven workflows for recurring implementation tasks | `api-endpoint-creation.task-type.md` |
 | `cpat` | Code pattern changes, recorded when a convention deliberately shifts | `error-handling-v2.cpat.md` |
 
-## How layers connect
+## How categories connect
 
 The natural lifecycle flows from **Vision -> Knowledge -> Experience**:
 
@@ -96,7 +96,7 @@ Vision                       Knowledge              Experience
 └─────────────────────┘     └──────────┘           └──────────┘
 ```
 
-This is not a strict sequence. Documents can be created in any layer at any time. A team might start with a `rule` that was always understood but never written down, or create a `task-type` before the underlying `adr` exists.
+This is not a strict sequence. Documents can be created in any category at any time. A team might start with a `rule` that was always understood but never written down, or create a `task-type` before the underlying `adr` exists.
 
 ## How knowledge flows
 
@@ -112,11 +112,11 @@ idea -> prd -> plan -> implementation
                       task-type / cpat (patterns learned)
 ```
 
-[Relations](/concepts/relations/) link documents across layers with four directed types: `implements`, `extends`, `depends_on`, and `related`. Agents get a graph of your repository context, including the connections between documents.
+[Relations](/concepts/relations/) link documents across categories with four directed types: `implements`, `extends`, `depends_on`, and `related`. Agents get a graph of your repository context, including the connections between documents.
 
-## Layers are virtual
+## Categories are virtual
 
-Layers are derived from the document type in the filename, not from directories. A file at `.archcore/auth/jwt-strategy.adr.md` belongs to Knowledge because `adr` is a Knowledge type, not because it sits in an `auth/` directory.
+Categories are derived from the document type in the filename, not from directories. A file at `.archcore/auth/jwt-strategy.adr.md` belongs to Knowledge because `adr` is a Knowledge type, not because it sits in an `auth/` directory.
 
 Organize your `.archcore/` directory however you want:
 
@@ -131,7 +131,7 @@ Organize your `.archcore/` directory however you want:
 └── onboarding-flow.task-type.md    <- Experience
 ```
 
-Three different layers, organized by domain. The layer comes from the type, not the path. See [Documents & Layout](/concepts/documents/) for more on organizing your files.
+Three different categories, organized by domain. The category comes from the type, not the path. See [Documents & Layout](/concepts/documents/) for more on organizing your files.
 
 ## Agents read, write, and connect
 

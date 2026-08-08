@@ -59,26 +59,40 @@ Rules of thumb:
 
 ## Every declared global is mandatory
 
-There is no optional or "skip if missing" global. If a declared source's directory is absent, the MCP server **fails fast at startup**:
+There is no optional or "skip if missing" global. If a declared source is unusable, the MCP server **fails fast at startup**:
 
 ```text
 global source "company-standards" not found at "../company-standards/.archcore" — clone it before starting the MCP server
 ```
 
-This is deliberate. A typo in `path`, or a source that was never cloned, would otherwise yield zero global documents with no signal, and the agent would run against silently incomplete context, the exact failure globals exist to prevent.
+Five states are fatal. Each one aborts startup and the document scan with a message built from the declared `id` and `path`, never from an absolute filesystem path:
+
+| Fatal state | Message |
+| ----------- | ------- |
+| Missing | `global source "<id>" not found at "<path>"` |
+| Not a directory | `global source "<id>" at "<path>" is not a directory` |
+| Unreadable | `global source "<id>" at "<path>" is not readable` |
+| Self-overlap | `global source "<id>" at "<path>" resolves to the project's own .archcore` |
+| Duplicate path | `global sources "<a>" and "<b>" resolve to the same path "<path>"` |
+
+At startup the missing message ends with `— clone it before starting the MCP server`, and the other four end with `— fix .archcore/settings.json before starting the MCP server`. Unreadable covers a subdirectory the document walk cannot enter, not only the top level.
+
+A source that exists and is readable but holds zero recognized documents is a **warning, never fatal**. The server starts, the scan yields no documents from it, and `global source "<id>" at "<path>" contains no documents` appears on startup stderr, in `archcore status`, and in the SessionStart context.
+
+Failing fast is deliberate. A typo in `path`, or a source that was never cloned, would otherwise yield zero global documents with no signal, and the agent would run against silently incomplete context, the exact failure globals exist to prevent.
 
 :::note
-An invalid `settings.json` (a parse or validation error) also aborts MCP startup. The server does not start with globals silently dropped.
+An invalid `settings.json` (a parse or validation error) also aborts MCP startup, with `invalid .archcore/settings.json: …`. The server does not start with globals silently dropped.
 :::
 
 The non-server surfaces never block your session, so they degrade instead of failing:
 
-- **The session-start hook** falls back to a local-only context summary and injects a visible warning naming the missing source, so your local documents are never dropped.
-- **`archcore status`** reports the missing source as a visible failure (counted as an issue, non-zero exit) while still running its structural local-file checks.
+- **The session-start hook** falls back to a local-only context summary on any fatal state and injects a visible warning naming the source, so your local documents are never dropped. An empty source and an invalid `settings.json` add a warning as well.
+- **`archcore status`** reports a fatal source as a visible failure (counted as an issue, non-zero exit) and an empty source as a warning, while still running its structural local-file checks.
 
 ## Read-only everywhere
 
-A mounted global is a read-only context surface. It is visible **only** through the MCP read tools (`list_documents`, `get_document`, `search_documents`) and refused everywhere else.
+A mounted global is a read-only context surface. Two surfaces expose it: the MCP read tools (`list_documents`, `get_document`, `search_documents`) and the [pre-write code-alignment injection](/cli/hooks/#code-alignment-injection), which marks every global document `[global]`. Every other surface refuses it.
 
 Every global document carries source annotation on read:
 
@@ -89,25 +103,31 @@ Every global document carries source annotation on read:
 | `read_only` | `true` | _(omitted)_ |
 | `global` | `true` | _(omitted)_ |
 
-Outside the read tools:
+Outside those read surfaces:
 
-- **Not writable.** `create_document`, `update_document`, and `remove_document` reject any path under a declared global with `cannot {create,update,remove} … a read-only global source document`.
+- **Not writable through MCP.** `create_document` rejects a target under a declared global with `cannot create document in a read-only global source`; `update_document` and `remove_document` reject with `cannot update a read-only global source document` and `cannot remove a read-only global source document`. Those messages fire on in-tree paths. A write addressed at an external global (a `../` sibling or an absolute path) fails earlier with `invalid path: must start with ".archcore/"`, because the write tools cannot address a path outside `.archcore/` at all (see the [vendoring tip](#vendoring-a-global-in-tree)).
+- **Not writable from the editor.** The `PreToolUse` [write guard](/cli/hooks/#the-write-guard) refuses a direct editor write to a document inside a global, including a document inside an external global that the MCP tools cannot address.
 - **Not a relation endpoint.** `add_relation` refuses an edge whose source **or** target is a global, in either direction. Relations connect local documents only. (`remove_relation` stays open so you can clean up a pre-existing edge.)
+- **Fail closed.** When `settings.json` is present but cannot be read, the write and relation tools reject with `cannot verify global sources: settings.json is unreadable` rather than proceed.
 - **Absent from CLI surfaces.** `archcore status` (tag hygiene, counts) and the session-start context operate on local documents only. A consumer cannot fix an upstream global's tags and is not responsible for them.
 
 To record that a local document follows a global rule, link **local → local** documents and treat the global as background context. Do not link to the global, and do not fix it in your project. Corrections belong upstream in the source repository.
 
 ## Local overrides global
 
-When a local document and a global one cover the same topic, for example a local `error-handling.rule.md` and a company-wide one, the **local document is authoritative** for your project. Global sources are organization-wide defaults, and the local project refines or overrides them.
+When a local document and a global one cover the same topic, the **local document is authoritative** for your project. The concrete trigger is a shared slug: when a local `error-handling.rule.md` and a company-wide `error-handling.rule.md` share that slug, the agent applies the local document as the effective rule and treats the global one as background. Global sources are organization-wide defaults, and the local project refines or overrides them.
 
-The scan surfaces **both** documents and never drops the global. Precedence is a reading convention your agent applies by inspecting `source_kind`, `source_id`, and `read_only` on each result. The server performs no deduplication. The lineage stays visible: the agent sees that a local override exists, applies it, and still has the general default for context.
+The scan surfaces **both** documents and never drops the global. Precedence is a reading convention your agent applies by inspecting `source_kind`, `source_id`, and `read_only` on each result; the agent never infers authority from a path or a title. The server performs no deduplication, so the lineage stays visible: the agent sees that a local override exists, applies it, and still has the general default for context. Every write targets a local document.
 
 ## Vendoring a global in-tree
 
 Instead of pointing at a sibling repo, you can vendor the global content **inside** your project under the reserved `.archcore/global/` directory. The local document scan skips any directory named `global` at any depth, so vendored content is invisible until you declare it.
 
 This is the most self-contained distribution form. It assumes nothing about clone layout, and it yields the clean read-only write message.
+
+:::caution
+Never name a **local** document directory `global`. The local scan skips any directory named `global` at any depth, so documents under one silently disappear from the corpus. When a local document folder seems to have disappeared, that name is the usual cause; rename the directory.
+:::
 
 ### 1. Place the content under `.archcore/global/<id>`
 
@@ -131,6 +151,8 @@ echo ".archcore/global/" >> .gitignore
 - Cloned a whole repo (it has its own `.archcore/`): `path: ".archcore/global/company/.archcore"`.
 - Vendored only the document tree (`knowledge/` directly under the folder): `path: ".archcore/global/company"`.
 
+When the documents do not appear after declaring, `path` points at the wrong level: it must reach the directory whose subtree holds the `*.type.md` files, often `…/.archcore` after cloning a whole repository.
+
 ### 3. Declare it
 
 ```json
@@ -140,8 +162,10 @@ echo ".archcore/global/" >> .gitignore
 }
 ```
 
+An in-tree global vendored under a folder **not** named `global`, such as `.archcore/globals/<id>`, is de-duplicated by the scan: it appears exactly once, as a read-only global, never also as a writable local. The reserved `.archcore/global/` layout stays the recommended, self-documenting one.
+
 :::tip
-In-tree vendoring produces the clearer write-path error. A write attempt on a vendored global returns the clean `cannot update a read-only global source document`, whereas a `../` sibling fails writes with `invalid path: must start with ".archcore/"` (a cosmetic difference in the write-path message; reads succeed for both). Vendored copies and submodules are snapshots: re-clone or `git submodule update` to pull upstream changes. An automated `archcore globals pull` is not yet available.
+In-tree vendoring produces the clearer write-path error. A write attempt on a vendored global returns the clean `cannot update a read-only global source document`, whereas a `../` sibling fails writes with `invalid path: must start with ".archcore/"` (a cosmetic difference in the write-path message; reads succeed for both). Vendored copies and submodules are snapshots: re-clone or `git submodule update` to pull upstream changes. An automated refresh command is planned but not implemented.
 :::
 
 ## Monorepo root as a global
@@ -162,7 +186,7 @@ The web app's agent reads the root's shared conventions read-only, while each ap
 
 - **One writable primary per server.** Writing two independent local projects in one session is not supported; exactly one primary is writable.
 - **Transitive globals are not followed.** The server reads the primary's `globals` only and ignores a global's own `globals`.
-- **Distribution is manual for now.** Getting the source onto disk (clone / submodule / vendor) is your responsibility; lockfiles and an `archcore globals pull` command are deferred.
+- **Distribution is manual for now.** Getting the source onto disk (clone / submodule / vendor) is your responsibility. An automated refresh command and lockfiles are planned, with no accepted approach yet.
 
 ## Next steps
 

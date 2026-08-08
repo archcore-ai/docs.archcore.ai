@@ -16,7 +16,9 @@ When a project declares [global sources](/cli/global-sources/), the read tools (
 | `read_only` | _(omitted)_ | `true` |
 | `global` | _(omitted)_ | `true` |
 
-Global documents are **read-only**: the write tools (`create_document`, `update_document`, `remove_document`) reject any global path, and `add_relation` refuses an edge that touches a global on either endpoint. Local documents always take precedence over a same-topic global.
+Global documents are **read-only**: the write tools (`create_document`, `update_document`, `remove_document`) reject any global path, and `add_relation` refuses an edge that touches a global on either endpoint. When a local document and a global cover the same topic, the agent treats the local one as authoritative when reading them; search ranking does not weight local above global.
+
+No MCP tool includes an absolute filesystem path in an error or a result. Every returned path is relative to the project root or to `.archcore/`.
 
 ## list_documents
 
@@ -27,7 +29,7 @@ List documents with optional filters.
 | Name       | Type     | Required | Description                                                                                  |
 | ---------- | -------- | -------- | -------------------------------------------------------------------------------------------- |
 | `types`    | string[] | No       | Filter by document types (e.g., `["adr", "rule"]`)                                           |
-| `category` | string   | No       | Filter by layer: `vision`, `knowledge`, or `experience`                                      |
+| `category` | string   | No       | Filter by category: `vision`, `knowledge`, or `experience`                                   |
 | `status`   | string   | No       | Filter by status: `draft`, `accepted`, or `rejected`                                         |
 | `tags`     | string[] | No       | Filter by tags with OR semantics (matches documents with at least one of the specified tags) |
 | `limit`    | number   | No       | Maximum number of documents to return. Default 100, max 500. Values above 500 are clamped; `0` or omitted maps to the default; negative values return `limit must be non-negative`. |
@@ -45,7 +47,7 @@ List documents with optional filters.
 }
 ```
 
-- `documents`: the page of matches, `[]` when nothing matches. Each row carries `path`, `title`, `type`, `category`, `status`, and `tags`.
+- `documents`: the page of matches, `[]` when nothing matches. Each row carries `path`, `category`, `type`, `filename`, `slug`, `title`, `status`, `tags`, `mtime`, `source_id`, and `source_kind`, plus `global` and `read_only` only when true. List rows carry no `content`.
 - `total`: total number of documents matching the filters, before pagination.
 - `offset`: the offset applied to this page.
 - `returned`: number of documents in `documents` (the page size).
@@ -57,20 +59,30 @@ List documents with optional filters.
 {
   "documents": [
     {
-      "path": "roadmap/auth-v2.prd.md",
-      "title": "Auth System Redesign",
-      "type": "prd",
+      "path": ".archcore/roadmap/auth-v2.prd.md",
       "category": "vision",
+      "type": "prd",
+      "filename": "auth-v2.prd.md",
+      "slug": "auth-v2",
+      "title": "Auth System Redesign",
       "status": "draft",
-      "tags": ["auth"]
+      "tags": ["auth"],
+      "mtime": "2026-04-20T16:00:00Z",
+      "source_id": "local",
+      "source_kind": "local"
     },
     {
-      "path": "auth/jwt-strategy.adr.md",
-      "title": "Use JWT for Authentication",
-      "type": "adr",
+      "path": ".archcore/auth/jwt-strategy.adr.md",
       "category": "knowledge",
+      "type": "adr",
+      "filename": "jwt-strategy.adr.md",
+      "slug": "jwt-strategy",
+      "title": "Use JWT for Authentication",
       "status": "accepted",
-      "tags": ["auth", "security"]
+      "tags": ["auth", "security"],
+      "mtime": "2026-03-12T09:14:00Z",
+      "source_id": "local",
+      "source_kind": "local"
     }
   ],
   "total": 142,
@@ -94,24 +106,37 @@ Search documents by path reference, content substring, or metadata. Unlike `list
 | `content`     | string   | conditional | Case-insensitive substring matched against title + body. No stemming or fuzzy matching.                                      |
 | `types`       | string[] | conditional | Filter by document types (e.g., `["adr", "rule"]`).                                                                          |
 | `status`      | string   | conditional | Filter by status: `draft`, `accepted`, or `rejected`.                                                                        |
-| `mtime_after` | string   | No          | Only include documents modified after this time. Accepts RFC3339 timestamps or a positive relative duration: `<N>h`, `<N>d`, `<N>w`, `<N>mo`, `<N>y`. |
+| `mtime_after` | string   | No          | Only include documents modified after this time. Accepts RFC3339 timestamps or a relative duration: `<N>d` (days) or `<N>h` (hours), e.g. `30d`, `24h`. |
 | `sort`        | string   | No          | Result ordering: `relevance` (default) or `mtime`.                                                                           |
 | `mode`        | string   | No          | Output detail: `snippets` (default) returns only matching excerpts; `full` additionally returns each result's complete document `body` (frontmatter stripped), so you can read the matched docs without a follow-up `get_document`. |
-| `limit`       | number   | No          | Maximum number of results. Defaults and caps are mode-dependent: `snippets` → default 50, max 200; `full` → default 3, max 20. Values above the cap are clamped.                                                |
+| `limit`       | number   | No          | Maximum number of results. Defaults and caps are mode-dependent: `snippets` → default 50, max 200; `full` → default 3, max 20. Values above the cap are clamped; `0` or omitted maps to the mode default.       |
 
 At least one of `path_ref`, `content`, `types`, or `status` must be provided. Filters combine with AND semantics.
 
 **Sort modes:**
 
-- `relevance`: orders by max match specificity DESC, then type priority (`rule` > `adr` > `spec` > ...), then mtime DESC.
+- `relevance`: orders by max match specificity DESC, then type priority (`rule` > `adr` > `rfc` > `spec` > ...), then mtime DESC. The full type-priority order is `rule` > `adr` > `rfc` > `spec` > `cpat` > `guide` > `plan` > `idea` > `rnd` > `prd` > `brs` > `syrs` > `srs` > `strs` > `mrd` > `brd` > `urd` > `doc` > `task-type`; any other type sorts last.
 - `mtime`: orders purely by modification time, newest first.
 
-**Returns:** Array of matched documents. Each result has:
+**Returns:** Array of matched documents, `[]` when nothing matches. Every result's `path` begins with `.archcore/`. Each result has:
 
 - `path`, `title`, `type`, `status`, `mtime`, `tags`: document metadata.
-- `matches`: per-match evidence array. Each entry has `kind` (`path_ref_explicit`, `path_ref_mention`, or `content`), `ref` (the matched token), `specificity` (integer), and `excerpt` (~120-char window). Empty array for pure-metadata queries.
+- `source_id`, `source_kind`: always present, plus `global` and `read_only` only when true. See [Source annotation and global sources](#source-annotation-and-global-sources).
+- `matches`: per-match evidence array. Each entry has `kind` (`path_ref_explicit`, `path_ref_mention`, or `content`), `ref` (the matched token), `specificity` (integer), and `excerpt` (~120-char window). Serialized as `[]` for pure-metadata queries, never `null`.
 - `body`: the complete document body (frontmatter stripped). Included only when `mode: "full"`; omitted in the default `snippets` mode.
-- `incoming_relations`, `outgoing_relations`: manifest edges involving this document.
+- `incoming_relations`, `outgoing_relations`: manifest edges involving this document. Serialized as `[]` when empty, never `null`.
+
+**Errors:**
+
+- All filters empty: `specify at least one filter (path_ref, content, types, or status)`.
+- Negative `limit`: `limit must be non-negative`.
+- Invalid `mtime_after`: `invalid mtime_after: <reason>`.
+- A missing `.sync-state.json` manifest is not an error; every result carries empty relation arrays. A present-but-invalid manifest fails the call with `loading manifest: <reason>`, and `get_document` and `list_relations` fail the same way.
+
+**Limitations:**
+
+- A rule with no `@path` reference in its body is not reachable through a `path_ref` search.
+- Content matching is strict substring: singular and plural forms do not match.
 
 **Example: find rules and ADRs that reference a code path**
 
@@ -144,7 +169,9 @@ Read a document's full content with its relations.
 | ------ | ------ | -------- | --------------------------------------------- |
 | `path` | string | Yes      | Document path as returned by `list_documents` |
 
-**Returns:** Full document content plus outgoing and incoming relations.
+**Returns:** The full document record: the same fields as a `list_documents` row plus `content`, with `outgoing_relations` and `incoming_relations`. Each relation entry is `{path, type}` with a `.archcore/`-prefixed path.
+
+**Errors:** an unknown path returns `document not found: <path>`.
 
 ---
 
@@ -164,7 +191,7 @@ Create a new document. Generates from template if no content is provided. Reject
 | `directory` | string   | No       | Subdirectory within `.archcore/`                  |
 | `tags`      | string[] | No       | Tags for cross-cutting categorization             |
 
-**Returns:** Path, type, layer, title, status, and `nearby_documents` hint (for adding relations).
+**Returns:** `{path, category, type, title, status}`, plus `tags` when non-empty and `nearby_documents` when present. `nearby_documents` is up to 5 paths of other documents in the same directory, sorted alphabetically. Treat it as a hint only: review each candidate and call `add_relation` when a semantic link exists. Do not link every neighbor by default.
 
 **Example:**
 
@@ -197,6 +224,8 @@ Modify an existing document's title, status, or content. Rejects a path under a 
 
 At least one of `title`, `status`, `content`, or `tags` must be provided.
 
+**Returns:** `{path, category, type, title, status}`, plus `tags` when non-empty.
+
 ---
 
 ## remove_document
@@ -209,7 +238,7 @@ Permanently delete a document and all its relations. Rejects a path under a [glo
 | ------ | ------ | -------- | ------------- |
 | `path` | string | Yes      | Document path |
 
-**Returns:** Confirmation with `relations_removed` count.
+**Returns:** `{path, title, type, category, relations_removed}`. `relations_removed` counts the deleted document's own edges.
 
 :::caution
 This is a destructive action. Prefer `update_document` with `status: "rejected"` to preserve history.
@@ -228,6 +257,8 @@ Create a directed relation between two documents. Refuses an edge whose source *
 | `source` | string | Yes      | Source document path                                            |
 | `target` | string | Yes      | Target document path                                            |
 | `type`   | string | Yes      | Relation type: `related`, `implements`, `extends`, `depends_on` |
+
+**Returns:** `{source, target, type, added}`. `added` is `false` when the edge already existed.
 
 **Example:**
 
@@ -253,6 +284,8 @@ Remove a directed relation between two documents.
 | `target` | string | Yes      | Target document path |
 | `type`   | string | Yes      | Relation type        |
 
+**Returns:** `{source, target, type, removed}`. `removed` is `false` when no such edge exists.
+
 ---
 
 ## list_relations
@@ -265,7 +298,7 @@ List all relations, optionally filtered by document.
 | ------ | ------ | -------- | ---------------------------------------- |
 | `path` | string | No       | Filter relations involving this document |
 
-**Returns:** All relations (or relations for the specified document) showing source, target, and type.
+**Returns:** A JSON envelope `{"relations": [...]}` with all relations, or the relations involving the specified document. Each entry carries `source`, `target`, and `type`. Relation `source` and `target` are stored without the `.archcore/` prefix, unlike the `path` fields on documents.
 
 ---
 

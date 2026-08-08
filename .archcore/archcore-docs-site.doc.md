@@ -41,7 +41,7 @@ Retired pages and where they now point:
 
 The changelog lives outside the sidebar as a standalone content collection (`src/content/changelog/`). It is accessed via the "Changelog" link in the site header. Entries are split by product (Plugin / CLI) into tabs on the listing page; each entry has a required `product` frontmatter field. Changelog pages use Starlight's standard docs template (sidebar and TOC visible) but entries are not registered in the main sidebar. See the `adding-changelog-entry` guide and `changelog-content-structure` rule for details.
 
-The newest CLI entry is `0.5.0`. The CLI has since shipped through `v0.7.0`, so the changelog trails the product.
+The newest entries are `0.7.0-cli` and `0.7.0-plugin`, matching the current CLI release `v0.7.0`.
 
 ### Landing system (staged)
 
