@@ -29,7 +29,7 @@ Start with these documents:
 
 - `archcore-docs-site` — site architecture, sections, component overrides, key files
 - `content-structure` — the five sidebar groups and which directory each maps to
-- `docs-from-cli-context` — the accuracy obligation
+- `documentation-sources` — the three upstream sources and the accuracy obligation
 - `adding-docs-page` — the procedure for a new page
 - `adding-changelog-entry` and `changelog-content-structure` — changelog conventions
 

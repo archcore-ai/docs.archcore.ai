@@ -45,7 +45,7 @@ Apply instructions in this order:
 
 1. Explicit user requirements.
 2. Accepted rules and decisions in `.archcore/`.
-3. Factual accuracy against the source repositories, per the `docs-from-cli-context` rule.
+3. Factual accuracy against the upstream sources, per the `documentation-sources` rule.
 4. This writing policy.
 5. General stylistic preferences.
 
@@ -54,11 +54,13 @@ an awkward sentence that describes it correctly.
 
 ## Source of truth
 
-All content comes from the Archcore CLI and plugin repositories and their `.archcore/` context. Do not
-invent features, flags, defaults, or behavior. When a claim cannot be verified in a source repository,
-omit it rather than hedge it.
+All content comes from three upstream sources, split by subject: the `archcore` global source for
+concepts, vocabulary, positioning, and architectural roles; the CLI repository for engine behavior;
+the plugin repository for runtime behavior. Do not invent features, flags, defaults, or behavior, and
+do not define a concept here that no upstream document defines. When a claim cannot be verified
+upstream, omit it rather than hedge it.
 
-See the `docs-from-cli-context` rule for the full obligation.
+See the `documentation-sources` rule for the full obligation and the precedence between the three.
 
 ## Plain-language principles
 

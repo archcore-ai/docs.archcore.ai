@@ -3,23 +3,8 @@
   "files": {},
   "relations": [
     {
-      "source": "update-docs-from-cli.task-type.md",
-      "target": "docs-from-cli-context.rule.md",
-      "type": "related"
-    },
-    {
-      "source": "docs-stack.doc.md",
-      "target": "docs-from-cli-context.rule.md",
-      "type": "related"
-    },
-    {
       "source": "docs-stack.doc.md",
       "target": "update-docs-from-cli.task-type.md",
-      "type": "related"
-    },
-    {
-      "source": "content-structure.rule.md",
-      "target": "docs-from-cli-context.rule.md",
       "type": "related"
     },
     {
@@ -35,11 +20,6 @@
     {
       "source": "adding-docs-page.guide.md",
       "target": "content-structure.rule.md",
-      "type": "related"
-    },
-    {
-      "source": "adding-docs-page.guide.md",
-      "target": "docs-from-cli-context.rule.md",
       "type": "related"
     },
     {
@@ -64,11 +44,6 @@
     },
     {
       "source": "archcore-docs-site.doc.md",
-      "target": "docs-from-cli-context.rule.md",
-      "type": "related"
-    },
-    {
-      "source": "archcore-docs-site.doc.md",
       "target": "docs-stack.doc.md",
       "type": "related"
     },
@@ -78,18 +53,8 @@
       "type": "related"
     },
     {
-      "source": "archcore-docs-site.doc.md",
-      "target": "docs-from-cli-context.rule.md",
-      "type": "depends_on"
-    },
-    {
       "source": "adding-docs-page.guide.md",
       "target": "content-structure.rule.md",
-      "type": "depends_on"
-    },
-    {
-      "source": "adding-docs-page.guide.md",
-      "target": "docs-from-cli-context.rule.md",
       "type": "depends_on"
     },
     {
@@ -105,11 +70,6 @@
     {
       "source": "adding-changelog-entry.guide.md",
       "target": "content-structure.rule.md",
-      "type": "related"
-    },
-    {
-      "source": "adding-changelog-entry.guide.md",
-      "target": "docs-from-cli-context.rule.md",
       "type": "related"
     },
     {
@@ -144,11 +104,6 @@
     },
     {
       "source": "changelog-content-structure.rule.md",
-      "target": "docs-from-cli-context.rule.md",
-      "type": "related"
-    },
-    {
-      "source": "changelog-content-structure.rule.md",
       "target": "docs-stack.doc.md",
       "type": "related"
     },
@@ -161,11 +116,6 @@
       "source": "adding-changelog-entry.guide.md",
       "target": "changelog-content-structure.rule.md",
       "type": "depends_on"
-    },
-    {
-      "source": "plain-language-and-seo.rule.md",
-      "target": "docs-from-cli-context.rule.md",
-      "type": "related"
     },
     {
       "source": "plain-language-and-seo.rule.md",
@@ -190,6 +140,56 @@
     {
       "source": "archcore-docs-site.doc.md",
       "target": "plain-language-and-seo.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "adding-docs-page.guide.md",
+      "target": "documentation-sources.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "docs-stack.doc.md",
+      "target": "documentation-sources.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "archcore-docs-site.doc.md",
+      "target": "documentation-sources.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "update-docs-from-cli.task-type.md",
+      "target": "documentation-sources.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "content-structure.rule.md",
+      "target": "documentation-sources.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "archcore-docs-site.doc.md",
+      "target": "documentation-sources.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "adding-docs-page.guide.md",
+      "target": "documentation-sources.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "adding-changelog-entry.guide.md",
+      "target": "documentation-sources.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "changelog-content-structure.rule.md",
+      "target": "documentation-sources.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "plain-language-and-seo.rule.md",
+      "target": "documentation-sources.rule.md",
       "type": "related"
     }
   ]

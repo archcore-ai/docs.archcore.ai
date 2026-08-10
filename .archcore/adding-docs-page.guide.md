@@ -27,7 +27,7 @@ status: accepted
    ---
    ```
 
-4. **Write content from CLI / plugin context only** — All documentation must be derived from the Archcore source repositories (CLI and Plugin) and their `.archcore/` context. Do not invent features or behaviors not present in the source. See the `docs-from-cli-context` rule.
+4. **Write content from upstream context only** — Take concepts and vocabulary from the `archcore` global source, engine behavior from the CLI repository, and runtime behavior from the plugin repository. Do not invent features or behaviors, and do not define a concept that no upstream document defines. See the `documentation-sources` rule.
 
 5. **Register in sidebar** — Add the page to the matching group in the `sidebar` array in `astro.config.mjs`:
    ```js
