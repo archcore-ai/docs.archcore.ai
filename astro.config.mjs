@@ -241,6 +241,7 @@ export default defineConfig({
 					label: 'Reference',
 					items: [
 						{ label: 'Document Format', slug: 'reference/document-format' },
+						{ label: 'Precision Checks', slug: 'reference/precision-checks' },
 						{ label: 'MCP Tools', slug: 'reference/mcp-tools' },
 						{ label: 'Plugin Skills', slug: 'reference/skills' },
 					],

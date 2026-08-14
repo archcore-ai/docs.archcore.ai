@@ -160,22 +160,27 @@ Three checks run, and a failure in one does not silence the others.
   - auth/session-refresh.spec.md (implements this document)
 ```
 
-**Precision findings** measure the written document against the document contract. They fire on `create_document` and `update_document` only:
+**Precision findings** measure the written document against the document contract. They fire on `create_document` and `update_document` only. The checks fall into four groups:
 
-| Finding | Fires when |
-| ------- | ---------- |
-| Vague wording | The body uses words from the vagueness lexicon. Up to 5 offenders are named. |
-| Missing section | A required `##` section for that document type is absent. |
-| Frontmatter | `title` is missing or empty, or `status` is missing or invalid. |
-| Placeholder body | The body is under 200 characters, counted in characters rather than bytes so a short non-ASCII document is flagged the same way. |
-| Cross-document links | The body links other `.archcore/` documents instead of using `add_relation`. Up to 3 are named. |
-| Long code block | A code block of 5+ lines in a document type that argues rather than instructs (`adr`, `rfc`, `doc`, and the vision types). |
-| `SHALL` notation | A `spec` uses `SHALL` instead of the BCP 14 modals `MUST` / `SHOULD` / `MAY`. |
-| Oversized spec | A `spec` body exceeds 80 lines. |
-| Compound requirement | A numbered `spec` clause carries two modals. |
-| Subjectless passive | A numbered `spec` clause states an obligation with no obligated subject. Up to 3 are named. |
+| Group | Examples |
+| ----- | -------- |
+| Every document type | Vague wording, missing section, foreign section, frontmatter, placeholder body, cross-document links, long code block, restatement |
+| Types with graded clauses or procedure steps | Requirement over 25 words, step over 20 words, compound requirement, condition after the obligation, open-ended list, ambiguous alternative, misplaced BCP 14 modal |
+| One type only | `SHALL` in a `spec`, oversized `spec`, subjectless passive, EARS clause in a `prd` requirement, `rule` with no file target, `adr` with one alternative, `cpat` without a code block |
+| Content ownership | A heading whose content another type owns, and a statement copied word for word from a linked document |
 
-The advisory validates the document path through the containment-safe read guard before opening the file, so a symlink out of `.archcore/` produces no findings at all.
+One report carries at most 5 findings and ends with a count of what the cap dropped:
+
+```text
+[Archcore Precision] .archcore/auth/jwt-strategy.adr.md (advisory):
+  - vague wording (robust) — replace with a concrete fact, version, threshold, or measurement
+  - missing section: ## Alternatives Considered
+  - +2 more finding(s) not shown (report cap 5)
+```
+
+[Precision checks](/reference/precision-checks/) lists every check, the types it grades, and the threshold behind it.
+
+The advisory validates the document path through the containment-safe read guard before opening the file, so a symlink out of `.archcore/` produces no findings at all. The restatement check reads the sync manifest to find linked documents, and returns nothing when the manifest will not load.
 
 ## Installing
 
@@ -291,6 +296,7 @@ Install hooks unless you have a reason not to.
 
 ## Next steps
 
+- [Precision checks](/reference/precision-checks/) is the full table of post-write checks and thresholds.
 - [MCP server](/cli/mcp-server/) documents the tools the write guard points agents at.
 - [Agent integrations](/cli/agent-integrations/) has the full per-host support matrix and config paths.
 - [Global sources](/cli/global-sources/) explains why the write guard refuses a mounted global.

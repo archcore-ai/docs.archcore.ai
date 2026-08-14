@@ -73,6 +73,10 @@ Cursor is the only host that loads the plugin's `rules/` directory (`archcore-co
 
 ### Codex CLI
 
+One adapter covers both Codex surfaces, the CLI and the desktop app. They share one binary, one `~/.codex/config.toml`, and one plugin install, so the agent id is `codex-cli` on both and no artifact distinguishes them.
+
+Codex applies project wiring only after two separate consents. It loads a project's `.codex/` layer only for a project marked `trust_level = "trusted"`, and it runs a command hook only after you review and trust it under `/hooks`. Writing the files grants neither, so wiring stays inert until you give both.
+
 Codex CLI uses the same `PostToolUse` semantics as Claude Code, and adds Codex's `apply_patch` tool to the `PreToolUse` matcher. A Codex-side feature flag gates Codex hooks:
 
 ```bash

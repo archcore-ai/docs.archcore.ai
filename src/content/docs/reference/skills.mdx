@@ -14,7 +14,7 @@ Every command shipped with the Archcore plugin, with its outcome and flags. For 
 | Command              | Outcome                                             | Arguments and flags                                                        |
 | -------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `/archcore:init`     | Make your repo legible to AI agents                 | `--depth=light\|standard\|deep`, `--mode=small\|medium\|large`, `--domain=<slug>`, `--refresh` |
-| `/archcore:plan`     | Turn an idea into a scoped implementation plan      | `[topic]`, plus an optional track name: `sdd`, `sources`, or `iso`         |
+| `/archcore:plan`     | Turn an idea into a scoped implementation plan      | `[topic]`, plus an optional track name: `sdd`, `sources`, `iso`, or `research` |
 | `/archcore:document` | Record a decision or document what lives in code    | `[module, topic, or decision]`, plus an optional type: `adr`, `rfc`, `spec`, `doc`, `guide`, `rule` |
 | `/archcore:review`   | Check your changes and your docs against each other | `--deep`, `--drift`, and an optional path, tag, or scope                    |
 
@@ -29,6 +29,7 @@ A track is a gated cascade. The skill creates each document through MCP in order
 | `sdd` (default) | idea → prd → spec → plan | `prd implements idea`, `spec implements prd`, `plan implements spec`          | A feature, refactor, initiative, or roadmap.                |
 | `sources`       | mrd → brd → urd          | The three source documents are peers, related rather than implementing         | Market research, discovery, or stakeholder alignment.       |
 | `iso`           | brs → strs → syrs → srs  | `strs implements brs` and `urd`, `syrs implements strs`, `srs implements syrs` | Regulated systems, audits, full ISO 29148 traceability.     |
+| `research`      | frame → gather → conclude, producing one `rnd` | `rnd related` the `idea` or `prd` the research informs, when one exists | Investigating an unknown or comparing alternatives before planning or deciding. |
 
 Without a named track, the skill routes from the request wording and from the documents already in `.archcore/`. A gate whose topic an existing document covers closes through `skip_when`, so an `sdd` run can produce the plan alone.
 

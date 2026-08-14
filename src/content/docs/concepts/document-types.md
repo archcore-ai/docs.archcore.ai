@@ -3,7 +3,9 @@ title: Document Types
 description: Archcore has 19 document types, including ADR, RFC, rule, guide, spec, doc, PRD, plan, and ISO specifications.
 ---
 
-Archcore has 19 document types organized into 3 categories. Each type has a template with required sections that the Archcore CLI generates. If you have not installed the CLI yet, get it from the [CLI page](https://archcore.ai/cli/).
+Archcore has 19 document types organized into 3 categories. Each type has a template that the Archcore CLI generates. If you have not installed the CLI yet, get it from the [CLI page](https://archcore.ai/cli/).
+
+The template sections listed below are what the CLI writes into a new document. A narrower set is checked after every write, and [Precision checks](/reference/precision-checks/) lists it per type.
 
 ## Choosing the right type
 
@@ -51,7 +53,7 @@ Product requirements with goals, scope, and acceptance criteria.
 |---|---|
 | **File extension** | `.prd.md` |
 | **When to use** | Product requirements with goals and acceptance criteria are defined |
-| **Required sections** | Vision, Problem Statement, Goals & Success Metrics, Requirements |
+| **Template sections** | Vision, Problem Statement, Goals and Success Metrics, Requirements |
 
 #### Idea
 
@@ -61,7 +63,7 @@ A product or technical concept that needs capturing before it is fully formed.
 |---|---|
 | **File extension** | `.idea.md` |
 | **When to use** | A concept needs capturing for future evaluation |
-| **Required sections** | Idea, Value, Possible Implementation, Risks & Constraints |
+| **Template sections** | Idea, Value, Possible Implementation, Risks and Constraints, Next Steps |
 
 #### RnD
 
@@ -71,7 +73,7 @@ A bounded investigation that answers an open question before a decision is made 
 |---|---|
 | **File extension** | `.rnd.md` |
 | **When to use** | A bounded investigation is needed to answer a question before deciding or building |
-| **Required sections** | Research Goal, Questions/Hypotheses, Approach, Findings, Recommendation, Next Action |
+| **Template sections** | Research Goal, Context and Trigger, Questions / Hypotheses, Approach, Findings, Implications, Recommendation, Next Action, Risks and Unknowns, Related Materials |
 
 An `rnd` is the **Research Gate** in front of the committing tracks (`rnd` -> `idea`, `rnd` -> `adr` -> `spec` -> `plan`). Its status maps to the verdict:
 
@@ -93,7 +95,7 @@ An actionable plan with phased tasks and acceptance criteria.
 |---|---|
 | **File extension** | `.plan.md` |
 | **When to use** | An implementation plan with tasks is formed |
-| **Required sections** | Goal, Tasks (phased), Acceptance Criteria, Dependencies |
+| **Template sections** | Goal, Tasks (phased), Acceptance Criteria, Dependencies, Notes |
 
 ### Sources track (discovery)
 
@@ -107,7 +109,7 @@ Market analysis covering TAM/SAM/SOM, competitive landscape, market needs, and t
 |---|---|
 | **File extension** | `.mrd.md` |
 | **When to use** | Market analysis is needed before proposing a solution |
-| **Required sections** | Market Landscape, TAM/SAM/SOM, Competitive Analysis, Market Needs, Opportunity and Timing |
+| **Template sections** | Market Landscape, TAM/SAM/SOM, Competitive Analysis, Market Needs, Opportunity and Timing |
 
 #### BRD (Business Requirements Document)
 
@@ -117,7 +119,7 @@ Business justification with objectives, stakeholders, constraints, and ROI.
 |---|---|
 | **File extension** | `.brd.md` |
 | **When to use** | Business justification and organizational impact need documenting |
-| **Required sections** | Business Objectives, Stakeholders, Business Rules and Constraints, Success Metrics and ROI |
+| **Template sections** | Business Objectives, Stakeholders, Business Rules and Constraints, Success Metrics and ROI |
 
 #### URD (User Requirements Document)
 
@@ -127,7 +129,7 @@ User needs captured through personas, journeys, user requirements, usability, an
 |---|---|
 | **File extension** | `.urd.md` |
 | **When to use** | User needs, personas, and journeys need capturing during discovery |
-| **Required sections** | User Personas, User Journeys, User Requirements, Usability Requirements, Acceptance Criteria |
+| **Template sections** | User Personas, User Journeys, User Requirements, Usability Requirements, Acceptance Criteria |
 
 ### ISO track (decomposition)
 
@@ -142,7 +144,7 @@ Mission and goals, operational concept, business constraints, and traceability.
 | **File extension** | `.brs.md` |
 | **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.3 |
 | **When to use** | Business requirements need formalizing into ISO-structured specification |
-| **Required sections** | Mission and Goals, Operational Concept, Business Constraints, Traceability |
+| **Template sections** | Business Purpose and Scope, Business Overview, Mission, Goals and Objectives, Business Operations, Business Constraints, High-Level Operational Concept, Project Constraints, Success Criteria, Assumptions and Dependencies, Traceability |
 
 #### StRS (Stakeholder Requirements Specification)
 
@@ -153,7 +155,7 @@ Per-stakeholder-class requirements with concept of operations and traceability.
 | **File extension** | `.strs.md` |
 | **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.4 |
 | **When to use** | Stakeholder requirements need structuring per class with ConOps |
-| **Required sections** | Stakeholder Classes, ConOps, Stakeholder Requirements, Traceability |
+| **Template sections** | Purpose and Scope, System Overview, Business Context, Stakeholder Classes, Operational Concept (ConOps), Stakeholder Requirements, System Processes, Operational Policies and Rules, Operational Constraints, Compliance and Regulatory, Project Constraints, Traceability |
 
 #### SyRS (System Requirements Specification)
 
@@ -164,7 +166,7 @@ System boundary, system requirements, interfaces, and verification approach.
 | **File extension** | `.syrs.md` |
 | **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.5 |
 | **When to use** | The whole system boundary, interfaces, and verification need specifying |
-| **Required sections** | System Boundary, System Requirements, System Interfaces, Verification Approach |
+| **Template sections** | System Purpose and Scope, System Overview, System Requirements, System Interfaces, System Operations, Policy and Regulation, Life Cycle Sustainment, Assumptions and Dependencies, Verification Approach, Traceability |
 
 #### SRS (Software Requirements Specification)
 
@@ -175,7 +177,7 @@ Per-function and per-endpoint specifications with a verification matrix.
 | **File extension** | `.srs.md` |
 | **ISO reference** | [ISO/IEC/IEEE 29148:2018](https://www.iso.org/standard/72089.html) §9.6 |
 | **When to use** | Detailed software requirements need per-function/per-endpoint specification |
-| **Required sections** | Scope, Software Requirements, External Interfaces, Verification Matrix |
+| **Template sections** | Purpose and Scope, Product Perspective, Software Requirements, External Interfaces, Data Requirements, Usability Requirements, Performance, Design Constraints, Software Quality Attributes, Verification Matrix, Traceability |
 
 ### Choosing the right requirements track
 
@@ -226,7 +228,7 @@ Records a decision that has been made.
 |---|---|
 | **File extension** | `.adr.md` |
 | **When to use** | A technical decision is made or finalized |
-| **Required sections** | Context, Decision, Alternatives Considered, Consequences |
+| **Template sections** | Context, Decision, Alternatives Considered, Consequences |
 
 ```markdown
 ---
@@ -260,7 +262,7 @@ Proposes a significant change for team review.
 |---|---|
 | **File extension** | `.rfc.md` |
 | **When to use** | A significant change is being proposed |
-| **Required sections** | Summary, Motivation, Detailed Design, Drawbacks, Alternatives |
+| **Template sections** | Summary, Motivation, Detailed Design, Drawbacks, Alternatives |
 
 ### Rule
 
@@ -270,7 +272,7 @@ Imperative statements that the team must follow.
 |---|---|
 | **File extension** | `.rule.md` |
 | **When to use** | A team standard or required behavior is established |
-| **Required sections** | Rule statements, Rationale, Examples (Good/Bad), Enforcement |
+| **Template sections** | Description, Rule, Rationale, Examples (Good/Bad), Exceptions, Enforcement |
 
 ```markdown
 ---
@@ -303,7 +305,7 @@ Step-by-step instructions for completing a specific task.
 |---|---|
 | **File extension** | `.guide.md` |
 | **When to use** | Step-by-step instructions need to be documented |
-| **Required sections** | Prerequisites, Steps (numbered), Verification, Common Issues |
+| **Template sections** | Overview, Prerequisites, Steps (numbered), Verification, Common Issues, Next Steps |
 
 ### Spec
 
@@ -315,7 +317,7 @@ A spec covers one subject and is not a general reference dump. Keep the body at 
 |---|---|
 | **File extension** | `.spec.md` |
 | **When to use** | A normative contract with behavior, constraints, and conformance criteria is being formalized |
-| **Required sections** | Purpose & Scope, Surface, Normative Behavior, Constraints & Invariants, Failure Behavior, Conformance |
+| **Template sections** | Purpose & Scope, Surface, Normative Behavior, Constraints & Invariants, Failure Behavior, Conformance |
 
 Write each Normative Behavior item as a numbered requirement in EARS clause order, with one uppercase BCP 14 keyword (MUST, SHOULD, or MAY, defined by RFC 2119 and RFC 8174) per requirement. EARS has four forms:
 
@@ -378,7 +380,7 @@ Non-behavioral reference material: registries, glossaries, lookup tables, and co
 |---|---|
 | **File extension** | `.doc.md` |
 | **When to use** | Non-behavioral reference material like registries, glossaries, or lookup tables needs documenting |
-| **Required sections** | Overview, Content sections, Examples |
+| **Template sections** | Overview, Content, Examples, Best Practices, FAQ |
 
 :::note[Rule vs Doc]
 A **rule** contains imperative statements ("Always do X", "Never do Y") with enforcement info. A **doc** is non-behavioral reference material. If it prescribes behavior, use `rule`. If it describes what exists, use `doc`.
@@ -398,7 +400,7 @@ A proven workflow for a recurring implementation task.
 |---|---|
 | **File extension** | `.task-type.md` |
 | **When to use** | A proven workflow for a recurring task is documented |
-| **Required sections** | What, When to Use, Steps, Example, Things to Watch Out For |
+| **Template sections** | What, When to Use, Steps, Example, Things to Watch Out For |
 
 ### CPAT (Code Pattern Change)
 
@@ -408,7 +410,7 @@ Records how and why a coding convention or pattern changed.
 |---|---|
 | **File extension** | `.cpat.md` |
 | **When to use** | A coding pattern or convention has deliberately changed |
-| **Required sections** | What Changed, Why, Before, After, Scope |
+| **Template sections** | What Changed, Why, Before, After, Scope, Notes |
 
 ```markdown
 ---
@@ -439,3 +441,25 @@ const orders = await getOrders(user.id);
 ## Scope
 All files in `src/services/` and `src/handlers/`.
 ```
+
+---
+
+## Content ownership
+
+Each kind of content has one owning document type and one section inside it. A track produces several documents on one topic and links them with [`implements`](/concepts/relations/), so the boundary decides which of them a statement belongs in.
+
+| Content kind | Owner | Section |
+|---|---|---|
+| Wanted outcome, beneficiary, threshold | `prd` | Requirements |
+| Measured goal with units and a target value | `prd` | Goals and Success Metrics |
+| Graded behavior: EARS clauses, BCP 14 modals | `spec` | Normative Behavior |
+| Interfaces, signatures, states, field-driven rules | `spec` | Surface |
+| Error, edge, and degradation handling | `spec` | Failure Behavior |
+| Phases, tasks, milestones, delivery dates | `plan` | Tasks |
+| Rejected alternative and the reason it was rejected | `adr` | Alternatives Considered |
+
+Two documents holding one statement have no single owner. An edit to one leaves the other stating the opposite, and a reader cannot tell which of the two binds.
+
+The `prd` template carries four sections for this reason. A section it does not own is not offered to the author, and the graded behavior that satisfies a `prd` requirement goes in the linked `spec`.
+
+Two post-write checks report a crossing of the boundary. A foreign-section finding names a heading whose content another type owns. A restatement finding names a statement that survived a move from a linked document nearly word for word. Both are advisory and reject nothing. See [Precision checks](/reference/precision-checks/#content-ownership).
