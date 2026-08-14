@@ -94,7 +94,13 @@ export default defineConfig({
 	},
 	integrations: [
 		starlight({
-			title: 'archcore',
+			// Brand suffix for every page title ("CLI Overview — Archcore"),
+			// per the "… — Archcore" convention in the shared
+			// product/seo-information-architecture. The home page overrides its
+			// own full title in index.mdx. This was the lowercase wordmark
+			// 'archcore', which is a logo treatment, not an entity name.
+			title: 'Archcore',
+			titleDelimiter: '—',
 			components: {
 				SocialIcons: './src/components/HeaderLinks.astro',
 				Head: './src/components/Head.astro',
@@ -105,7 +111,7 @@ export default defineConfig({
 				starlightLlmsTxt({
 					projectName: 'Archcore',
 					description:
-						'Git-native repo memory for AI coding agents. Typed markdown documents (decisions, rules, specs, plans) stored in a .archcore/ directory in your repository and served to agents over MCP.',
+						'Archcore is a git-native context layer for AI coding agents, covering spec-driven development and context engineering. Typed markdown documents (specs, architecture decisions, rules, plans) stored in a .archcore/ directory in your repository and served to agents over MCP.',
 					customSets: [
 						{ label: 'CLI', paths: ['cli/**'] },
 						{ label: 'Plugin', paths: ['plugin/**'] },
@@ -120,7 +126,7 @@ export default defineConfig({
 				alt: 'archcore logo',
 			},
 			description:
-				'Git-native repo memory for AI coding agents. Archcore keeps decisions, rules, specs, and plans as typed markdown documents in your repository — loaded into any MCP agent.',
+				'Spec-driven development and context engineering for AI coding agents. Archcore keeps specs, architecture, decisions, rules, and plans as typed markdown documents in your repository, loaded into any MCP agent.',
 			head: [
 				// Preload critical variable fonts so the browser fetches them
 				// in parallel with CSS instead of waiting for @font-face discovery.
@@ -164,7 +170,7 @@ export default defineConfig({
 						'@type': 'WebSite',
 						name: 'Archcore',
 						url: 'https://docs.archcore.ai',
-						description: 'Archcore turns your repository into structured, machine-readable context — so AI agents understand your architecture, rules, and decisions.',
+						description: 'Archcore is a git-native context layer for AI coding agents. Specs, architecture, decisions, rules, and plans live in Git and are available to agents as they work.',
 						publisher: {
 							'@type': 'Organization',
 							name: 'Archcore',

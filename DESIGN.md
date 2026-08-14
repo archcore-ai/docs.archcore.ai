@@ -14,11 +14,19 @@ Do not make the website look like a generic AI SaaS landing page.
 
 ## Product Positioning
 
+> Canonical strings live in the shared context: `product/canonical-narrative` (fixed strings, terminology, avoid-list) and `product/surface-descriptors` (the resolved per-surface slots). This section states the brief they create. It does not override them.
+
 ### One-line positioning
 
-Archcore turns a repository into structured, machine-readable context so AI coding agents understand architecture, rules, decisions, and workflows.
+Archcore is a git-native context layer for AI coding agents.
 
-### Category
+### Discovery categories
+
+Spec-Driven Development and Context Engineering. Category line: **Spec-Driven Development & Context Engineering for AI Coding Agents**.
+
+Specs are one part of context. Context is broader than specs. Any surface that names both teaches that relation.
+
+### Product category
 
 Git-native context layer for AI coding agents.
 
@@ -85,13 +93,18 @@ Avoid copy that feels like:
 
 Use words like:
 
+- AI coding agents
+- spec-driven development
+- context engineering
+- project context
+- git-native
+- specs
 - repository
-- structured context
-- machine-readable
 - architecture
+- architecture decisions / ADRs
 - rules
-- decisions
-- workflows
+- plans
+- project knowledge
 - MCP
 - typed documents
 - relation graph
@@ -115,6 +128,8 @@ Avoid overusing:
 - autonomous
 - copilot for X
 - AI-powered everything
+
+Never as positioning for Archcore: **memory** (repo memory, agent memory), **platform** ("context engineering platform"), and **workflow / workflows**. The category term *context engineering* is correct; *platform* is what inflates it. Name the concrete capability instead of "workflow": skills, slash commands, gated tracks, hooks, review, guardrails.
 
 ---
 
@@ -617,7 +632,7 @@ Good icon themes:
 - shield
 - list
 - code
-- workflow
+- graph
 
 Do not use:
 
@@ -739,7 +754,7 @@ Use a 2x2 feature grid:
 - Add a new service
 - Follow team rules
 - Reuse prior decisions
-- Run multi-step workflows
+- Run multi-step tracks
 
 ### 7. FAQ
 
@@ -957,7 +972,7 @@ product:
     - "decisions"
     - "guides"
     - "specs"
-    - "workflows"
+    - "plans"
 
 paths:
   plugin:
@@ -1014,7 +1029,7 @@ So AI agents can follow your architecture, rules, and decisions — instead of g
 
 ```txt
 Plugin
-For Claude Code and Cursor. Higher-level workflows, guardrails, and intent commands inside your agent.
+For Claude Code and Cursor. Skills, gated tracks, guardrails, and intent commands inside your agent.
 ```
 
 CTA:
@@ -1059,7 +1074,7 @@ Instruction files are flat memory. Archcore is structured system context.
 Supporting text:
 
 ```txt
-Instruction files work for agent-specific prompts and short-lived rules. They are not a graph of decisions, standards, specs, and workflows.
+Instruction files work for agent-specific prompts and short-lived rules. They are not a graph of decisions, standards, specs, and plans.
 ```
 
 ---

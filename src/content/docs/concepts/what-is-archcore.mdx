@@ -1,13 +1,15 @@
 ---
 title: What is Archcore?
-description: Archcore stores decisions, rules, and plans as typed markdown documents in your repository, read by agents over MCP.
+description: Archcore stores specs, decisions, rules, and plans as typed markdown documents in your repository, read by agents over MCP.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="shared" />
 
-Archcore is **git-native context for AI coding agents**. It stores project knowledge, such as decisions, rules, patterns, and plans, as typed markdown documents in your repository. Agents read those documents from the first turn of a session.
+Archcore is **a git-native context layer for AI coding agents**. It stores project knowledge, such as specs, architecture, decisions, rules, and plans, as typed markdown documents in your repository. Agents read those documents from the first turn of a session.
+
+Its two discovery categories are spec-driven development and context engineering. A spec is one part of context, not the whole context: the same directory also holds the architecture, prior decisions, constraints, and team rules an agent needs while implementing.
 
 ## The problem
 

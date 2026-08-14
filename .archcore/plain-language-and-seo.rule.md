@@ -34,6 +34,11 @@ creates and points to that file. It does not restate the policy.
     `@astro.config.mjs`.
 14. IF a claim cannot be verified against the Archcore CLI or plugin repository, THEN the author MUST
     omit it.
+15. WHEN an author writes a positioning sentence, a page `title`, or a `description` that states what
+    Archcore is, the author MUST take the wording from the shared `product/canonical-narrative` and
+    `product/surface-descriptors` rather than composing a variant for this site.
+16. The author MUST NOT append the site's brand suffix inside a page's frontmatter `title`. The suffix
+    `— Archcore` is applied site-wide by `@astro.config.mjs`.
 
 ## Rationale
 
@@ -101,6 +106,8 @@ parallelism, and an `-ing` tail.
 
 ## References
 
+- `product/canonical-narrative` and `product/surface-descriptors` — the fixed positioning strings
+- `product/seo-information-architecture` — cross-surface title and description conventions, keyword ownership
 - `@AGENTS.md` — the canonical writing policy
 - `@CLAUDE.md` — agent routing and Archcore operation rules
 - `@DESIGN.md` — voice definition: direct, technical, confident, minimal, calm, specific

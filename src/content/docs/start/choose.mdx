@@ -25,7 +25,7 @@ Archcore has two entry points: the plugin and the CLI. Both read and write the s
 | **CLI prerequisite** | Required (same one-line installer as standalone CLI) | Required |
 | **Hosts** | Claude Code, Cursor, Codex CLI, GitHub Copilot CLI | All 8 supported agents |
 | **Interface** | 4 slash commands (`/archcore:init`, `/archcore:plan`, `/archcore:document`, `/archcore:review`) | MCP tools + natural language |
-| **Multi-step workflows** | `/archcore:plan` tracks and `/archcore:document` cascades orchestrate document chains automatically | You drive them manually through MCP |
+| **Multi-step tracks** | `/archcore:plan` tracks and `/archcore:document` cascades orchestrate document chains automatically | You drive them manually through MCP |
 | **Guardrails** | MCP-only writes, post-mutation validate, cascade warnings | MCP available; guardrails are opt-in via hooks |
 | **Best for** | Day-to-day use inside a supported host | Scripting, CI, agents without plugin support |
 
@@ -33,8 +33,8 @@ Both paths share the same `.archcore/` directory and the same MCP server backed 
 
 ## The mental model
 
-- **CLI is the compiler.** It reads `.archcore/`, builds the graph, speaks MCP.
-- **Plugin is the runtime.** It applies that graph inside Claude Code, Cursor, Codex CLI, and GitHub Copilot CLI through skills, hooks, and workflows.
+- **CLI is the engine.** It reads `.archcore/`, builds the graph, speaks MCP.
+- **Plugin is the runtime on top of it.** It applies that graph inside Claude Code, Cursor, Codex CLI, and GitHub Copilot CLI through skills, slash commands, gated tracks, and hooks.
 
 More depth in [Mental Model](/concepts/mental-model/).
 

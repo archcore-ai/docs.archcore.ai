@@ -1,16 +1,20 @@
 ---
 title: Mental Model
-description: The Archcore CLI compiles .archcore/ into a context graph and the plugin applies that context inside your agent.
+description: The Archcore CLI builds .archcore/ into a context graph and the plugin applies that context inside your agent.
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="shared" />
 
+**CLI = context infrastructure. Plugin = the command surface and guardrails. Archcore = one product system.**
+
 Archcore is one product built from two pieces:
 
-- The **Archcore CLI** is the compiler. It reads `.archcore/`, builds the context graph, and exposes it over MCP.
-- The **Archcore plugin** is the runtime. It applies that context inside your AI agent through skills, guardrails, and workflows.
+- The **Archcore CLI** is the engine. It reads `.archcore/`, builds the context graph, and exposes it over MCP.
+- The **Archcore plugin** is the runtime on top of it. It applies that context inside your AI agent through skills, slash commands, gated tracks, and guardrails.
+
+Neither is the primary path. Which one you use is decided by the agent you run, not by a recommendation.
 
 ## Why two pieces?
 
@@ -23,7 +27,7 @@ Putting both in one package would couple their release cadences. Every plugin ch
 
 ## Who does what
 
-| Responsibility                                    | CLI (compiler)   | Plugin (runtime) |
+| Responsibility                                    | CLI (engine)     | Plugin (runtime) |
 | ------------------------------------------------- | ---------------- | ---------------- |
 | Initialize `.archcore/` in a repo                 | `archcore init`  | No               |
 | Parse and validate document frontmatter           | Yes              | No               |
@@ -82,5 +86,5 @@ Both paths read and write the same `.archcore/`. You can switch between them or 
 ## Next steps
 
 - [Plugin overview](/plugin/overview/) describes the runtime layer.
-- [CLI overview](/cli/overview/) describes the compiler layer.
+- [CLI overview](/cli/overview/) describes the engine layer.
 - [Document Types](/concepts/document-types/) lists the vocabulary both layers speak.

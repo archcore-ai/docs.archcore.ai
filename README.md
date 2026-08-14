@@ -2,7 +2,7 @@
 
 <https://docs.archcore.ai/cli/overview/>
 
-Documentation for [Archcore](https://archcore.ai) — System Context Platform that keeps humans and AI in sync with your system.
+Documentation for [Archcore](https://archcore.ai), a git-native context layer for AI coding agents. Specs, architecture, decisions, rules, and plans live in Git and are available to agents as they work.
 
 ## Links
 
