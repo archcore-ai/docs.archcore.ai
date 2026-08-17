@@ -28,15 +28,16 @@ Everything except the write guard is **advisory**: it adds text to the agent's c
 The recap goes into the agent's working context before you type anything. Its sections, in order:
 
 1. Header and the MCP tool line.
-2. Global-source warnings, when a declared [global source](/cli/global-sources/) is in a fatal state (missing, not a directory, unreadable, self-overlapping, or a duplicate path), contains no documents, or `settings.json` is invalid.
+2. The invalid-settings warning, when `.archcore/settings.json` is present but cannot be parsed or validated.
 3. `CORPUS`: document counts by category and by status, including rejected.
 4. `BRANCH`: the checked-out branch, when it resolves.
-5. `IN PROGRESS`: drafts, newest first.
-6. `RECENTLY ACCEPTED`: documents accepted in the last 30 days, newest first.
-7. The staleness advisory, when due.
-8. `EXISTING TAGS`: the top 20 tags by frequency.
-9. `DOCUMENT RELATIONS`: the relation count and the tools that manage it.
-10. A closing pointer to the MCP server instructions.
+5. `GLOBALS`: one line per declared [global source](/cli/global-sources/), when at least one source is declared.
+6. `IN PROGRESS`: drafts, newest first.
+7. `RECENTLY ACCEPTED`: documents accepted in the last 30 days, newest first.
+8. The staleness advisory, when due.
+9. `EXISTING TAGS`: the top 20 tags by frequency.
+10. `DOCUMENT RELATIONS`: the relation count and the tools that manage it.
+11. A closing pointer to the MCP server instructions.
 
 Example output:
 
@@ -62,6 +63,29 @@ DOCUMENT RELATIONS: 18 relation(s) stored.
 Refer to MCP server instructions for document types, workflow rules, and usage guidance.
 ```
 
+### The `GLOBALS` block
+
+When `.archcore/settings.json` declares at least one [global source](/cli/global-sources/), the recap carries a `GLOBALS` block after `BRANCH`, or after `CORPUS` when the branch does not resolve. It tells the agent that a global exists, how large it is, and what it covers:
+
+```text
+GLOBALS (read-only, query via MCP read tools):
+  - archcore — 42 docs (knowledge 40, vision 1, experience 1) · product/ 14, concepts/ 14, architecture/ 7, market/ 4, web/ 3
+  ⚠ global source "company" not found at "../company/.archcore" — clone it or fix .archcore/settings.json
+  Local documents take precedence over same-topic globals.
+```
+
+One line renders per declared source, in declaration order. A healthy source's line carries the declared `id`, its document count, its per-category counts, and its top-level directories with document counts, ordered by count descending and alphabetically on a tie. The directory list is the source's vocabulary: enough for an agent to phrase a query against a corpus it has never read.
+
+What the block does and does not do:
+
+- **Every count comes from filenames and directory names.** The block reads no global document's content, and it adds no corpus scan to session start. The numbers come from the walk that already classifies each declared source.
+- **No global document path, title, or tag appears in it.** Global content stays behind the MCP read tools.
+- **A declared source's warning renders inside the block**, prefixed with `⚠`, and the remaining sources still render. An invalid `settings.json` is the one case that behaves differently: it produces a standalone warning and no `GLOBALS` block at all.
+- **The precedence sentence closes the block** when at least one healthy source rendered a count line.
+- **`CORPUS` switches its label.** While the block renders, the corpus count reads `local documents`, and the connected banner gains the total global document count: `… · 102 docs + 42 global`.
+
+When no global source is declared, neither the block nor its heading appears, and `CORPUS` keeps its plain `documents` label.
+
 ### The recap is bounded
 
 The recap is a budgeted summary, not an index of your knowledge base:
@@ -69,14 +93,15 @@ The recap is a budgeted summary, not an index of your knowledge base:
 - **At most 24 document lines** across `IN PROGRESS` and `RECENTLY ACCEPTED` combined. A truncated block says how many documents were omitted and names the `list_documents` filter that returns them.
 - **`EXISTING TAGS` caps at 20**, ranked by frequency. The ranking draws on every local document, rejected ones included, so the agent reuses your vocabulary instead of inventing synonyms.
 - **Rejected documents never appear in either block**, but they are counted in `CORPUS`.
+- **`GLOBALS` caps at 8 source lines and 6 directories per line.** When either cap drops entries, the block names how many it dropped. The banner total still counts every healthy source, including one the block truncated away.
 - Every document line carries the full `.archcore/`-prefixed path, so you can pass it to `get_document` unchanged.
 
-Output length follows that budget, not corpus size. A 300-document project and a 3000-document project produce recaps that differ only by the width of the `CORPUS` counters.
+Output length follows that budget, not corpus size. A 300-document project and a 3000-document project produce recaps that differ only by the width of the `CORPUS` counters. The `GLOBALS` block carries its own ceilings for the same reason: its size follows those ceilings, never the size of the mounted corpus.
 
-Global documents are surfaced through the MCP read tools and the code-alignment injection, never in the recap.
+No global document line appears in the recap. The `GLOBALS` block reports per-source counts only, and global documents themselves are surfaced through the MCP read tools and the code-alignment injection.
 
 :::note
-The recap degrades rather than fails. A global source in any fatal state falls back to a local-only scan with a visible warning naming the source, an empty source adds a warning, and an invalid `settings.json` warns with `invalid .archcore/settings.json: … — global sources not loaded` and continues. Outside a git tree, or on a detached `HEAD`, the `BRANCH` line is omitted rather than filled with a placeholder.
+The recap degrades rather than fails. A global source in any fatal state falls back to a local-only scan and renders its warning inside the `GLOBALS` block, so your local documents are never dropped; an empty source warns there too. An invalid `settings.json` warns with `invalid .archcore/settings.json: … — global sources not loaded` and continues without the block. Outside a git tree, or on a detached `HEAD`, the `BRANCH` line is omitted rather than filled with a placeholder.
 :::
 
 ### Staleness advisory

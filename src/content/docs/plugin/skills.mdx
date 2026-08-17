@@ -1,6 +1,6 @@
 ---
 title: Plugin Skills
-description: "The four /archcore:* slash commands in the Archcore plugin, the tracks they route to, and when to use each."
+description: "The four /archcore:* slash commands in the Archcore plugin, the routes and tracks they run, and when to use each."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -9,7 +9,7 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 **The plugin is four slash commands.** Each one names the outcome it produces before it runs.
 
-You can also describe what you want in plain English: "record the decision to use PostgreSQL". Archcore routes the request to the same track, and the `/archcore:*` commands below are shortcuts to it.
+You can also describe what you want in plain English: "record the decision to use PostgreSQL". Archcore handles the request the same way, and the `/archcore:*` commands below are shortcuts to it.
 
 Everyday context needs no command at all. Lifecycle hooks inject the applicable rules and specs when the agent edits a source file, and the session opens with a recap of what is decided and in progress. See [How the plugin works](/plugin/how-it-works/).
 
@@ -18,13 +18,15 @@ Everyday context needs no command at all. Lifecycle hooks inject the applicable 
 | Command              | Outcome                                             | When to use                                                                                                      |
 | -------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `/archcore:init`     | Make your repo legible to AI agents                 | First-time setup. Detects repo scale, composes a first-day seed in one preview, and wires host configs           |
-| `/archcore:plan`     | Turn an idea into a scoped implementation plan      | New feature, refactor, or initiative. Name `sdd`, `sources`, `iso`, or `research` to run that track directly     |
+| `/archcore:plan`     | Turn a request into the document package it needs   | New feature, refactor, or initiative. Name `sdd`, `sources`, `iso`, or `research` to run that path directly      |
 | `/archcore:document` | Record a decision or document what lives in code    | A decision was made, or a module, API, or integration has tribal knowledge but no doc yet                        |
 | `/archcore:review`   | Check your changes and your docs against each other | Before merge. Add `--drift` for staleness, `--deep` for a full documentation audit                               |
 
-Each command routes your request into a track, a gated flow that creates documents step by step.
+`/archcore:document` and `/archcore:review` classify your request into a track, a gated flow that creates documents step by step. `/archcore:plan` computes a route first, then runs the instruments that route names.
 
-![Diagram of how the three work commands route to tracks. /archcore:plan runs sdd by default, research for investigations, and the requirements cascade for sources or ISO 29148. /archcore:document runs decision, decision.resolve on an open proposal, or describe. /archcore:review runs branch review by default, actualize with --drift, closeout, or experience capture.](../../../assets/plugin-command-tracks.png)
+![Diagram of how the three work commands route. The /archcore:plan branch shows the tracks that shipped before plugin v0.8.0: sdd (idea, prd, spec, plan) as the default, research (questions, evidence, rnd) for investigations, and the requirements cascade for sources or ISO 29148. /archcore:document routes to decision, decision.resolve on an open proposal, or describe. /archcore:review routes to branch review by default, actualize with --drift, closeout, or experience capture.](../../../assets/plugin-command-tracks.png)
+
+The diagram's `/archcore:plan` branch shows the fixed tracks that shipped before plugin v0.8.0. The route model below is current.
 
 ## `/archcore:init`
 
@@ -46,7 +48,7 @@ The same confirm installs host wiring: the project MCP config, the `SessionStart
 
 | Flag                          | Effect                                                                                                          |
 | ----------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `--depth=light\|standard\|deep` | Synthesis budget, independent of the scale mode. Default `standard`.                                            |
+| `--depth=light\|standard\|deep` | Synthesis budget, independent of the scale mode. Sets the hotspot spec coverage rate. Default `standard`.       |
 | `--mode=small\|medium\|large` | Force the scale mode instead of auto-detection.                                                                  |
 | `--domain=<slug>`             | Re-run focused on one domain of a large repo, scoping the data model and hotspot specs to that domain's tree.    |
 | `--refresh`                   | Re-run on a seeded repo to add facts that appeared since the first init, and to retrofit host wiring.            |
@@ -55,34 +57,91 @@ If you already have `CLAUDE.md`, `AGENTS.md`, or `.cursorrules`, `init` imports 
 
 After `init`, `/archcore:document` and `/archcore:plan` take over for day-to-day work.
 
+### What a depth buys
+
+The hotspot spec budget is a coverage rate over the ranked candidate pool, with no absolute maximum: about 10% of the eligible pool at `light`, 25% at `standard`, and 60% at `deep`, with floors of 3, 4, and 6 specs. A 214-module pool budgets around 54 specs at `standard`; a 12-module pool budgets 4. Large mode keeps a floor of at least one spec per selected domain and fills the rest by repo-wide rank, and a `--domain` re-run applies the same formula to that domain's narrowed pool.
+
+A depth is a ceiling, not a quota. It raises the budget and never fabricates documents to reach a number: if the ranked pool holds 5 modules, `deep` produces at most 5 specs. Cross-cutting rule synthesis runs at every depth.
+
+Above 25 specs the preview carries a high-volume notice naming the spec count, the estimated tokens, and the cheaper depth. Nothing is written before the single confirm, and the preview prices every depth, so you can switch depth after seeing the plan. The document count is a function of your repository, never a constant.
+
 ## `/archcore:plan`
 
-**Outcome:** Turn an idea into a scoped implementation plan.
+**Outcome:** Turn a request into the document package it needs.
 
 ```
 /archcore:plan auth redesign
-/archcore:plan sdd auth redesign
+/archcore:plan csv export
+/archcore:plan sdd notifications platform
 /archcore:plan sources payment market research
 /archcore:plan iso payment gateway compliance
 /archcore:plan research vector store options
 ```
 
-The skill runs one gated track. Each gate creates a document through MCP, wires the `implements` relation to the document before it, and pauses for your review before the next gate opens. Stop at any gate.
+The skill grounds in `.archcore/` and in the code, computes a route from that grounding, announces the route, then runs the instruments the route names. Each instrument creates its documents through MCP and wires their relations. You are never asked to pick a route or a size.
 
-### Track flows
+### What the route is computed from
 
-| Track             | Flow                     | Use when                                                                       |
-| ----------------- | ------------------------ | ------------------------------------------------------------------------------ |
-| `sdd` (default)   | idea → prd → spec → plan | A feature, refactor, initiative, or roadmap.                                   |
-| `sources`         | mrd → brd → urd          | Market research, discovery, competitive analysis, or stakeholder alignment.    |
-| `iso`             | brs → strs → syrs → srs  | Regulated systems and formal ISO 29148 requirements with traceability.         |
-| `research`        | questions → evidence → rnd | Technical research: investigate an unknown or compare alternatives before planning or deciding. |
+Before anything is created, the conductor derives four values.
 
-Name a track in the invocation to run it directly. Without a name, the skill routes from your request wording and from the documents that already exist in `.archcore/`.
+| Value             | What it holds                                                                                                                                                                    |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Δ (canon delta)   | What the request does to the accepted document graph: the `creates`, `modifies`, and `retires` capability lists, `decision` for a settled choice, `intent_gap` for product intent no document records |
+| Π (gap profile)   | Where each missing piece of information has to come from: `machine`, `user`, `world`, `undecided`, or `empirical`                                                                 |
+| M (maturity)      | The maturity of the zone the request touches: `stone` when an accepted document covers it or a dependent consumes it, `pencil` otherwise                                          |
+| R (risk flags)    | `external-contract`, `data-migration`, `security-compliance`, `irreversibility`, `multi-team`                                                                                     |
 
-A gate whose topic an existing document already covers closes through `skip_when`. "Just a plan, skip the idea and PRD" therefore produces the plan alone.
+Π decides who answers each open question. A `machine` need is composed from grounding with no question and cites its artifact. A `user` need opens an interview inside the question ceiling. A `world` need runs the research instrument, an `undecided` need runs the decision instrument, and an `empirical` need runs a timeboxed spike whose code never merges.
 
-When a decision surfaces mid-plan, the skill records it as an `adr` through the decision track, then returns to the open gate.
+### The five routes
+
+| Route        | Fires when                                     | Package                                                                                                             |
+| ------------ | ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `null`       | Every Δ list is empty, no decision, no intent gap | Nothing is created                                                                                                  |
+| `decision`   | Only a settled choice is delta                 | One `adr`, or an `rfc` for a proposal still open                                                                    |
+| `amendment`  | `modifies` names an existing capability        | The change routed through the code-wrong or spec-wrong verdict against that capability's `spec`                     |
+| `capability` | `creates` holds one capability                 | One `spec` plus one `plan`, plus a `prd` when `intent_gap` names goals or metrics beyond that capability's purpose   |
+| `umbrella`   | `creates` holds two or more capabilities       | One umbrella `prd`, one `spec` per capability, one `plan`                                                           |
+
+Four composition rules apply on top of the route:
+
+- A capability whose delta introduces an operational procedure (install, migrate, operate, or verify steps a person performs) adds one `guide`. A `data-migration` flag adds a migration runbook `guide`.
+- A `decision` or `amendment` route whose implementation spans two or more tasks adds a `plan`.
+- `stone` maturity or any risk flag raises the size label one step, and the announcement names the flag that raised it.
+- `security-compliance` escalates the flagged capability into the ISO links, which raises the size label one further step. An unflagged capability is never escalated.
+
+The size label is derived, never asked: `S` for `null`, `decision`, and `amendment`, `M` for `capability`, `L` for `umbrella`. Escalation raises it, capped at `XL`.
+
+Graph state no longer decides the package. Inside an engaged instrument, a gate whose topic an existing document already covers still closes through `skip_when`.
+
+### The route announcement
+
+One line, before any instrument runs:
+
+```text
+route: capability (size M) — Δ: creates=[csv-export]; Π: machine, user; M: pencil; R: none; raised by: none; instruments: contract, decompose
+```
+
+A produced `plan` carries the same declared Δ and route rationale in its `## Declared Delta` section, so a later `/archcore:review` can reconcile what shipped against what the route declared.
+
+### When the answer is no document
+
+"Fix the Safari button overflow" computes to the `null` route: no capability is created, modified, or retired, no choice is settled, and no product intent is missing. The skill creates no document and reports the empty route. About 30% of the plugin's 40 recorded routing traces resolve this way, so an empty package is the intended outcome rather than a failure.
+
+### Expert paths
+
+Naming a path skips the computation and runs it directly.
+
+| Named           | Runs                                                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `sdd`           | The full package: `prd`, one `spec` per capability, then `plan`, each gate at its per-gate question maximum                 |
+| `sources`       | The acquisition instrument: mrd → brd → urd, three peer source documents                                                    |
+| `iso`           | The ISO 29148 links: brs → strs → syrs → srs, each requirement carrying a traceability identifier                           |
+| `research`      | The research instrument: frame the questions, gather evidence, conclude, producing one `rnd`                                |
+| A route name    | `null`, `decision`, `amendment`, `capability`, or `umbrella`. Δ is still derived, and the name fixes only the route and the label |
+| A document type | The instrument that produces that type, entered at its first gate                                                          |
+
+When a settled decision surfaces at a gate, the skill records it as an `adr` through the decision instrument, then returns to the open gate.
 
 ## `/archcore:document`
 

@@ -1,6 +1,6 @@
 ---
 title: MCP Tools Reference
-description: Parameters, returns, and constraints for the 10 Archcore MCP tools, plus the conditional install_host_config tool.
+description: Parameters, returns, errors, and source scoping for the 10 Archcore MCP tools, plus conditional install_host_config.
 ---
 
 The Archcore MCP server exposes 10 tools that AI agents use to interact with your `.archcore/` documents. An eleventh, [`install_host_config`](#install_host_config), is registered conditionally: `archcore mcp` exposes it, but a server built without a host-wiring executor does not.
@@ -16,7 +16,9 @@ When a project declares [global sources](/cli/global-sources/), the read tools (
 | `read_only` | _(omitted)_ | `true` |
 | `global` | _(omitted)_ | `true` |
 
-Global documents are **read-only**: the write tools (`create_document`, `update_document`, `remove_document`) reject any global path, and `add_relation` refuses an edge that touches a global on either endpoint. When a local document and a global cover the same topic, the agent treats the local one as authoritative when reading them; search ranking does not weight local above global.
+`list_documents` and `search_documents` both take a `source` parameter that scopes one call to `local`, `global`, or a declared source id. An unknown value fails the call instead of returning an empty page.
+
+Global documents are **read-only**: the write tools (`create_document`, `update_document`, `remove_document`) reject any global path, and `add_relation` refuses an edge that touches a global on either endpoint. When a local document and a global cover the same topic, the agent treats the local one as authoritative when reading them. Search ranking carries no source weight beyond the final tiebreak, which puts the local document first when two results tie on every other key.
 
 No MCP tool includes an absolute filesystem path in an error or a result. Every returned path is relative to the project root or to `.archcore/`.
 
@@ -34,6 +36,7 @@ List documents with optional filters.
 | `tags`     | string[] | No       | Filter by tags with OR semantics (matches documents with at least one of the specified tags) |
 | `limit`    | number   | No       | Maximum number of documents to return. Default 100, max 500. Values above 500 are clamped; `0` or omitted maps to the default; negative values return `limit must be non-negative`. |
 | `offset`   | number   | No       | Number of matching documents to skip before the returned page. Default 0. Use with `truncated` to page through large result sets; negative values return `offset must be non-negative`. |
+| `source`   | string   | No       | Scope the listing to one source: `local` (the project's own documents), `global` (every mounted global source), or a declared global source id. Omitted admits every source; an unknown value returns `invalid source "<value>" (valid: "local", "global", or a declared global source id)`. |
 
 **Returns:** A JSON envelope object:
 
@@ -43,7 +46,8 @@ List documents with optional filters.
   "total": 0,
   "offset": 0,
   "returned": 0,
-  "truncated": false
+  "truncated": false,
+  "by_source": { "local": 0 }
 }
 ```
 
@@ -51,7 +55,10 @@ List documents with optional filters.
 - `total`: total number of documents matching the filters, before pagination.
 - `offset`: the offset applied to this page.
 - `returned`: number of documents in `documents` (the page size).
-- `truncated`: `true` when more matches exist beyond this page. Narrow the filters or request the next page with `offset`.
+- `truncated`: `true` when more matches exist beyond this page. Narrow the filters, scope the call with `source`, or request the next page with `offset`.
+- `by_source`: each source id mapped to its number of matching documents across the whole filtered set, before pagination. Compare it with the page to see what a truncation dropped.
+
+**Page ordering:** The page interleaves sources. Each source gets a quota proportional to its share of the filtered set, with a floor of one row, so every mounted source appears on the first page instead of being evicted by a large local corpus. A project with no global sources keeps plain scan order, and paging with `offset` walks the same interleaved sequence without repeating or skipping a document.
 
 **Example response:**
 
@@ -72,6 +79,21 @@ List documents with optional filters.
       "source_kind": "local"
     },
     {
+      "path": ".archcore/global/company/architecture/error-handling.rule.md",
+      "category": "knowledge",
+      "type": "rule",
+      "filename": "error-handling.rule.md",
+      "slug": "error-handling",
+      "title": "Error Handling Standard",
+      "status": "accepted",
+      "tags": ["errors"],
+      "mtime": "2026-02-02T11:30:00Z",
+      "source_id": "company",
+      "source_kind": "global",
+      "global": true,
+      "read_only": true
+    },
+    {
       "path": ".archcore/auth/jwt-strategy.adr.md",
       "category": "knowledge",
       "type": "adr",
@@ -87,42 +109,75 @@ List documents with optional filters.
   ],
   "total": 142,
   "offset": 0,
-  "returned": 2,
-  "truncated": true
+  "returned": 3,
+  "truncated": true,
+  "by_source": { "local": 130, "company": 12 }
 }
 ```
+
+The page holds one row from the mounted `company` source because the interleave seeds every source before it fills the rest of the page by share.
 
 ---
 
 ## search_documents
 
-Search documents by path reference, content substring, or metadata. Unlike `list_documents`, this tool scans document bodies and returns per-match evidence (excerpts, specificity, ranking). Read-only.
+Search documents by path reference, content words, or metadata. Unlike `list_documents`, this tool scans document bodies and returns per-match evidence (excerpts, specificity, ranking). Read-only.
 
 **Parameters:**
 
 | Name          | Type     | Required    | Description                                                                                                                  |
 | ------------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | `path_ref`    | string   | conditional | Path reference to match in document bodies. Matches both `@path` notation and qualified bare paths. Leading `@` is optional. |
-| `content`     | string   | conditional | Case-insensitive substring matched against title + body. No stemming or fuzzy matching.                                      |
+| `content`     | string   | conditional | Case-insensitive word search against title + body. The value is split on whitespace, and `match` decides how many of the words must occur. No stemming, no fuzzy matching. |
+| `match`       | string   | No          | How the words in `content` must match: `all` (default), `any`, or `exact`. Any other value maps to `all`. |
+| `source`      | string   | No          | Scope the search to one source: `local` (the project's own documents), `global` (every mounted global source), or a declared global source id. Omitted admits every source. |
 | `types`       | string[] | conditional | Filter by document types (e.g., `["adr", "rule"]`).                                                                          |
 | `status`      | string   | conditional | Filter by status: `draft`, `accepted`, or `rejected`.                                                                        |
-| `mtime_after` | string   | No          | Only include documents modified after this time. Accepts RFC3339 timestamps or a relative duration: `<N>d` (days) or `<N>h` (hours), e.g. `30d`, `24h`. |
+| `mtime_after` | string   | No          | Only include documents modified after this time. Accepts RFC3339 timestamps or a positive relative duration: `<N>h`, `<N>d`, `<N>w`, `<N>mo`, `<N>y`, e.g. `24h`, `30d`, `6mo`. |
 | `sort`        | string   | No          | Result ordering: `relevance` (default) or `mtime`.                                                                           |
 | `mode`        | string   | No          | Output detail: `snippets` (default) returns only matching excerpts; `full` additionally returns each result's complete document `body` (frontmatter stripped), so you can read the matched docs without a follow-up `get_document`. |
 | `limit`       | number   | No          | Maximum number of results. Defaults and caps are mode-dependent: `snippets` → default 50, max 200; `full` → default 3, max 20. Values above the cap are clamped; `0` or omitted maps to the mode default.       |
 
 At least one of `path_ref`, `content`, `types`, or `status` must be provided. Filters combine with AND semantics.
 
+**Match modes:**
+
+- `all` (default): every word of `content` occurs somewhere in the document, in any order and at any distance. `"plugin compatibility"` matches a document titled "Plugin / CLI Compatibility".
+- `any`: at least one word occurs. Highest recall, noisiest page.
+- `exact`: the whole `content` value as one literal substring — the behavior before CLI v0.8.0.
+
+A single-word query behaves identically under `all` and `exact`.
+
 **Sort modes:**
 
-- `relevance`: orders by max match specificity DESC, then type priority (`rule` > `adr` > `rfc` > `spec` > ...), then mtime DESC. The full type-priority order is `rule` > `adr` > `rfc` > `spec` > `cpat` > `guide` > `plan` > `idea` > `rnd` > `prd` > `brs` > `syrs` > `srs` > `strs` > `mrd` > `brd` > `urd` > `doc` > `task-type`; any other type sorts last.
+- `relevance` (default): orders by score DESC, then type priority ASC, then modification time DESC, then `path` ASC as the final tiebreak.
+
+  The score is `100 × (best path-ref specificity + Σ content-word specificities) + capped occurrence count`. Per word, a title hit scores 3, a hit on a markdown heading line scores 2, and any other body hit scores 1. The occurrence count is capped at 20, so a term-stuffed body cannot outrank a structural hit. A repeated path reference contributes its single best hit rather than a sum.
+
+  Type priority is `rule` 1, `adr` 2, `spec` 3, `cpat` 4, `guide` 5, `plan` 6, `idea` 7; every other type sorts last.
+
+  A global document's effective modification time is treated as zero, because a vendored global's mtime is its clone date and not a relevance signal. On a tie across every other key, the local document therefore ranks first.
 - `mtime`: orders purely by modification time, newest first.
 
-**Returns:** Array of matched documents, `[]` when nothing matches. Every result's `path` begins with `.archcore/`. Each result has:
+**Per-source representation:** when the `limit` cut would remove every row of a source that has at least one match, that source's top row is swapped in over the lowest-ranked page row whose source keeps more than one row. Sources claim a swap in rank order of their own top row, and swapping stops once every page row is its source's last. The guarantee holds in `full` mode too, so one of the three default slots carries the top row of an otherwise-evicted source.
 
-- `path`, `title`, `type`, `status`, `mtime`, `tags`: document metadata.
+**Returns:** a JSON envelope object:
+
+```json
+{
+  "results": [ /* array of matched documents */ ],
+  "coverage": { "local": 102, "company": 42 }
+}
+```
+
+- `results`: the matches, `[]` when nothing matches.
+- `coverage`: each searched source id mapped to the number of documents scanned in it, counted after the `source` scope and before the query filters. An empty `results` beside a populated `coverage` is a **verified absence** — the corpus was searched and holds no match, rather than having been skipped.
+
+Each result has:
+
+- `path`, `title`, `type`, `status`, `mtime`, `tags`: document metadata. A primary document's `path` begins with `.archcore/`; a mounted external global carries its declared relative prefix instead.
 - `source_id`, `source_kind`: always present, plus `global` and `read_only` only when true. See [Source annotation and global sources](#source-annotation-and-global-sources).
-- `matches`: per-match evidence array. Each entry has `kind` (`path_ref_explicit`, `path_ref_mention`, or `content`), `ref` (the matched token), `specificity` (integer), and `excerpt` (~120-char window). Serialized as `[]` for pure-metadata queries, never `null`.
+- `matches`: per-match evidence array. Each entry has `kind` (`path_ref_explicit`, `path_ref_mention`, or `content`), `ref` (the matched token — one content word under `all` and `any`, the whole query under `exact`), `specificity` (integer), and `excerpt` (~120-char window). Serialized as `[]` for pure-metadata queries, never `null`.
 - `body`: the complete document body (frontmatter stripped). Included only when `mode: "full"`; omitted in the default `snippets` mode.
 - `incoming_relations`, `outgoing_relations`: manifest edges involving this document. Serialized as `[]` when empty, never `null`.
 
@@ -131,12 +186,14 @@ At least one of `path_ref`, `content`, `types`, or `status` must be provided. Fi
 - All filters empty: `specify at least one filter (path_ref, content, types, or status)`.
 - Negative `limit`: `limit must be non-negative`.
 - Invalid `mtime_after`: `invalid mtime_after: <reason>`.
+- Unknown `source`: `invalid source "<value>" (valid: "local", "global", or a declared global source id)`.
+- A `content` value that holds no word under `match: "all"` or `"any"`: `content must contain at least one word`. `exact` accepts any non-empty value.
 - A missing `.sync-state.json` manifest is not an error; every result carries empty relation arrays. A present-but-invalid manifest fails the call with `loading manifest: <reason>`, and `get_document` and `list_relations` fail the same way.
 
 **Limitations:**
 
 - A rule with no `@path` reference in its body is not reachable through a `path_ref` search.
-- Content matching is strict substring: singular and plural forms do not match.
+- Matching is literal per word. There is no stemming, so singular and plural forms of one word still do not match each other.
 
 **Example: find rules and ADRs that reference a code path**
 
@@ -147,15 +204,34 @@ search_documents({
 })
 ```
 
-**Example: content search across all documents**
+**Example: a multi-word query that no title spells that way**
 
 ```
 search_documents({
-  content: "money rounding",
-  status: "accepted",
-  limit: 20
+  content: "plugin compatibility"
 })
 ```
+
+Returns both a local rule titled "Compatibility Contract Between the CLI and the Plugin" and a global rule titled "Plugin / CLI Compatibility Across Independent Release Trains". Each holds both words somewhere; neither holds the phrase. `match: "exact"` returns nothing here.
+
+**Example: verified absence**
+
+```json
+{ "results": [], "coverage": { "local": 102, "company": 42 } }
+```
+
+144 documents across both sources were searched and none holds every query word. Broaden the words or try `match: "any"` — do not read this as a source that went unsearched.
+
+**Example: scope a search to the mounted globals**
+
+```
+search_documents({
+  content: "error handling",
+  source: "global"
+})
+```
+
+**Compatibility:** CLI v0.8.0 changed this response from a bare array to the `{"results", "coverage"}` envelope, and made `all` the default match mode. A client that parsed the array directly must be updated; `match: "exact"` restores the earlier matching behavior. From here the envelope grows additively — new fields may appear on the envelope, on a result, or on a match without breaking a consumer that ignores unknown fields.
 
 ---
 

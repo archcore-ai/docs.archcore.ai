@@ -1,6 +1,6 @@
 ---
 title: CLI Commands
-description: "Every archcore subcommand: init, status, doctor, config, mcp, instructions, hooks, update, plus --version and --help."
+description: "Every archcore subcommand: init, status, doctor, config, mcp, instructions, hooks, plugin, update, and global flags."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -22,10 +22,11 @@ archcore init
 3. Installs MCP server config for detected agents
 4. Installs lifecycle hooks for supported agents
 5. Offers to write the "use Archcore" instruction hint into detected agent configs (interactive only)
+6. Installs the Archcore plugin on the hosts you selected
 
 If no agents are detected in an interactive terminal, `init` prompts a multi-select of all supported agents plus a "Skip — configure later" option. In non-interactive contexts (no TTY), it installs nothing and prints a hint to run `archcore mcp install --agent <id>` later.
 
-Re-running `init` prompts "Reinitialize?". Confirming overwrites `.archcore/settings.json` back to `{"sync":"none"}` and discards any `language` or `globals` you had set. Declining leaves it untouched. MCP and hook writes are always idempotent.
+Re-running `init` prompts "Reinitialize?". Confirming restores the directory and the host wiring and keeps the settings you already have: the sync mode, project id, language, and globals are preserved, and `init` prints `Existing .archcore/settings.json kept`. Only a project whose settings cannot be read at all falls back to the defaults. Declining leaves everything untouched. MCP and hook writes are always idempotent.
 
 In non-interactive contexts (no TTY), `init` skips the instruction hint. Add it later with [`archcore instructions install`](#archcore-instructions).
 
@@ -33,8 +34,23 @@ In non-interactive contexts (no TTY), `init` skips the instruction hint. Add it 
 
 | Flag               | Description                                                                                                                                              |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--agent <id>`     | Non-interactive: initialize and install hooks, MCP config, and the usage hint for the given agent id (e.g. `claude-code`, `cursor`, `codex-cli`, `copilot`). Repeatable. |
+| `--agent <id>`     | Non-interactive: initialize and install hooks, MCP config, the usage hint, and the plugin for the given agent id (e.g. `claude-code`, `cursor`, `codex-cli`, `copilot`). Repeatable. |
 | `--project <path>` | Project root to initialize. Defaults to the current directory; env: `ARCHCORE_PROJECT_ROOT`.                                                              |
+| `--yes`            | Answer the reinitialize prompt with yes, and nothing else. Without `--agent`, the plugin step then prints the per-host install commands instead of running them. |
+
+**Plugin delivery:**
+
+`init` also delivers the [Archcore plugin](/plugin/overview/), and an explicit host selection is the only thing that authorizes it.
+
+- The interactive picker marks every plugin-capable host with "also installs the Archcore plugin". Codex CLI and GitHub Copilot are marked "machine-level, outside this project", because their plugin stores have no repository scope. The screen states that a checked host is also the consent to install the plugin on it, and that nothing is installed for a host you leave unchecked.
+- Checking a host in that picker installs its plugin after wiring, with no second prompt.
+- `--agent <id>` carries the same consent for the hosts it names, interactive or not.
+- Detection is not consent. When the project already carries a host's config (`.claude/`, `.codex/`, and so on), `init` wires that host, installs no plugin, and prints one hint naming `archcore plugin install`.
+- `--yes` without `--agent`, a session with no terminal, and any CI environment variable all produce the same result: `init` prints the per-host install commands and runs none of them.
+- A plugin delivery failure never changes init's exit code.
+- Install is idempotent. A rerun over an installed plugin reports it and changes nothing.
+
+See [`archcore plugin`](#archcore-plugin) for the commands each host runs.
 
 For a step-by-step walkthrough, see the [CLI Quick Start](/cli/quick-start/).
 
@@ -82,6 +98,8 @@ archcore doctor [--fix] [--agent <id>] [--project <path>]
 If `doctor` finds any issue, it returns a non-zero exit code.
 
 A host counts as wired only when its config file holds a hook command Archcore wrote. `doctor` skips a host that is detected but was never wired, and when no host is wired it says nothing about hooks rather than reporting them healthy. See [`archcore hooks`](#archcore-hooks) for what the notes cover.
+
+`doctor` also prints a one-line advisory when the update freshness cache already holds a newer version. The advisory makes no network call, never counts as an issue, and does not change the exit code. It still prints in a directory where Archcore was never initialized. See [`archcore update`](#archcore-update) for what fills that cache.
 
 **Flags:**
 
@@ -156,6 +174,8 @@ Coding agents connect to this stdio server and launch it as a subprocess. You do
 | `--project <path>` | Project root to serve. Overrides the current directory.     |
 
 `archcore mcp` resolves the project root in order: the `--project` flag, then the `ARCHCORE_PROJECT_ROOT` environment variable, then the current working directory. Use `--project` when an agent launches the server from a fixed location instead of the project directory.
+
+60 seconds after it starts serving, `archcore mcp` runs one background update attempt on its own goroutine. The attempt writes nothing to stdout and never delays a JSON-RPC response. See [unattended update](#archcore-update) for the conditions that must hold before anything is replaced.
 
 See [MCP server](/cli/mcp-server/) for details.
 
@@ -269,6 +289,72 @@ See [Hooks](/cli/hooks/) for the full guard and advisory detail.
 
 ---
 
+## archcore plugin
+
+Manage the Archcore plugin on the four hosts that ship one: Claude Code, Cursor, Codex CLI, and GitHub Copilot.
+
+```bash
+archcore plugin install [--agent <id>] [--project <path>] [--scope user|project]
+archcore plugin update  [--agent <id>] [--project <path>]
+archcore plugin remove  [--agent <id>] [--project <path>]
+archcore plugin status  [--agent <id>] [--project <path>]
+```
+
+Typing the verb is the consent for every host it targets, so each verb runs the same way with or without a terminal. This is the difference from [`archcore init`](#archcore-init), where consent comes from a checked host or an `--agent` flag.
+
+Three frozen identifiers address the plugin everywhere: repository `archcore-ai/plugin`, marketplace `archcore-plugins`, plugin id `archcore@archcore-plugins`.
+
+**Flags:**
+
+| Flag               | Description                                                                                                                            |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `--agent <id>`     | Act on one host: `claude-code`, `cursor`, `codex-cli`, `copilot`. An agent with no shipping plugin fails with an error naming only those four ids. Defaults to every host that ships a plugin. |
+| `--project <path>` | Project root containing `.archcore/`. Read by `install --scope project` only.                                                          |
+| `--scope`          | Which Claude Code settings file gains the marketplace entry: `user` or `project`. Accepted by `install` only; default `user`.           |
+
+`--scope project` writes into the repository's `.claude/settings.json`, and the CLI prints that the committed file delivers the declaration to every teammate who checks it out.
+
+**What `install` runs per host:**
+
+| Host           | Commands                                                                                                                                                                                                        |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Claude Code    | `claude plugin marketplace add archcore-ai/plugin`, then `claude plugin install archcore@archcore-plugins` (user scope by default), then merges an `extraKnownMarketplaces["archcore-plugins"]` entry with `"autoUpdate": true` into `~/.claude/settings.json`, preserving unknown fields |
+| Cursor         | No CLI mechanism. The command prints the instruction to add the plugin from the Cursor UI (Marketplace or `/add-plugin`) and runs no host command                                                                |
+| Codex CLI      | `codex plugin marketplace add archcore-ai/plugin`, then `codex plugin add archcore@archcore-plugins` (machine-level)                                                                                             |
+| GitHub Copilot | `copilot plugin install archcore-ai/plugin:plugins/archcore` (machine-level)                                                                                                                                     |
+
+**What `update` runs per host:**
+
+| Host           | Commands                                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Claude Code    | `claude plugin marketplace update archcore-plugins`, then `claude plugin update archcore@archcore-plugins`         |
+| Cursor         | Prints the Cursor UI instruction and runs no host command                                                         |
+| Codex CLI      | `codex plugin marketplace upgrade archcore-plugins`. Codex has no per-plugin update, so refreshing the marketplace snapshot is the update |
+| GitHub Copilot | `copilot plugin update archcore@archcore-plugins`                                                                 |
+
+**How it decides what to do:**
+
+The CLI reads evidence in this order and stops at the first tier that answers:
+
+1. The host CLI is on `PATH`. The CLI reads that host's own read-only listing: `claude plugin list --json`, `copilot plugin list`, or `codex plugin list --json`. A mutating command runs only after that listing confirms the plugin.
+2. The host CLI is absent. The CLI reads the host's on-disk plugin registry.
+3. Neither answers. The host is skipped silently.
+
+Each host command is bounded at 30 seconds, and the whole step at 120 seconds. A failed or timed-out command prints the exact command that ran, and the run continues with the next host.
+
+**Exit codes and reporting:**
+
+- `archcore plugin status` reports, per host, the evidence found, whether the plugin is present, and its version when the host reports one. It always exits 0.
+- A direct `archcore plugin` invocation exits non-zero when a host action it attempted failed. A host skipped for missing evidence does not fail it.
+- `remove` runs the host's own uninstall and removes the `autoUpdate` entry the CLI wrote. When `~/.claude/settings.json` is invalid JSON, `remove` reports it and stops without writing a backup, because rewriting the file fresh would discard content Archcore never wrote.
+- The plugin surface sends no telemetry and never attempts privilege elevation.
+
+OpenCode, Gemini CLI, Roo Code, and Cline ship no Archcore plugin, so `archcore plugin` never addresses them.
+
+For installing the plugin from a host's own UI or CLI, see [Install the plugin](/plugin/install/).
+
+---
+
 ## archcore update
 
 Check for and install the latest version.
@@ -284,6 +370,41 @@ Reads the latest release tag from the `https://github.com/archcore-ai/cli/releas
 | Flag      | Description                                                                                                                          |
 | --------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `--check` | Quietly report whether a newer version exists. Caches the result for 24 hours, uses a short network timeout, and always exits 0. Built for hooks and advisories. |
+
+**Plugin update step:**
+
+After the binary phase, a typed `archcore update` refreshes the Archcore plugin on every host that already carries it.
+
+- The step runs after a replacement and after an already-current result. A failed binary phase skips it.
+- `--check` never runs it.
+- A host without the plugin produces no output.
+- The step never changes the exit code and sends no telemetry event.
+- [`archcore plugin update`](#archcore-plugin) runs the same actions.
+
+**Unattended update in the background:**
+
+`archcore mcp` starts one background update attempt 60 seconds after it begins serving. Every condition below must hold, in this order, before anything is replaced:
+
+1. The binary carries the official-build marker injected by the release workflow.
+2. The running version is not `dev`.
+3. No CI environment variable is set.
+4. No other process holds the 24-hour claim for this binary path.
+5. The install directory is writable by this process.
+6. The latest version parses and is strictly newer.
+
+Refusals at conditions 1 to 3 are silent. The running process keeps executing the image it started with, so the new version takes effect at the next launch: the next session, the next hook invocation, or the next command you type. When a replacement completes, one line goes to stderr, which lands in the host's server log.
+
+No environment variable disables unattended update. `DO_NOT_TRACK` and `ARCHCORE_TELEMETRY_OPTOUT` stop telemetry and leave updates working. Making the install directory root-owned is the supported way to stop a machine from updating itself.
+
+**Telemetry:**
+
+The update paths report three anonymous events: `cli_updated`, `cli_update_failed` carrying the failed `stage`, and `cli_update_skipped` carrying the skip `reason`. A `trigger` property separates a typed `manual` run from an `auto` one.
+
+- No event carries an error message, a path, a directory name, a user name, a host name, or repository data.
+- `archcore update --check` sends nothing.
+- When a manual event is delivered, `archcore update` prints one disclosure line naming the opt-out variable and `https://archcore.ai/privacy`.
+- A build without an injected key sends nothing.
+- Set `DO_NOT_TRACK` or `ARCHCORE_TELEMETRY_OPTOUT` to any value other than `0` to stop every event. These are the same two variables the [analytics and opt-out](/cli/install/#analytics-and-opt-out) section describes.
 
 ---
 

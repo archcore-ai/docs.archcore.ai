@@ -145,18 +145,22 @@ This needs no command. It happens on every source-file edit.
 
 ## 6. Try a multi-step plan
 
-For something bigger, drive a full cascade with `/archcore:plan`:
+For something bigger, use `/archcore:plan`:
 
 ```
 /archcore:plan event-driven orders
 ```
 
-The default `sdd` track walks you through an idea, a PRD, a spec, and a plan, one document per gate, with the relations wired between them. You review each gate before the next opens. Name a different track when you need a different depth:
+The skill computes a route from your repository, announces it, then creates the documents that route names, with the relations wired between them. For a single new capability that is usually one spec and one plan. A request that changes no capability creates no document at all.
 
+Name a path first to run it directly instead:
+
+- `sdd`: the full package, prd → spec → plan.
 - `sources` (mrd → brd → urd): market research and discovery.
-- `iso` (brs → strs → syrs → srs): formal ISO 29148 cascade.
+- `iso` (brs → strs → syrs → srs): the formal ISO 29148 links.
+- `research`: an investigation, producing one `rnd`.
 
-Name the track first: `/archcore:plan iso payment gateway compliance`.
+For example: `/archcore:plan iso payment gateway compliance`.
 
 ## 7. Review before you merge
 

@@ -82,7 +82,7 @@ export default defineConfig({
 		'/reference/troubleshooting/': '/cli/troubleshooting/',
 
 		// Plugin Skills consolidation — Intent Commands and Tracks merged into Skills
-		'/plugin/intent-commands/': '/plugin/skills/#all-7-commands-at-a-glance',
+		'/plugin/intent-commands/': '/plugin/skills/#all-four-commands-at-a-glance',
 		'/plugin/tracks/': '/plugin/skills/#archcoreplan',
 		'/reference/tracks/': '/plugin/skills/#archcoreplan',
 

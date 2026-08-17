@@ -11,16 +11,18 @@ The plugin runs on AI coding agents that implement both Agent Skills and MCP as 
 
 ## Support matrix
 
-| Host                   | Status       | Install                               | MCP wiring                                                                        | Hook events                                             |
-| ---------------------- | ------------ | ------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| **Claude Code**        | Production   | Plugin marketplace                    | Automatic, from the plugin's `.claude.mcp.json` (runs `archcore` from `PATH`)     | `SessionStart`, `PreToolUse`, `PostToolUse`             |
-| **Cursor**             | Implemented  | Plugin marketplace or local directory | User-registered from the `docs/cursor.mcp.example.json` template, scoped with `--project ${workspaceFolder}` | `sessionStart`, `preToolUse`, `afterMCPExecution`       |
-| **Codex CLI**          | Implemented  | `codex plugin marketplace add`        | Automatic, from the plugin's `.codex.mcp.json` (runs `archcore` from `PATH`)      | `SessionStart`, `PreToolUse`, `PostToolUse`, behind a feature flag |
-| **GitHub Copilot CLI** | Implemented  | `copilot plugin install` (subdir spec) | Project-level only. Run `archcore init --agent copilot` (the plugin ships no MCP server here) | `sessionStart`, `preToolUse`, `postToolUse`             |
+| Host                   | Status       | Install from the host                 | Install with the Archcore CLI                          | MCP wiring                                                                        | Hook events                                             |
+| ---------------------- | ------------ | ------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| **Claude Code**        | Production   | Plugin marketplace                    | Yes, at user scope                                     | Automatic, from the plugin's `.claude.mcp.json` (runs `archcore` from `PATH`)     | `SessionStart`, `PreToolUse`, `PostToolUse`             |
+| **Cursor**             | Implemented  | Plugin marketplace or local directory | No. Cursor manages plugins in its UI, so the CLI prints the instruction and runs no command | User-registered from the `docs/cursor.mcp.example.json` template, scoped with `--project ${workspaceFolder}` | `sessionStart`, `preToolUse`, `afterMCPExecution`       |
+| **Codex CLI**          | Implemented  | `codex plugin marketplace add`        | Yes, machine-level rather than per project             | Automatic, from the plugin's `.codex.mcp.json` (runs `archcore` from `PATH`)      | `SessionStart`, `PreToolUse`, `PostToolUse`, behind a feature flag |
+| **GitHub Copilot CLI** | Implemented  | `copilot plugin install` (subdir spec) | Yes, machine-level rather than per project            | Project-level only. Run `archcore init --agent copilot` (the plugin ships no MCP server here) | `sessionStart`, `preToolUse`, `postToolUse`             |
 
 **Production** means the plugin is deployed and used day-to-day; bug fixes and new skills ship through the marketplace.
 
 **Implemented** means every skill and agent works and all documented hooks fire. Some host-level edge cases still surface, listed below.
+
+`archcore plugin install` acts on three of the four hosts and reports what it found on each. Cursor is the exception: it has no command-line plugin mechanism, so the CLI prints the UI instruction instead. On Codex CLI and GitHub Copilot the plugin lands in a machine-level store outside the repository, so one install serves every project on that machine. [Install the plugin](/plugin/install/) has the commands.
 
 Copilot support is CLI only. VS Code agent mode has no self-serve plugin install, and cloud-agent sandboxes do not load plugin hooks.
 
@@ -140,12 +142,12 @@ Tool whitelists are identical across formats. See [Built-in agents](/plugin/agen
 
 ## Other agents
 
-The plugin does not run on an MCP-aware agent without a plugin runtime. Gemini CLI, OpenCode, Roo Code, and Cline use the [CLI path](/cli/overview/) instead, which gives them MCP access and agent integrations without plugin skills or guided flows.
+The plugin does not run on an MCP-aware agent without a plugin runtime. Gemini CLI, OpenCode, Roo Code, and Cline use the [CLI path](/cli/overview/) instead, which gives them MCP access and agent integrations without plugin skills or guided flows. `archcore plugin --agent <id>` rejects those ids with an error naming the four hosts that ship a plugin.
 
 Track planned host support in the [plugin repository](https://github.com/archcore-ai/plugin).
 
 ## Next steps
 
 - [How the plugin works](/plugin/how-it-works/) describes the hook lifecycle that differs per host.
-- [Install the plugin](/plugin/install/) lists the marketplace command for each host.
+- [Install the plugin](/plugin/install/) covers `archcore plugin install` and the marketplace command for each host.
 - [Plugin troubleshooting](/plugin/troubleshooting/) covers host-specific issues.

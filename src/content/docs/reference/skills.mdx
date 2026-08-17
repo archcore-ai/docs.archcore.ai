@@ -1,6 +1,6 @@
 ---
 title: Plugin Skills Reference
-description: "Lookup table for the four Archcore plugin commands: flags, plan track flows, document cascades, and review modes."
+description: "Lookup table for the four Archcore plugin commands: flags, plan routes, document cascades, and review modes."
 ---
 
 import PathBadge from '../../../components/PathBadge.astro';
@@ -14,24 +14,83 @@ Every command shipped with the Archcore plugin, with its outcome and flags. For 
 | Command              | Outcome                                             | Arguments and flags                                                        |
 | -------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `/archcore:init`     | Make your repo legible to AI agents                 | `--depth=light\|standard\|deep`, `--mode=small\|medium\|large`, `--domain=<slug>`, `--refresh` |
-| `/archcore:plan`     | Turn an idea into a scoped implementation plan      | `[topic]`, plus an optional track name: `sdd`, `sources`, `iso`, or `research` |
+| `/archcore:plan`     | Turn a request into the document package it needs   | `[topic]`, plus an optional expert path: `sdd`, `sources`, `iso`, `research`, a route name, or a document type |
 | `/archcore:document` | Record a decision or document what lives in code    | `[module, topic, or decision]`, plus an optional type: `adr`, `rfc`, `spec`, `doc`, `guide`, `rule` |
 | `/archcore:review`   | Check your changes and your docs against each other | `--deep`, `--drift`, and an optional path, tag, or scope                    |
 
-Track and type names are positional, not flags. `/archcore:plan iso payment gateway` runs the ISO cascade directly.
+Path, route, and type names are positional, not flags. `/archcore:plan iso payment gateway` runs the ISO links directly.
 
-## `/archcore:plan` track flows
+## `/archcore:init` depth budget
 
-A track is a gated cascade. The skill creates each document through MCP in order, wires relations automatically, and pauses for your review before the next gate opens.
+`--depth` sets the synthesis budget and is independent of `--mode`. Extraction runs at every depth.
 
-| Track           | Flow                     | Relations created                                                             | Use when                                                    |
-| --------------- | ------------------------ | ------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `sdd` (default) | idea → prd → spec → plan | `prd implements idea`, `spec implements prd`, `plan implements spec`          | A feature, refactor, initiative, or roadmap.                |
-| `sources`       | mrd → brd → urd          | The three source documents are peers, related rather than implementing         | Market research, discovery, or stakeholder alignment.       |
-| `iso`           | brs → strs → syrs → srs  | `strs implements brs` and `urd`, `syrs implements strs`, `srs implements syrs` | Regulated systems, audits, full ISO 29148 traceability.     |
-| `research`      | frame → gather → conclude, producing one `rnd` | `rnd related` the `idea` or `prd` the research informs, when one exists | Investigating an unknown or comparing alternatives before planning or deciding. |
+| Depth                  | Hotspot specs                      | Cross-cutting rules                            | Authored files                                                    | Relations                        |
+| ---------------------- | ---------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------- | -------------------------------- |
+| `light`                | 10% of the ranked pool, floor 3    | Every candidate over the recurrence threshold  | Linked                                                            | Basic                            |
+| `standard` (default)   | 25% of the ranked pool, floor 4    | Every candidate over the recurrence threshold  | Linked                                                            | Basic                            |
+| `deep`                 | 60% of the ranked pool, floor 6    | Every candidate over the recurrence threshold  | Extracted and split; authored decisions become `adr` documents    | Enriched, spec to rule and spec to spec |
 
-Without a named track, the skill routes from the request wording and from the documents already in `.archcore/`. A gate whose topic an existing document covers closes through `skip_when`, so an `sdd` run can produce the plan alone.
+The spec budget is `max(floor, round(rate × pool size))`, clipped to the pool size, with no absolute maximum. It is a ceiling, not a quota: a 5-module pool yields at most 5 specs at `deep`. A 214-module pool budgets around 54 specs at `standard`, a 12-module pool budgets 4. Large mode adds a floor of one spec per selected domain and fills the rest by repo-wide rank; a `--domain` re-run applies the same formula to that domain's narrowed pool.
+
+Above 25 specs the preview carries a high-volume notice naming the spec count, the estimated tokens, and the cheaper depth. Nothing is written before the single confirm.
+
+## `/archcore:plan` routes
+
+The skill computes a route from grounding before it creates anything, announces the route, then runs the instruments that route names. Naming an expert path skips the computation.
+
+### Computed values
+
+| Value           | Values it can take                                                                            |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| Δ (canon delta) | `creates`, `modifies`, `retires` (capability lists), `decision`, `intent_gap`                 |
+| Π (gap profile) | `machine`, `user`, `world`, `undecided`, `empirical`                                          |
+| M (maturity)    | `pencil`, `stone`                                                                             |
+| R (risk flags)  | `external-contract`, `data-migration`, `security-compliance`, `irreversibility`, `multi-team` |
+
+### Route table
+
+| Route        | Fires when                                       | Package                                                                     | Base size |
+| ------------ | ------------------------------------------------ | ----------------------------------------------------------------------------- | --------- |
+| `null`       | Every Δ list empty, no decision, no intent gap   | Nothing                                                                     | S         |
+| `decision`   | Only a settled choice is delta                   | `adr`, or `rfc` for an open proposal                                        | S         |
+| `amendment`  | `modifies` names an existing capability          | Code-wrong or spec-wrong verdict against that capability's `spec`           | S         |
+| `capability` | `creates` holds one capability                   | `spec` and `plan`, plus a `prd` when `intent_gap` exceeds that capability's purpose | M   |
+| `umbrella`   | `creates` holds two or more capabilities         | Umbrella `prd`, one `spec` per capability, one `plan`                       | L         |
+
+Additions and escalations apply on top of the matched route:
+
+| Condition                                                       | Effect                                                                                       |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| The delta introduces an operational procedure                   | Adds one `guide`                                                                             |
+| R carries `data-migration`                                      | Adds a migration runbook `guide`                                                             |
+| A `decision` or `amendment` implementation spans two or more tasks | Adds one `plan`                                                                            |
+| M is `stone`, or R is non-empty                                 | Raises the size label one step; the announcement names the raising flag                      |
+| R carries `security-compliance`                                 | Escalates the flagged capability into the ISO links, and raises the size label one more step |
+
+Size labels run `S`, `M`, `L`, `XL` and cap at `XL`. They are derived, never asked.
+
+### Π engagement
+
+| Source      | Action                                                                              |
+| ----------- | ------------------------------------------------------------------------------------- |
+| `machine`   | Compose from grounding with no question, citing the artifact                         |
+| `user`      | Interview within the question ceiling                                                |
+| `world`     | Research instrument, producing an `rnd`                                              |
+| `undecided` | Decision instrument, producing an `adr` or `rfc`                                     |
+| `empirical` | Timeboxed spike, producing an `rnd` that holds Goal, Questions, and Findings only    |
+
+### Expert paths
+
+| Named           | Path                                                                            | Relations created                                                                                     |
+| --------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `sdd`           | prd → spec (one per capability) → plan                                          | `spec implements prd`, `plan implements spec`                                                         |
+| `sources`       | mrd → brd → urd                                                                 | The three source documents are peers, related rather than implementing                                |
+| `iso`           | brs → strs → syrs → srs                                                         | `brs implements mrd` and `brd`, `strs implements brs` and `urd`, `syrs implements strs`, `srs implements syrs` |
+| `research`      | frame → gather → conclude, producing one `rnd`                                  | `rnd related` the `idea` or `prd` the research informs, when one exists                               |
+| A route name    | `null`, `decision`, `amendment`, `capability`, or `umbrella`; Δ is still derived, and the name fixes only the route and the label | Per the route                            |
+| A document type | The instrument that produces it, entered at its first gate                      | Per the instrument                                                                                    |
+
+Graph state no longer decides the package. Inside an engaged instrument, a gate whose topic an existing document covers still closes through `skip_when`.
 
 ## `/archcore:document` tracks
 

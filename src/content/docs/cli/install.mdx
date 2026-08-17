@@ -52,8 +52,8 @@ The install scripts accept five environment variables (same on Unix and Windows)
 | `ARCHCORE_VERSION`          | latest            | latest                                  | Pin to a specific release tag (e.g. `v1.0.0`).                            |
 | `ARCHCORE_INSTALL_DIR`      | `~/.local/bin`    | `%LOCALAPPDATA%\Programs\archcore`      | Override the install directory.                                          |
 | `GITHUB_TOKEN`              | None              | None                                    | Authenticate asset downloads from a private repository. Version resolution reads a public redirect and uses no token. |
-| `DO_NOT_TRACK`              | None              | None                                    | Any value other than `0` disables install analytics.                     |
-| `ARCHCORE_TELEMETRY_OPTOUT` | None              | None                                    | Any value other than `0` disables install analytics. Tool-specific equivalent of `DO_NOT_TRACK`. |
+| `DO_NOT_TRACK`              | None              | None                                    | Any value other than `0` disables analytics, in the installer and in the CLI. |
+| `ARCHCORE_TELEMETRY_OPTOUT` | None              | None                                    | Any value other than `0` disables analytics. Tool-specific equivalent of `DO_NOT_TRACK`. |
 
 <Tabs>
 	<TabItem label="macOS / Linux">
@@ -70,17 +70,32 @@ The install scripts accept five environment variables (same on Unix and Windows)
 	</TabItem>
 </Tabs>
 
-## Install analytics
+## Analytics and opt-out
 
-The installer sends one anonymous event per run: `cli_installed` on success, or `cli_install_failed` with a stage category on failure. The event carries no error text, no file paths, no user or host names, and no repository data. The installed CLI binary sends nothing; only the installer reports.
+Archcore sends anonymous events from two places: the install scripts, and the CLI's update path.
 
-The event's identifier is a random value stored at `${XDG_STATE_HOME:-$HOME/.local/state}/archcore/install-id` on Unix and `%USERPROFILE%\.local\state\archcore\install-id` on Windows. The installer prints a one-line notice when it sends the event.
+| Sender          | Events                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------- |
+| Install script  | `cli_installed` on success, `cli_install_failed` with a stage category on failure                   |
+| CLI update path | `cli_updated` on success, `cli_update_failed` with a `stage` category, `cli_update_skipped` with a `reason` |
 
-Opt out by setting `DO_NOT_TRACK=1` or `ARCHCORE_TELEMETRY_OPTOUT=1`. The scripts check the opt-out before creating the identifier file, so an opt-out leaves no trace on disk:
+The update path covers a typed `archcore update` and the unattended attempt described under [Update](#update). A `trigger` property separates a typed `manual` run from an unattended `auto` one. `archcore update --check` sends nothing.
+
+No event carries an error message, a file path, a directory name, a user name, a host name, or repository data.
+
+Both senders resolve their identifier from the same file, so one machine is one identifier: `${XDG_STATE_HOME:-$HOME/.local/state}/archcore/install-id` on Unix, `%USERPROFILE%\.local\state\archcore\install-id` on Windows.
+
+The installer prints a one-line notice when it sends its event. When a manual event is delivered, `archcore update` prints one disclosure line naming an opt-out variable and the privacy page.
+
+Two variables opt out of both senders: `DO_NOT_TRACK` and `ARCHCORE_TELEMETRY_OPTOUT`, at any value other than `0`. Both are read before any filesystem access, so an opted-out machine also creates no identifier file:
 
 ```bash
 DO_NOT_TRACK=1 curl -fsSL https://archcore.ai/install.sh | bash
 ```
+
+The opt-out variables stop telemetry only. They do not disable updates.
+
+A build without an injected key sends nothing, so `go build`, `go install`, a fork, and a CI build are all inert.
 
 The full policy is at <a href="https://archcore.ai/privacy" target="_blank">archcore.ai/privacy</a>.
 
@@ -94,13 +109,34 @@ You should see a version string. If the binary isn't on your `PATH`, see [CLI tr
 
 ## Update
 
+The CLI updates on two paths. You type `archcore update`, or the MCP server runs one unattended attempt in the background of a session. Both replace the same binary through the same code.
+
+### Typed update
+
 ```bash
 archcore update
 ```
 
 `archcore update` reads the latest release tag from the `https://github.com/archcore-ai/cli/releases/latest` redirect (no GitHub API request), downloads the binary for your OS and architecture, verifies the checksum, and replaces the binary in place. The [`archcore update` reference](/cli/commands/#archcore-update) covers the `--check` flag.
 
+After the binary phase, `archcore update` refreshes the Archcore plugin on every host that already carries it. A host without the plugin produces no output, and no command runs there. The [`archcore plugin` reference](/cli/commands/#archcore-plugin) covers the direct commands.
+
 Two other paths update the binary: re-run the install script, or run `go install github.com/archcore-ai/cli@latest`.
+
+### Unattended update
+
+`archcore mcp` starts one unattended attempt in the background, 60 seconds after it begins serving. The attempt proceeds only when all of these conditions hold, in this order:
+
+1. The binary carries the official-build marker from the release workflow.
+2. The running version is not `dev`.
+3. No CI environment variable is set.
+4. No other process holds the 24-hour claim for this binary path.
+5. The install directory is writable.
+6. The latest version parses and is strictly newer.
+
+The running process keeps executing the image it started with. The new version applies at the next launch. A locally built binary carries no official-build marker and never self-updates, which is the intended behavior.
+
+No environment variable disables unattended update. Making the install directory root-owned is the supported way to stop a machine from updating itself, and it costs no bandwidth: the refusal happens before any download.
 
 ## Next steps
 

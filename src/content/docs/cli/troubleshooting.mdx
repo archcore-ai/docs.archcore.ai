@@ -330,12 +330,23 @@ Errors from the install scripts and `archcore update`:
 | Message | Cause and fix |
 | ------- | ------------- |
 | `Could not reach https://github.com/…/releases/latest` | A network, proxy, or DNS problem. No API rate limit is involved, so `GITHUB_TOKEN` does not help. Pin a version instead: `ARCHCORE_VERSION=v1.0.0`. |
+| `Could not check for updates` | A network problem, or `github.com` answered with something other than a redirect: a captive portal, a proxy interstitial, or an outage. Retry later. No API rate limit applies; the check reads the `github.com` web redirect, which needs no token. |
+| `unexpected redirect resolving latest release` | The redirect landed somewhere that is not a `/releases/tag/` page. Two causes occur in practice: a proxy or captive portal intercepting the request, or a repository with no published release, which GitHub answers with a redirect to the bare `/releases` page. |
+| `no Location header` / `parsing redirect location` | A redirect arrived without a usable `Location`. This indicates an intercepting proxy rather than GitHub. |
 | `Checksum verification failed` / `Checksum mismatch` | The download was corrupted. Run the install or `archcore update` again. |
 | `Unsupported operating system/architecture` | Prebuilt binaries cover `darwin`, `linux`, and `windows` on `amd64` and `arm64` only. Build from source with `go install github.com/archcore-ai/cli@latest`. |
 | `this installer requires bash` | The script was piped into `sh` or another POSIX shell. Pipe into `bash` instead. |
 | `Update failed` with a permission error | The binary sits in a directory without write access. Reinstall it to a writable location, or run `archcore update` with `sudo`. |
 
 See [Install the CLI](/cli/install/) for the install options and prerequisites.
+
+### A development build updates on every run
+
+While `archcore --version` reports `dev`, `archcore update` downloads the latest release on every run: a development build compares as always behind. The unattended path refuses a `dev` build instead.
+
+### The background update never runs
+
+`archcore mcp` starts one unattended attempt 60 seconds after it begins serving, and the attempt stops at the first condition that does not hold. Walk the conditions in order under [Unattended update](/cli/install/#unattended-update). A binary built with `go build` carries no official-build marker, so it stops at condition 1, which is the intended behavior for a local build.
 
 ## Validation errors
 

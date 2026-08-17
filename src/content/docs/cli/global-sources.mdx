@@ -87,7 +87,7 @@ An invalid `settings.json` (a parse or validation error) also aborts MCP startup
 
 The non-server surfaces never block your session, so they degrade instead of failing:
 
-- **The session-start hook** falls back to a local-only context summary on any fatal state and injects a visible warning naming the source, so your local documents are never dropped. An empty source and an invalid `settings.json` add a warning as well.
+- **The session-start hook** discloses every declared source in a [`GLOBALS` block](/cli/hooks/#the-globals-block): the agent sees that the source exists, how many documents it holds, and its top-level directories, with no global content injected. On any fatal state the hook falls back to a local-only context summary and renders the source's warning inside the block, so your local documents are never dropped. An empty source warns there too; an invalid `settings.json` warns on its own and suppresses the block.
 - **`archcore status`** reports a fatal source as a visible failure (counted as an issue, non-zero exit) and an empty source as a warning, while still running its structural local-file checks.
 
 ## Read-only everywhere
@@ -103,13 +103,17 @@ Every global document carries source annotation on read:
 | `read_only` | `true` | _(omitted)_ |
 | `global` | `true` | _(omitted)_ |
 
+A read can be scoped to one source: `list_documents` and `search_documents` both take a `source` parameter accepting `local`, `global`, or a declared source id.
+
+`search_documents` matches on words rather than on an exact substring, so an approximate query still reaches a global whose author phrased the title differently. It returns a `coverage` map naming each searched source and the number of documents scanned in it, which makes an empty result a verified absence rather than an unsearched corpus. `list_documents` returns `by_source` counts and interleaves sources on the page, so a large local corpus cannot evict a mounted global from the first page. The [MCP tools reference](/reference/mcp-tools/) carries the full parameter tables.
+
 Outside those read surfaces:
 
 - **Not writable through MCP.** `create_document` rejects a target under a declared global with `cannot create document in a read-only global source`; `update_document` and `remove_document` reject with `cannot update a read-only global source document` and `cannot remove a read-only global source document`. Those messages fire on in-tree paths. A write addressed at an external global (a `../` sibling or an absolute path) fails earlier with `invalid path: must start with ".archcore/"`, because the write tools cannot address a path outside `.archcore/` at all (see the [vendoring tip](#vendoring-a-global-in-tree)).
 - **Not writable from the editor.** The `PreToolUse` [write guard](/cli/hooks/#the-write-guard) refuses a direct editor write to a document inside a global, including a document inside an external global that the MCP tools cannot address.
 - **Not a relation endpoint.** `add_relation` refuses an edge whose source **or** target is a global, in either direction. Relations connect local documents only. (`remove_relation` stays open so you can clean up a pre-existing edge.)
 - **Fail closed.** When `settings.json` is present but cannot be read, the write and relation tools reject with `cannot verify global sources: settings.json is unreadable` rather than proceed.
-- **Absent from CLI surfaces.** `archcore status` (tag hygiene, counts) and the session-start context operate on local documents only. A consumer cannot fix an upstream global's tags and is not responsible for them.
+- **Absent from CLI surfaces.** `archcore status` (tag hygiene, counts) and the session-start recap blocks operate on local documents only, and the `GLOBALS` block reports per-source counts rather than any global document. A consumer cannot fix an upstream global's tags and is not responsible for them.
 
 To record that a local document follows a global rule, link **local → local** documents and treat the global as background context. Do not link to the global, and do not fix it in your project. Corrections belong upstream in the source repository.
 

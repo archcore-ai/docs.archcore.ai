@@ -7,26 +7,29 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="cli" />
 
-Archcore supports 8 coding agents. Each one integrates through three mechanisms: **MCP servers**, **lifecycle hooks**, and an **instruction hint** — a short "use Archcore" nudge written into the agent's config files. `archcore init` installs MCP config and hooks where the host supports them; the instruction hint is opt-in on interactive runs and skipped non-interactively (see [Instruction hint](#instruction-hint)).
+Archcore supports 8 coding agents. Each one integrates through three mechanisms: **MCP servers**, **lifecycle hooks**, and an **instruction hint** — a short "use Archcore" nudge written into the agent's config files. `archcore init` installs MCP config and hooks where the host supports them; the instruction hint is opt-in on interactive runs and skipped non-interactively (see [Instruction hint](#instruction-hint)). Four hosts additionally carry the Archcore plugin: Claude Code, Cursor, Codex CLI, and GitHub Copilot.
 
 If you are still deciding, the [CLI page](https://archcore.ai/cli/) has the short version of this matrix.
 
 ## Support matrix
 
-| Agent          | MCP    | Hooks | Instruction File          |
-| -------------- | ------ | ----- | ------------------------- |
-| Claude Code    | Yes    | Yes   | `CLAUDE.md` + `AGENTS.md` |
-| Cursor         | Yes    | Yes   | `AGENTS.md`               |
-| GitHub Copilot | Yes    | Yes   | `AGENTS.md`               |
-| Gemini CLI     | Yes    | Yes   | `GEMINI.md`               |
-| Codex CLI      | Yes    | Yes   | `AGENTS.md`               |
-| OpenCode       | Yes    | No    | `AGENTS.md`               |
-| Roo Code       | Yes    | No    | `AGENTS.md`               |
-| Cline          | Manual | No    | `AGENTS.md`               |
+| Agent          | MCP    | Hooks | Plugin  | Instruction File          |
+| -------------- | ------ | ----- | ------- | ------------------------- |
+| Claude Code    | Yes    | Yes   | Yes     | `CLAUDE.md` + `AGENTS.md` |
+| Cursor         | Yes    | Yes   | UI only | `AGENTS.md`               |
+| GitHub Copilot | Yes    | Yes   | Yes     | `AGENTS.md`               |
+| Gemini CLI     | Yes    | Yes   | No      | `GEMINI.md`               |
+| Codex CLI      | Yes    | Yes   | Yes     | `AGENTS.md`               |
+| OpenCode       | Yes    | No    | No      | `AGENTS.md`               |
+| Roo Code       | Yes    | No    | No      | `AGENTS.md`               |
+| Cline          | Manual | No    | No      | `AGENTS.md`               |
 
 - **MCP** gives the agent tools to list, search, read, create, and update documents.
 - **Hooks** wire three lifecycle events: session start (project recap), pre-write (blocks direct writes to `.archcore/` documents and injects the documents that constrain the file being edited), and post-write (structure, relation-cascade, and precision findings after a document changes).
+- **Plugin** says whether the Archcore plugin ships for that host and whether the CLI can install it. Cursor is the "UI only" case: it manages plugins in its own interface, so the CLI runs no command there and prints the instruction to add the plugin from the Cursor UI. OpenCode's own plugin is a different artifact and is not this surface.
 - **Instruction File** is the file that receives the "use Archcore" hint.
+
+Three entry points reach the plugin: `archcore plugin install|update|remove|status`, the delivery step inside `archcore init` (a host you check in the agent picker or name with `--agent` is the consent), and the refresh step inside `archcore update`, which covers each host that already carries the plugin. On Codex CLI and GitHub Copilot the plugin installs machine-level, outside the project. See the [`archcore plugin` reference](/cli/commands/#archcore-plugin).
 
 Hook install wiring covers five hosts. The other three do not get a hook config:
 
@@ -189,7 +192,7 @@ OpenCode, Roo Code, and Cline work through MCP tools alone. On those hosts you a
 
 This page lists the **CLI-level** integrations. Every supported agent gets MCP and, where possible, hooks.
 
-Two of these hosts (Claude Code and Cursor) additionally support the higher-level **Archcore plugin** — skills, tracks, built-in agents, and guardrails. See [Supported AI agents](/plugin/supported-hosts/) for the plugin-specific matrix.
+Four of these hosts (Claude Code, Cursor, Codex CLI, and GitHub Copilot) additionally carry the higher-level **Archcore plugin** with its skills, tracks, built-in agents, and guardrails. `archcore plugin` delivers it on three of them and prints the UI instruction on Cursor. See [Supported AI agents](/plugin/supported-hosts/) for the plugin-specific matrix.
 
 ## Next steps
 

@@ -1,6 +1,6 @@
 ---
 title: Install the Plugin
-description: Install the Archcore CLI globally, then add the plugin to Claude Code, Cursor, Codex CLI, or GitHub Copilot CLI.
+description: Install the Archcore CLI, then run archcore plugin install or add the plugin from your host's own marketplace.
 ---
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
@@ -10,9 +10,75 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 The plugin runs inside your coding agent and invokes `archcore` from your `PATH`. Install the CLI first, then install the plugin. The [CLI install guide](/cli/install/) has one curl line for macOS and Linux and one PowerShell line for Windows.
 
-Two hosts need one extra step. On Cursor you register MCP yourself. On GitHub Copilot CLI you wire the project with `archcore init --agent copilot`. See the tabs below.
+With the CLI in place, `archcore plugin install` adds the plugin to every host it can act on. The [per-host route](#install-per-host) below does the same job from each host's own interface.
 
-## Install the plugin
+Two hosts need one extra step on either route. On Cursor you register MCP yourself. On GitHub Copilot CLI you wire the project with `archcore init --agent copilot`.
+
+## Install with the CLI
+
+```bash
+archcore plugin install
+```
+
+The command targets the four hosts that ship a plugin and prints one report per host.
+
+| Host               | What `install` does                                                                                                                |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Claude Code        | Runs `claude plugin marketplace add archcore-ai/plugin`, then `claude plugin install archcore@archcore-plugins` at user scope       |
+| Cursor             | Prints the instruction to add the plugin from the Cursor marketplace or with `/add-plugin`. Cursor has no CLI mechanism, so no host command runs |
+| Codex CLI          | Runs `codex plugin marketplace add archcore-ai/plugin`, then `codex plugin add archcore@archcore-plugins`, machine-level            |
+| GitHub Copilot     | Runs `copilot plugin install archcore-ai/plugin:plugins/archcore`, machine-level                                                    |
+
+Machine-level means the host's plugin store has no repository scope, so the install changes your machine rather than the current project.
+
+To act on a single host, name it with `--agent`:
+
+```bash
+archcore plugin install --agent claude-code
+```
+
+`--agent` accepts `claude-code`, `cursor`, `codex-cli`, and `copilot`. Any other agent id fails with an error naming those four.
+
+Typing the verb is the consent for every host the command targets, so it acts the same way with or without a terminal. The CLI runs a mutating host command only after that host's own read-only plugin listing reports the plugin's state:
+
+- The listing already names Archcore: the CLI reports it and changes nothing, so a rerun is a no-op.
+- The host CLI is not on `PATH`: the CLI reads the host's on-disk plugin registry, reports the plugin when it finds it there, and otherwise prints the exact install command for you to run.
+- A host command fails or times out: the CLI prints the command it ran and continues with the next host.
+
+[`archcore plugin`](/cli/commands/#archcore-plugin) covers the flags, the evidence tiers, and the exit codes.
+
+### Claude Code auto-update
+
+When the CLI performs the Claude Code install, it also merges an `extraKnownMarketplaces["archcore-plugins"]` entry carrying `"autoUpdate": true` into `~/.claude/settings.json`, keeping the fields already in the file. Claude Code then refreshes the plugin on its own in the background.
+
+`--scope project` writes that entry into the repository's `.claude/settings.json` instead, and the CLI prints that the committed file delivers the declaration to every teammate who checks it out. The flag selects the settings file and nothing else about the install.
+
+### Keep the plugin current
+
+```bash
+archcore plugin status
+archcore plugin update
+```
+
+`status` reports what each host carries. `update` refreshes every host whose listing confirms the plugin and stays silent for the rest.
+
+A manual `archcore update` runs the same update action after its binary phase, so upgrading the CLI carries the plugin along. That step never changes the exit code, `archcore update --check` skips it, and the unattended background update never reaches it. See [`archcore update`](/cli/commands/#archcore-update).
+
+### Install during archcore init
+
+`archcore init` installs the plugin for every host you check in its agent picker or name with `--agent`:
+
+```bash
+archcore init --agent claude-code
+```
+
+A host that `init` merely detected gets a hint naming `archcore plugin install`, never an install. Under `--yes` without `--agent`, and in CI, `init` prints the per-host commands and runs none of them.
+
+On GitHub Copilot CLI this is the shortest route: `archcore init --agent copilot --project "$PWD"` writes the hooks, the project-level MCP entry, and the usage hint, and installs the plugin in the same run.
+
+## Install per host
+
+Use this route when you prefer your host's own interface. The plugin still calls `archcore` from your `PATH`, so the CLI stays a prerequisite.
 
 <Tabs>
 	<TabItem label="Claude Code">
@@ -32,6 +98,8 @@ Two hosts need one extra step. On Cursor you register MCP yourself. On GitHub Co
 
 		The plugin spawns `archcore mcp` from your `PATH` through its `.claude.mcp.json`. If `.archcore/` does not exist yet, the first MCP call initializes it.
 
+		Only an install performed by the CLI writes the `autoUpdate` marketplace entry described above. After a manual install, refresh the plugin with `archcore plugin update`, `archcore update`, or Claude Code's own `/plugin` commands.
+
 		If `archcore` isn't on `PATH`, the session-start hook prints install instructions and links to the [CLI install guide](/cli/install/).
 	</TabItem>
 	<TabItem label="Cursor">
@@ -42,6 +110,8 @@ Two hosts need one extra step. On Cursor you register MCP yourself. On GitHub Co
 		3. Click **Add Plugin**
 
 		Cursor reads the repo's `marketplace.json` and installs the plugin. For team rollouts, paste the same URL under Dashboard → Settings → Plugins → Team Marketplaces → Import.
+
+		This is the only route on Cursor. Cursor exposes no command-line plugin mechanism, so `archcore plugin install --agent cursor` prints this instruction and runs nothing.
 
 		Cursor does not auto-register plugin MCP, so register `archcore` yourself. Copy [`docs/cursor.mcp.example.json`](https://github.com/archcore-ai/plugin/blob/main/docs/cursor.mcp.example.json) (shipped in the plugin's `docs/` directory) into `~/.cursor/mcp.json` (user-scoped) or `.cursor/mcp.json` (project-scoped):
 
@@ -70,6 +140,8 @@ Two hosts need one extra step. On Cursor you register MCP yourself. On GitHub Co
 		# then run /plugins, open Archcore, and select Install plugin
 		```
 
+		The plugin installs machine-level, outside the project. `archcore plugin install --agent codex-cli` runs the same marketplace add and follows it with `codex plugin add archcore@archcore-plugins`.
+
 		Codex registers MCP automatically. The plugin's manifest references `.codex.mcp.json`, which runs `archcore mcp` from your `PATH`. That config uses no env-var substitution and no plugin-relative paths.
 
 		Enable hooks. Codex gates them behind an under-development feature flag that defaults to off:
@@ -90,7 +162,9 @@ Two hosts need one extra step. On Cursor you register MCP yourself. On GitHub Co
 
 		Step 2 is not optional. On Copilot the plugin ships **no MCP server**, so a project that skips it loads skills and hooks but has no document tools at all. Copilot launches a plugin's MCP server in the plugin install directory with no project path ([github/copilot-cli#4234](https://github.com/github/copilot-cli/issues/4234)), which would serve the plugin cache instead of your repository.
 
-		`archcore init --agent copilot` writes the project-level MCP entry, the hooks, and the usage hint. Restart the session afterwards so Copilot connects the tools.
+		`archcore init --agent copilot` writes the project-level MCP entry, the hooks, and the usage hint, and installs the plugin in the same run. Restart the session afterwards so Copilot connects the tools.
+
+		The plugin installs machine-level, outside the project. The `copilot` binary is often absent from `PATH` on a VS Code-managed install; the CLI then prints the install command instead of running it, and step 1 stays yours to run.
 
 		Copilot **CLI** only. VS Code agent mode has no self-serve plugin install, and cloud-agent sandboxes do not load plugin hooks.
 	</TabItem>
@@ -151,16 +225,32 @@ To pin a specific binary, install it to a directory you control and put that dir
 
 ## Verify
 
-1. Restart your coding agent so the session-start hook can run.
-2. In a fresh conversation, type `/archcore:` and check that autocomplete lists four commands: `init`, `plan`, `document`, and `review`.
-3. Run a read-only command against a real project:
+1. Ask the CLI what each host reports:
+
+	```bash
+	archcore plugin status
+	```
+
+	One line per host, for example:
+
+	```text
+	Claude Code: installed (the host reports it)
+	Cursor: not installed
+	Codex CLI: not installed (the host reports it)
+	GitHub Copilot: installed (on-disk registry; the host CLI is not on PATH)
+	```
+
+	The command covers all four hosts, reads each host's own listing when its CLI is on `PATH`, falls back to the on-disk plugin registry when it is not, and always exits 0.
+2. Restart your coding agent so the session-start hook can run.
+3. In a fresh conversation, type `/archcore:` and check that autocomplete lists four commands: `init`, `plan`, `document`, and `review`.
+4. Run a read-only command against a real project:
 
 	```
 	/archcore:review
 	```
 
 	On a branch with changes you get a review of those changes against `.archcore/`. On the default branch you get the project health dashboard.
-4. Record a real decision:
+5. Record a real decision:
 
 	```
 	/archcore:document use PostgreSQL as the primary database
@@ -172,25 +262,22 @@ If `/archcore:*` commands don't appear, check [Troubleshooting](/plugin/troubles
 
 ## Uninstall
 
-On Claude Code:
+Remove the plugin from every host that carries it:
 
 ```bash
-/plugin uninstall archcore@archcore-plugins
+archcore plugin remove
 ```
 
-On Cursor, remove Archcore from plugin settings and delete the `archcore` entry from your Cursor MCP config.
+On a host whose CLI is on `PATH`, the command runs that host's own uninstall. On Claude Code it also deletes the `extraKnownMarketplaces["archcore-plugins"]` entry the CLI wrote and leaves the rest of `~/.claude/settings.json` untouched. The `archcore-plugins` marketplace registration itself stays, because other plugins may still use it. A host whose listing shows no plugin is skipped in silence. A host whose CLI is off `PATH` but whose on-disk registry names the plugin gets its exact uninstall command printed.
 
-On Codex CLI:
+By hand, per host:
 
-```bash
-codex plugin uninstall archcore
-```
-
-On GitHub Copilot CLI:
-
-```bash
-copilot plugin uninstall archcore
-```
+| Host               | Uninstall                                                                                   |
+| ------------------ | --------------------------------------------------------------------------------------------- |
+| Claude Code        | `/plugin uninstall archcore@archcore-plugins`                                                |
+| Cursor             | Remove Archcore from plugin settings, then delete the `archcore` entry from your Cursor MCP config |
+| Codex CLI          | `codex plugin remove archcore@archcore-plugins`                                              |
+| GitHub Copilot CLI | `copilot plugin uninstall archcore`                                                          |
 
 The `archcore` CLI is a separate install. To remove it as well, use the same script that installed it.
 
@@ -198,3 +285,4 @@ The `archcore` CLI is a separate install. To remove it as well, use the same scr
 
 - [Supported AI agents](/plugin/supported-hosts/) confirms which features your host supports.
 - [Plugin skills](/plugin/skills/) documents the outcome, examples, and flags for each command.
+- [`archcore plugin`](/cli/commands/#archcore-plugin) is the full command reference for install, update, remove, and status.

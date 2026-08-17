@@ -36,7 +36,9 @@ archcore init
 3. Writes MCP server config and session hooks for every agent it detects.
 4. Offers to add a "use Archcore" hint to each detected agent's config, so the agent calls the Archcore MCP tools. You can add it later with `archcore instructions install`.
 
-If no agents are detected, `init` prompts you to pick which agents to configure from the full supported list, or to choose Skip. Without an interactive terminal, `init` configures nothing and points you to `archcore mcp install --agent <id>` to wire one up later.
+If no agents are detected, `init` prompts you to pick which agents to configure from the full supported list, or to choose Skip. Each plugin-capable host on that screen is marked "also installs the Archcore plugin": checking it wires the host and installs the [Archcore plugin](/plugin/overview/) in one step, and nothing is installed for a host you leave unchecked. A host that `init` detected on its own is wired but gets no plugin, only a hint naming `archcore plugin install`.
+
+Without an interactive terminal, `init` configures nothing and points you to `archcore mcp install --agent <id>` to wire an agent up later. No run installs a plugin unattended: with `--yes`, in CI, or with no terminal to check a box, `init` prints the per-host install commands and runs none of them.
 
 ## Verify the agent sees Archcore
 
