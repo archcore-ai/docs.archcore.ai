@@ -22,6 +22,21 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      # docs.archcore.ai shipped events to ph.archcore.ai for months after that
+      # proxy's Vercel deployment was deleted, and nothing failed — the same
+      # outage the landing repository hit, found only because its dashboard was
+      # audited. This gate refuses to build a bundle whose analytics host does
+      # not answer, so the silent version cannot come back. See
+      # analytics-host-must-reach-posthog.adr.md in archcore-ai/landing.
+      - name: Check the analytics host the docs will ship
+        env:
+          POSTHOG_KEY: ${{ vars.POSTHOG_KEY }}
+          # Mirrors DEFAULT_HOST in src/lib/analytics/core.ts, so an unset
+          # variable is checked against the host the bundle would really use.
+          POSTHOG_HOST: ${{ vars.POSTHOG_HOST || 'https://us.i.posthog.com' }}
+          LABEL: docs bundle (vars.POSTHOG_HOST)
+        run: ./scripts/check-analytics-host.sh
+
       - uses: actions/setup-node@v6
         with:
           node-version: 22

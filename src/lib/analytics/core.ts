@@ -32,7 +32,7 @@ const DEFAULT_HOST = "https://us.i.posthog.com";
 /**
  * Where the PostHog app itself lives, as opposed to where events are sent.
  *
- * The two differ once `host` points at ph.archcore.ai, the first-party proxy
+ * The two differ once `host` points at edge.archcore.ai, the first-party proxy
  * that keeps ingestion off a domain content blockers filter by name. posthog-js
  * otherwise assumes the app is reachable at `api_host`, and the toolbar and
  * every "open in PostHog" link would be requested from the proxy and 404.
