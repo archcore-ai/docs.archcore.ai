@@ -18,7 +18,7 @@ Everyday context needs no command at all. Lifecycle hooks inject the applicable 
 | Command              | Outcome                                             | When to use                                                                                                      |
 | -------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `/archcore:init`     | Make your repo legible to AI agents                 | First-time setup. Detects repo scale, composes a first-day seed in one preview, and wires host configs           |
-| `/archcore:plan`     | Turn a request into the document package it needs   | New feature, refactor, or initiative. Name `sdd`, `sources`, `iso`, or `research` to run that path directly      |
+| `/archcore:plan`     | Turn a request into the document package it needs   | New feature, refactor, or initiative. Name `sdd`, `sources`, `iso`, `research`, `rnd`, or `evidence` to run that path directly |
 | `/archcore:document` | Record a decision or document what lives in code    | A decision was made, or a module, API, or integration has tribal knowledge but no doc yet                        |
 | `/archcore:review`   | Check your changes and your docs against each other | Before merge. Add `--drift` for staleness, `--deep` for a full documentation audit                               |
 
@@ -75,7 +75,9 @@ Above 25 specs the preview carries a high-volume notice naming the spec count, t
 /archcore:plan sdd notifications platform
 /archcore:plan sources payment market research
 /archcore:plan iso payment gateway compliance
-/archcore:plan research vector store options
+/archcore:plan research vector store landscape
+/archcore:plan rnd vector store options
+/archcore:plan evidence https://example.com/benchmark-report
 ```
 
 The skill grounds in `.archcore/` and in the code, computes a route from that grounding, announces the route, then runs the instruments the route names. Each instrument creates its documents through MCP and wires their relations. You are never asked to pick a route or a size.
@@ -91,7 +93,7 @@ Before anything is created, the conductor derives four values.
 | M (maturity)      | The maturity of the zone the request touches: `stone` when an accepted document covers it or a dependent consumes it, `pencil` otherwise                                          |
 | R (risk flags)    | `external-contract`, `data-migration`, `security-compliance`, `irreversibility`, `multi-team`                                                                                     |
 
-Π decides who answers each open question. A `machine` need is composed from grounding with no question and cites its artifact. A `user` need opens an interview inside the question ceiling. A `world` need runs the research instrument, an `undecided` need runs the decision instrument, and an `empirical` need runs a timeboxed spike whose code never merges.
+Π decides who answers each open question. A `machine` need is composed from grounding with no question and cites its artifact. A `user` need opens an interview inside the question ceiling. A `world` need runs the research instrument, which produces a `research` or an `rnd` by the closing test, an `undecided` need runs the decision instrument, and an `empirical` need runs a timeboxed spike whose code never merges.
 
 ### The five routes
 
@@ -137,11 +139,15 @@ Naming a path skips the computation and runs it directly.
 | `sdd`           | The full package: `prd`, one `spec` per capability, then `plan`, each gate at its per-gate question maximum                 |
 | `sources`       | The acquisition instrument: mrd → brd → urd, three peer source documents                                                    |
 | `iso`           | The ISO 29148 links: brs → strs → syrs → srs, each requirement carrying a traceability identifier                           |
-| `research`      | The research instrument: frame the questions, gather evidence, conclude, producing one `rnd`                                |
+| `research`      | The research instrument with the type fixed to `research`: an open investigation closed by coverage of its declared scope   |
+| `rnd`           | The research instrument with the type fixed to `rnd`: a decision-bound investigation closed by a recommendation             |
+| `evidence`      | The gather gate of the research instrument, filing one external material as an `evidence` with its first `supports` or `contradicts` edge |
 | A route name    | `null`, `decision`, `amendment`, `capability`, or `umbrella`. Δ is still derived, and the name fixes only the route and the label |
 | A document type | The instrument that produces that type, entered at its first gate                                                          |
 
 When a settled decision surfaces at a gate, the skill records it as an `adr` through the decision instrument, then returns to the open gate.
+
+Before plugin v0.8.2, `research` produced an `rnd`. It now produces a `research`; name `rnd` to get the earlier behavior. Without a named type, a request that names a pending decision or a set of candidates produces an `rnd`, and any other investigation produces a `research`. The gather gate may also file an `evidence` for a material two documents rely on, a material a `contradicts` edge involves, or a material a newer one supersedes; the document and its first edge are written in the same step. On a CLI older than v0.8.3, `research` falls back to `rnd` and the skill names the required version.
 
 ## `/archcore:document`
 
@@ -153,7 +159,7 @@ When a settled decision surfaces at a gate, the skill records it as an `adr` thr
 /archcore:document src/orders/inventory-sync.ts spec
 ```
 
-The skill classifies your request and runs one of two tracks. Name a type in the invocation (`adr`, `rfc`, `spec`, `doc`, `guide`, `rule`) to skip classification.
+The skill classifies your request and runs one of two tracks. Name a type in the invocation (`adr`, `rfc`, `spec`, `doc`, `guide`, `rule`, `research`, `evidence`) to skip classification. `document research` files a ready investigation report as a `research`; `document evidence` files one external material as an `evidence`.
 
 ### Decision track
 
@@ -209,5 +215,5 @@ Every command resolves to **MCP tool calls**. The plugin never writes to `.archc
 ## Next steps
 
 - [Built-in agents](/plugin/agents/) covers the two agents that back complex multi-document flows.
-- [Document types](/concepts/document-types/) lists the 19 types these commands route to.
+- [Document types](/concepts/document-types/) lists the 21 types these commands route to.
 - [Skills reference](/reference/skills/) is a one-page lookup of all four commands.

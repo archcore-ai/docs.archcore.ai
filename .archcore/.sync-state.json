@@ -191,6 +191,31 @@
       "source": "plain-language-and-seo.rule.md",
       "target": "documentation-sources.rule.md",
       "type": "related"
+    },
+    {
+      "source": "research-and-evidence-docs.plan.md",
+      "target": "documentation-sources.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "research-and-evidence-docs.plan.md",
+      "target": "changelog-content-structure.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "research-and-evidence-docs.plan.md",
+      "target": "adding-changelog-entry.guide.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "research-and-evidence-docs.plan.md",
+      "target": "plain-language-and-seo.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "research-and-evidence-docs.plan.md",
+      "target": "update-docs-from-cli.task-type.md",
+      "type": "depends_on"
     }
   ]
 }

@@ -57,11 +57,12 @@ The MCP server starts even when `.archcore/` doesn't exist yet. From inside a fr
 
 On connect, an agent receives instructions for using the tools. They cover:
 
-- 22 pairwise type-selection rules for the types agents confuse (`rnd` vs `adr`, `spec` vs `doc`, `brs` vs `brd`)
+- The type catalog: all 21 [document types](/concepts/document-types/) with their virtual category, including `research` in vision and `evidence` in knowledge
+- 25 pairwise type-selection rules for the types agents confuse (`rnd` vs `research`, `spec` vs `doc`, `brs` vs `brd`). Three closing tests decide the investigation types: a verdict closes an `rnd`, coverage of the declared scope closes a `research`, and an `evidence` is one material, never one statement
 - How the informal requirements sources (`mrd`, `brd`, `urd`, `prd`) relate to the ISO specifications (`brs`, `strs`, `syrs`, `srs`)
-- Document relations: the four relation types, plus the advisory `rnd` linking conventions
+- Document relations: the seven relation types on three axes (structural, evidential, temporal) with the direction of each, plus the advisory linking conventions for `rnd` and `research`, and the rule that a `contradicts` edge stays until the disputed document records the resolution in prose
 - Tag format and filtering semantics
-- The status values `draft`, `accepted`, and `rejected`, including the `rnd` verdict mapping: draft = investigating, accepted = proceed/refine, rejected = defer/stop
+- The status values `draft`, `accepted`, and `rejected`, including the `rnd` verdict mapping (draft = investigating, accepted = proceed/refine, rejected = defer/stop), the `research` reading (accepted = the synthesis is current as of its last revision), and the `evidence` reading (accepted = a second reader confirmed the material and the extract)
 - Naming conventions and slug rules
 - When to create, update, delete, or search instead of creating
 - When to call `init_project` (empty repo + user wants to create a document)

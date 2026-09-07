@@ -1,6 +1,6 @@
 ---
 title: Document Relations
-description: Archcore has four directed relation types. Use implements, extends, depends_on, and related to link documents.
+description: Archcore has seven directed relation types on three axes, from implements and depends_on to supports and supersedes.
 ---
 
 Relations are explicit links between documents. They tell agents how your project's knowledge connects: which plan implements which PRD, which rule came from which decision, which guide depends on which standard.
@@ -15,8 +15,29 @@ You can ignore relations at first. They become valuable as your `.archcore/` gro
 | `extends` | One document builds on another | An RFC extends an existing ADR |
 | `depends_on` | One document requires another to make sense | A plan depends on an ADR |
 | `related` | General association | Two ADRs on the same topic |
+| `supports` | One material backs a statement in another document | An evidence supports a research |
+| `contradicts` | One document disputes a statement in another | An evidence contradicts a research |
+| `supersedes` | A newer document replaces an older one | A newer evidence supersedes an older evidence |
 
 Relations are **directed**. Each relation has a source and a target, and the direction carries meaning: "plan implements PRD" is not the same as "PRD implements plan".
+
+### Three axes
+
+The seven types fall on three axes. The axis tells you what kind of claim the edge makes.
+
+| Axis | Types | The edge says |
+|------|-------|---------------|
+| Structural | `implements`, `extends`, `depends_on`, `related` | How documents are built from one another |
+| Evidential | `supports`, `contradicts` | Whether a material backs or disputes a statement |
+| Temporal | `supersedes` | Which document replaced which |
+
+The direction of each evidential and temporal edge is fixed:
+
+- `supports` points from the material to the statement it backs.
+- `contradicts` points from the challenger to the statement it disputes. A reviewer reads the edge in both directions; the stored direction records who challenged whom.
+- `supersedes` points from the newer document to the older one it replaces.
+
+No relation type is bound to a document category. Which pair of types takes which edge is a convention, not a check the Archcore CLI enforces. The CLI accepts the three evidential and temporal types from version 0.8.3. An older CLI rejects a manifest that contains them, so every reader of a shared repository needs 0.8.3 or later before the first `supports`, `contradicts`, or `supersedes` edge lands.
 
 ## Creating relations
 
@@ -80,6 +101,23 @@ task-type ──depends_on──→ rule   (task follows these rules)
 cpat      ──extends────→ rule    (pattern change updates a rule)
 ```
 
+### Research links
+
+```
+rnd      ──depends_on───→ research  (decision-bound investigation draws on the territory map)
+evidence ──supports─────→ research  (material backs a finding)
+evidence ──contradicts──→ research  (material disputes a finding)
+evidence ──supersedes───→ evidence  (newer report replaces the older one)
+adr      ──contradicts──→ adr       (two accepted decisions conflict)
+adr      ──supersedes───→ adr       (a newer decision replaces an older one)
+```
+
+A `research` is never the source of `implements` or `extends`. `rnd depends_on research` is the link from a decision-bound investigation to the territory it draws on.
+
+A `contradicts` edge stays until the body of the disputed document carries one line that names both materials and states the resolution. A reader treats an edge without such a line as unresolved. The CLI stores the edge and does not resolve the contradiction.
+
+A superseded document shows its replacement only through its incoming relations. The CLI adds no annotation to tool responses for it.
+
 ### Requirements track
 
 ```
@@ -103,6 +141,6 @@ Archcore stores relations in `.archcore/.sync-state.json` alongside sync metadat
 
 ## Next steps
 
-- [Document Types](/concepts/document-types/) lists the 19 types you can link.
+- [Document Types](/concepts/document-types/) lists the 21 types you can link.
 - [MCP Tools](/reference/mcp-tools/) documents the arguments `add_relation`, `remove_relation`, and `list_relations` take.
 - [How Archcore Works](/concepts/how-it-works/) shows where relations sit in the three virtual categories.

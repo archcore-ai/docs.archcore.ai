@@ -121,6 +121,6 @@ The [CLI](/cli/commands/) manages both files and skips them when scanning docume
 
 ## Next steps
 
-- [Document Types](/concepts/document-types/) lists all 19 types and when to use each.
+- [Document Types](/concepts/document-types/) lists all 21 types and when to use each.
 - The [Plugin quick start](/start/plugin-quick-start/) and the [CLI quick start](/cli/quick-start/) walk through creating your first document.
 - [MCP Server](/cli/mcp-server/) explains how AI agents read and write project context.

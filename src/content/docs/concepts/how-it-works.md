@@ -31,8 +31,8 @@ Archcore needs no database and no special tooling. `ls .archcore/` shows what ex
 Archcore has a small surface area by design:
 
 - 3 statuses: `draft`, `accepted`, `rejected`
-- 19 document types, each with a clear purpose
-- 4 relation types: `implements`, `extends`, `depends_on`, `related`
+- 21 document types, each with a clear purpose
+- 7 relation types on three axes: structural (`implements`, `extends`, `depends_on`, `related`), evidential (`supports`, `contradicts`), temporal (`supersedes`)
 - 1 naming convention: `slug.type.md`, always
 
 An agent that encounters an Archcore project has few rules to learn. You can [start with three types](/concepts/document-types/) and add more as needed.
@@ -47,11 +47,11 @@ If you create an `adr`, it is in the Knowledge category. If you create a `plan`,
 
 ### Vision: what to build and why
 
-Vision has 11 document types across three **requirement tracks**. Use whichever fits your situation; all three can coexist.
+Vision has 12 document types across three **requirement tracks**. Use whichever fits your situation; all three can coexist.
 
 | Track | Documents | Best for |
 |-------|-----------|----------|
-| Product (simple) | `prd`, `idea`, `rnd`, `plan` | Individual features, small teams, rapid prototyping |
+| Product (simple) | `prd`, `idea`, `rnd`, `research`, `plan` | Individual features, small teams, rapid prototyping |
 | Sources (discovery) | `mrd` -> `brd` -> `urd` | Product teams doing discovery, stakeholder alignment |
 | ISO (decomposition) | `brs` -> `strs` -> `syrs` -> `srs` | Regulated systems, multi-team projects |
 
@@ -67,6 +67,7 @@ Decisions, standards, and reference material. This is where most documents live.
 | `guide` | Step-by-step instructions for a specific task | `deploy-staging.guide.md` |
 | `spec` | Normative contract covering behavior, constraints, and invariants | `webhook-delivery.spec.md` |
 | `doc` | Non-behavioral reference such as registries, glossaries, and lookup tables | `env-variables.doc.md` |
+| `evidence` | One external material with its address, access date, and the extract a document relies on | `vendor-benchmark-2026.evidence.md` |
 
 ### Experience: what we learned
 
@@ -142,6 +143,6 @@ You can say "create an ADR for the decision we just discussed" or "link this rul
 ## Next steps
 
 - [Plugin quick start](/start/plugin-quick-start/) and [CLI quick start](/cli/quick-start/) set up Archcore in 2 minutes.
-- [Document Types](/concepts/document-types/) is the full reference for all 19 types.
+- [Document Types](/concepts/document-types/) is the full reference for all 21 types.
 - [Relations](/concepts/relations/) explains how to link documents with directed relations.
 - [MCP Server](/cli/mcp-server/) shows how agents connect to your project context.

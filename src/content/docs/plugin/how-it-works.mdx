@@ -88,7 +88,7 @@ Three checks run, and a failure in one does not silence the others.
 
 **Structure validation** reports the same problems `archcore doctor` finds, capped at 5 per run.
 
-**Relation cascade notice** fires only on `update_document`. It reads the relation graph and names the documents that reach the changed one through `implements`, `depends_on`, or `extends`. It skips `related`, which is an association rather than a dependency, so changes do not propagate through it.
+**Relation cascade notice** fires only on `update_document`. It reads the relation graph and names the documents that reach the changed one through `implements`, `depends_on`, or `extends`. It skips `related`, which is an association rather than a dependency, so changes do not propagate through it. It also skips `supports`, `contradicts`, and `supersedes`: an evidential or temporal edge records a claim about a material, not a dependency on the changed document.
 
 You accept an updated `jwt-strategy.adr.md`. The hook finds `auth-redesign.plan.md`, which `depends_on` the ADR, and `token-refresh.spec.md`, which `implements` it. Both surface as cascade hints on your next turn. Resolve them, ignore them, or add them to a todo list. The hook only surfaces the signal.
 

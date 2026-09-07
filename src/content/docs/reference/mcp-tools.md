@@ -259,7 +259,7 @@ Create a new document. Generates from template if no content is provided. Reject
 
 | Name        | Type     | Required | Description                                       |
 | ----------- | -------- | -------- | ------------------------------------------------- |
-| `type`      | string   | Yes      | Document type (e.g., `adr`, `rule`, `guide`)      |
+| `type`      | string   | Yes      | One of the 21 [document types](/concepts/document-types/), including `research` and `evidence` from CLI v0.8.3 |
 | `filename`  | string   | Yes      | Slug for the filename (lowercase, hyphens only)   |
 | `title`     | string   | No       | Human-readable title                              |
 | `status`    | string   | No       | Status: `draft` (default), `accepted`, `rejected` |
@@ -300,6 +300,8 @@ Modify an existing document's title, status, or content. Rejects a path under a 
 
 At least one of `title`, `status`, `content`, or `tags` must be provided.
 
+From CLI v0.8.3 the tool preserves frontmatter keys it does not own. A key a person added by hand next to `title`, `status`, and `tags` survives the update. Earlier versions rebuilt the frontmatter from those three fields and dropped every other key.
+
 **Returns:** `{path, category, type, title, status}`, plus `tags` when non-empty.
 
 ---
@@ -324,7 +326,7 @@ This is a destructive action. Prefer `update_document` with `status: "rejected"`
 
 ## add_relation
 
-Create a directed relation between two documents. Refuses an edge whose source **or** target is a [global source](/cli/global-sources/) document, in either direction. Relations connect local documents only.
+Create a directed relation between two documents. Refuses an edge whose source **or** target is a [global source](/cli/global-sources/) document, in either direction. Relations connect local documents only. Both paths must name distinct existing documents inside the project; an absolute path or a path outside the project is rejected. The tool changes the manifest only. It does not change a document's status and does not resolve a contradiction.
 
 **Parameters:**
 
@@ -332,7 +334,21 @@ Create a directed relation between two documents. Refuses an edge whose source *
 | -------- | ------ | -------- | --------------------------------------------------------------- |
 | `source` | string | Yes      | Source document path                                            |
 | `target` | string | Yes      | Target document path                                            |
-| `type`   | string | Yes      | Relation type: `related`, `implements`, `extends`, `depends_on` |
+| `type`   | string | Yes      | Relation type, one of the seven values below                    |
+
+The seven relation types sit on three axes:
+
+| Type | Axis | The source ... |
+| ---- | ---- | -------------- |
+| `related` | structural | has a general association with the target |
+| `implements` | structural | fulfills what the target specifies |
+| `extends` | structural | builds on the target |
+| `depends_on` | structural | requires the target |
+| `supports` | evidential | is the material that backs the target statement |
+| `contradicts` | evidential | is the challenger that disputes the target statement |
+| `supersedes` | temporal | is the newer document that replaces the target |
+
+`supports`, `contradicts`, and `supersedes` require CLI v0.8.3. An older CLI rejects a manifest that contains them. See [Relations](/concepts/relations/) for the conventions on which type pairs take which edge.
 
 **Returns:** `{source, target, type, added}`. `added` is `false` when the edge already existed.
 

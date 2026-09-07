@@ -24,7 +24,7 @@ Every document type carries one of two profiles. The profile decides which check
 | Profile | Meaning | Types |
 | ------- | ------- | ----- |
 | STE | Lines instruct or obligate | `spec`, `rule`, `guide`, `task-type`, `brs`, `strs`, `syrs`, `srs` |
-| ISO | Lines argue or describe | `adr`, `rfc`, `doc`, `prd`, `plan`, `idea`, `rnd`, `cpat`, `mrd`, `brd`, `urd` |
+| ISO | Lines argue or describe | `adr`, `rfc`, `doc`, `evidence`, `prd`, `plan`, `idea`, `rnd`, `research`, `cpat`, `mrd`, `brd`, `urd` |
 
 Two further tables decide which numbered items a check may read at all.
 
@@ -45,7 +45,7 @@ A numbered item outside these sections is prose. An `adr` enumerates its alterna
 | Frontmatter | `title` is missing or empty, or `status` is missing or invalid |
 | Placeholder body | The body is under 200 characters, counted in characters so a short non-ASCII document is flagged the same way |
 | Cross-document links | The body links other `.archcore/` documents instead of using `add_relation`. Up to 3 are named |
-| Long code block | A code block of 5 or more lines in a type that argues rather than instructs: `adr`, `rfc`, `doc`, and every vision type except `rnd`. A `rule`, a `guide`, and a `cpat` are exempt, because the literal text is the artifact |
+| Long code block | A code block of 5 or more lines in a type that argues rather than instructs: `adr`, `rfc`, `doc`, and every vision type except `rnd` and `research`. A `rule`, a `guide`, a `cpat`, and an `evidence` are exempt, because the literal text is the artifact |
 | Restatement | A statement survived a move from a linked document nearly word for word. See [Restatement](#restatement) |
 
 The vagueness lexicon covers English (`appropriate`, `robust`, `scalable`, `modern`, `various`, `optimal`, `efficient`, `flexible`, `convenient`, `seamless`, `streamlined`), Russian stems (`оптимальн`, `удобн`, `правильн`, `надёжн`, `надежн`, `гибк`, `современн`, `передов`, `эффективн`, `масштабируем`), and the phrases `best practices`, `as needed`, `world class`, and `cutting edge`.
@@ -112,6 +112,8 @@ A heading matches by prefix, followed by whitespace or the end of the line. `## 
 | `prd` | Vision, Problem, Goals, Requirements |
 | `idea` | Idea, Value, Risks and Constraints |
 | `rnd` | Approach, Findings, Recommendation, Next Action |
+| `research` | Goal, Scope, Coverage, Sources, Findings, Synthesis, Open Gaps |
+| `evidence` | Locator, Extract, Notes |
 | `plan` | Goal, Tasks, Acceptance Criteria |
 | `mrd` | Market Landscape, Competitive Analysis, Market Needs |
 | `brd` | Business Objectives, Stakeholders, Success Metrics and ROI |

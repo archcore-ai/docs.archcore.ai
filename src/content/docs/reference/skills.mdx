@@ -14,8 +14,8 @@ Every command shipped with the Archcore plugin, with its outcome and flags. For 
 | Command              | Outcome                                             | Arguments and flags                                                        |
 | -------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `/archcore:init`     | Make your repo legible to AI agents                 | `--depth=light\|standard\|deep`, `--mode=small\|medium\|large`, `--domain=<slug>`, `--refresh` |
-| `/archcore:plan`     | Turn a request into the document package it needs   | `[topic]`, plus an optional expert path: `sdd`, `sources`, `iso`, `research`, a route name, or a document type |
-| `/archcore:document` | Record a decision or document what lives in code    | `[module, topic, or decision]`, plus an optional type: `adr`, `rfc`, `spec`, `doc`, `guide`, `rule` |
+| `/archcore:plan`     | Turn a request into the document package it needs   | `[topic]`, plus an optional expert path: `sdd`, `sources`, `iso`, `research`, `rnd`, `evidence`, a route name, or a document type |
+| `/archcore:document` | Record a decision or document what lives in code    | `[module, topic, or decision]`, plus an optional type: `adr`, `rfc`, `spec`, `doc`, `guide`, `rule`, `research`, `evidence` |
 | `/archcore:review`   | Check your changes and your docs against each other | `--deep`, `--drift`, and an optional path, tag, or scope                    |
 
 Path, route, and type names are positional, not flags. `/archcore:plan iso payment gateway` runs the ISO links directly.
@@ -75,7 +75,7 @@ Size labels run `S`, `M`, `L`, `XL` and cap at `XL`. They are derived, never ask
 | ----------- | ------------------------------------------------------------------------------------- |
 | `machine`   | Compose from grounding with no question, citing the artifact                         |
 | `user`      | Interview within the question ceiling                                                |
-| `world`     | Research instrument, producing an `rnd`                                              |
+| `world`     | Research instrument, producing a `research` or an `rnd` by the closing test          |
 | `undecided` | Decision instrument, producing an `adr` or `rfc`                                     |
 | `empirical` | Timeboxed spike, producing an `rnd` that holds Goal, Questions, and Findings only    |
 
@@ -86,9 +86,13 @@ Size labels run `S`, `M`, `L`, `XL` and cap at `XL`. They are derived, never ask
 | `sdd`           | prd → spec (one per capability) → plan                                          | `spec implements prd`, `plan implements spec`                                                         |
 | `sources`       | mrd → brd → urd                                                                 | The three source documents are peers, related rather than implementing                                |
 | `iso`           | brs → strs → syrs → srs                                                         | `brs implements mrd` and `brd`, `strs implements brs` and `urd`, `syrs implements strs`, `srs implements syrs` |
-| `research`      | frame → gather → conclude, producing one `rnd`                                  | `rnd related` the `idea` or `prd` the research informs, when one exists                               |
+| `research`      | frame → gather → conclude, type fixed to `research`                             | `research related` the `idea` or `prd` it informs, when one exists; `evidence supports` or `contradicts` the investigation when gather files a material |
+| `rnd`           | frame → gather → conclude, type fixed to `rnd`                                  | `rnd related` the `idea` or `prd` it informs, when one exists; `rnd depends_on research` when a territory map exists |
+| `evidence`      | gather only, filing one standalone material                                     | `supports` or `contradicts` a local investigation when one is named; `supersedes` the local evidence it replaces; a standalone material may have none |
 | A route name    | `null`, `decision`, `amendment`, `capability`, or `umbrella`; Δ is still derived, and the name fixes only the route and the label | Per the route                            |
 | A document type | The instrument that produces it, entered at its first gate                      | Per the instrument                                                                                    |
+
+Without a named type, a request that names a pending decision or a set of candidates produces an `rnd`; any other investigation produces a `research`. The `research` path produced an `rnd` before plugin v0.8.2. On a CLI older than v0.8.3 the path falls back to `rnd` and reports the required version.
 
 Graph state no longer decides the package. Inside an engaged instrument, a gate whose topic an existing document covers still closes through `skip_when`.
 
@@ -98,6 +102,7 @@ Graph state no longer decides the package. Inside an engaged instrument, a gate 
 | -------- | ---------------------------------------------------- | ------------------------------------------------------- |
 | Decision | A settled decision, a team standard, or a proposal   | `adr` for a settled decision, `rfc` for an open proposal |
 | Describe | A module, component, API, system, or technical topic | `spec`, `doc`, or `guide`, picked from the evidence     |
+| Research | A ready investigation report, or one external material, named by type | `research` for a report filed with `document research`; `evidence` for a material filed with `document evidence` |
 
 ### Decision cascade
 
@@ -124,12 +129,12 @@ When reviewed changes repeat an undocumented pattern, `review` offers a `cpat` o
 
 ## Document types
 
-The 19 document types have no dedicated slash commands. The commands above route to them. Call `mcp__archcore__create_document` directly when you need a specific type without a routing command.
+The 21 document types have no dedicated slash commands. The commands above route to them. Call `mcp__archcore__create_document` directly when you need a specific type without a routing command.
 
 | Category   | Types                                                                    |
 | ---------- | -------------------------------------------------------------------------- |
-| Vision     | `prd`, `idea`, `plan`, `rnd`, `mrd`, `brd`, `urd`, `brs`, `strs`, `syrs`, `srs` |
-| Knowledge  | `adr`, `rfc`, `rule`, `guide`, `doc`, `spec`                             |
+| Vision     | `prd`, `idea`, `plan`, `rnd`, `research`, `mrd`, `brd`, `urd`, `brs`, `strs`, `syrs`, `srs` |
+| Knowledge  | `adr`, `rfc`, `rule`, `guide`, `doc`, `spec`, `evidence`                 |
 | Experience | `task-type`, `cpat`                                                      |
 
 Full descriptions and required sections for each type: [Document types](/concepts/document-types/).

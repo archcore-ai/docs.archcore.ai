@@ -1,9 +1,9 @@
 ---
 title: Document Types
-description: Archcore has 19 document types, including ADR, RFC, rule, guide, spec, doc, PRD, plan, and ISO specifications.
+description: Archcore has 21 document types, including ADR, RFC, rule, spec, evidence, PRD, plan, research, and ISO specifications.
 ---
 
-Archcore has 19 document types organized into 3 categories. Each type has a template that the Archcore CLI generates. If you have not installed the CLI yet, get it from the [CLI page](https://archcore.ai/cli/).
+Archcore has 21 document types organized into 3 categories: 12 vision, 7 knowledge, and 2 experience. Each type has a template that the Archcore CLI generates. If you have not installed the CLI yet, get it from the [CLI page](https://archcore.ai/cli/).
 
 The template sections listed below are what the CLI writes into a new document. A narrower set is checked after every write, and [Precision checks](/reference/precision-checks/) lists it per type.
 
@@ -16,9 +16,11 @@ Need to enforce a team standard?           → rule
 Need step-by-step instructions?            → guide
 Need a contract for a boundary or feature? → spec
 Need reference/lookup material?            → doc
+Need a record of one external material?    → evidence
 Need to define product requirements?       → prd
 Need to capture an early idea?             → idea
 Need to investigate before deciding?       → rnd
+Need to map a territory with no decision?  → research
 Need to plan implementation tasks?         → plan
 Need market analysis (TAM, competitors)?   → mrd
 Need business justification (ROI, budget)? → brd
@@ -43,7 +45,7 @@ Where the product and project are heading. Vision documents are organized into t
 
 ### Product track (simple)
 
-The starting point for most teams. Four types that cover the lifecycle from investigation through implementation.
+The starting point for most teams. Five types that cover the lifecycle from investigation through implementation.
 
 #### PRD (Product Requirements Document)
 
@@ -85,6 +87,30 @@ A rejected `rnd` is a first-class outcome. Keep it in the repository, because "w
 
 :::note[RnD vs Idea vs ADR vs RFC]
 An **rnd** investigates an open question and must conclude with a recommendation. Use it for "should we" and "which way." An **idea** proposes a concept worth exploring, the "we could" case. An **adr** records a decision already made; gather evidence in an `rnd`, then record the resulting decision as an `adr`. An **rfc** puts a concrete proposal up for review. If there is nothing to propose yet, use `rnd`.
+:::
+
+#### Research
+
+An open investigation of a territory: a market landscape, a state-of-the-art review, a competitor watch. A `research` has no single decision behind it and closes on **coverage** of its declared scope, not on a verdict. It is revised as the territory changes.
+
+| | |
+|---|---|
+| **File extension** | `.research.md` |
+| **When to use** | A territory needs mapping and no single decision waits on the answer |
+| **Template sections** | Goal, Scope, Coverage, Sources, Findings, Synthesis, Open Gaps |
+
+The closing test separates the two investigation types: a verdict closes an `rnd`, coverage closes a `research`. The tense test is the same line: "we investigated X to decide Y" is an `rnd`; "we are mapping X" is a `research`.
+
+The status of a `research` records the state of its synthesis:
+
+- `draft`: the scope is not yet covered
+- `accepted`: the synthesis is current as of its last revision
+- `rejected`: abandoned, or fully replaced through `supersedes`
+
+Sources are recorded as rows in the Sources table first. A source gets its own `evidence` document only when two documents rely on it, when a `contradicts` edge involves it, or when a newer material supersedes it. By convention, `rnd depends_on research` links a decision-bound investigation to the territory it draws on; a `research` never uses `implements` or `extends`. See [Relations](/concepts/relations/).
+
+:::note[Research vs RnD vs Doc]
+A **research** maps a territory and closes when its scope is covered. An **rnd** answers one question and closes with a recommendation. A **doc** records reference information the team controls; a `research` records external knowledge with dated sources, coverage, and gaps.
 :::
 
 #### Plan
@@ -218,7 +244,7 @@ The Sources and ISO tracks overlap in subject matter but differ in formality:
 
 ## Knowledge
 
-Decisions, standards, and reference material.
+Decisions, standards, reference material, and records of external materials.
 
 ### ADR (Architecture Decision Record)
 
@@ -384,6 +410,32 @@ Non-behavioral reference material: registries, glossaries, lookup tables, and co
 
 :::note[Rule vs Doc]
 A **rule** contains imperative statements ("Always do X", "Never do Y") with enforcement info. A **doc** is non-behavioral reference material. If it prescribes behavior, use `rule`. If it describes what exists, use `doc`.
+:::
+
+### Evidence
+
+A record of one external material: a report, a page, a dataset, an interview. An `evidence` carries the address of the material, the access date, and the extract another document relies on. It never carries the file itself. A snapshot, when kept, lives outside `.archcore/`.
+
+| | |
+|---|---|
+| **File extension** | `.evidence.md` |
+| **When to use** | Two documents rely on one source, a `contradicts` edge involves it, or a newer material replaces it |
+| **Template sections** | Locator, Extract, Notes |
+
+The Locator section opens with fixed lines: address, access date, publication date when known, publisher when known. The frontmatter stays `title`, `status`, and `tags`. The class of the material travels as a tag: `source:primary`, `source:secondary`, `source:measurement`, `source:interview`, or `source:dataset`.
+
+The material test decides the type: an `evidence` is one material, never one statement. A finding inside a `research` or an `rnd` stays a line in that document. Most sources stay rows in a Sources table and never become a file.
+
+The status values keep their names and gain one reading:
+
+- `draft`: recorded by whoever found the material
+- `accepted`: a second reader confirmed that the material exists and that the extract is in it
+- `rejected`: retracted or found unreliable
+
+The second reader is a convention. The CLI does not fetch, hash, or snapshot a source.
+
+:::note[Evidence vs Doc]
+An **evidence** records one material and its extract. A **doc** records reference information that may combine several materials.
 :::
 
 ---

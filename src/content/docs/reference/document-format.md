@@ -3,7 +3,7 @@ title: Document Format
 description: File naming conventions, YAML frontmatter fields, content structure, and template generation for Archcore documents.
 ---
 
-An Archcore document is a Markdown file with YAML frontmatter and a `<slug>.<type>.md` filename. The parser requires `title` and `status`, accepts `tags`, and ignores every other frontmatter key.
+An Archcore document is a Markdown file with YAML frontmatter and a `<slug>.<type>.md` filename. The parser requires `title` and `status`, accepts `tags`, and ignores every other frontmatter key. From CLI v0.8.3, `update_document` preserves the keys it does not own, so a key you add by hand survives an update through the MCP tool.
 
 ## File naming
 
