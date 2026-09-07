@@ -15,7 +15,7 @@ For a quick all-in-one check, run:
 archcore doctor
 ```
 
-This validates your project context in one pass: `settings.json`, document structure, MCP configuration, and server reachability. The output names what is wrong and how to fix it.
+This validates your project context in one pass: `settings.json`, document structure, hook wiring notes for wired hosts, and server reachability. The output names what is wrong and how to fix it.
 
 ## Agent cannot see documents
 
@@ -31,7 +31,7 @@ The agent needs an MCP server configuration to connect to Archcore. Without it, 
 | -------------- | ------------------------------------ |
 | Claude Code    | `.mcp.json`                          |
 | Cursor         | `.cursor/mcp.json`                   |
-| GitHub Copilot | `.vscode/mcp.json`                   |
+| GitHub Copilot | `.mcp.json` (shared with Claude Code) |
 | Gemini CLI     | `.gemini/settings.json`              |
 | OpenCode       | `opencode.json`                      |
 | Codex CLI      | `.codex/config.toml`                 |
@@ -70,20 +70,6 @@ The MCP config JSON tells the agent what command to run. If the `command` or `ar
 ```
 
 Cursor is the exception: in `.cursor/mcp.json` the CLI writes `"args": ["mcp", "--project", "${workspaceFolder}"]` on purpose, because Cursor does not guarantee the working directory it launches MCP servers with. Do not replace it with the bare `["mcp"]` template.
-
-For GitHub Copilot, the format is slightly different:
-
-```json
-{
-  "servers": {
-    "archcore": {
-      "type": "stdio",
-      "command": "archcore",
-      "args": ["mcp"]
-    }
-  }
-}
-```
 
 **Fix:** Regenerate the config:
 
@@ -138,6 +124,8 @@ If the agent launches `archcore mcp` from a fixed directory you can't change (e.
 - **Environment:** set `ARCHCORE_PROJECT_ROOT=/absolute/path/to/repo` in the agent's environment.
 
 See [Pointing the server at a project root](/cli/mcp-server/#pointing-the-server-at-a-project-root) for the full config example.
+
+When the root is not pinned with `--project` or `ARCHCORE_PROJECT_ROOT`, the server follows the working directory the client reports (see [Following the session's working directory](/cli/mcp-server/#following-the-sessions-working-directory)). When the server refuses a reported directory, it keeps the current root and writes one line to stderr per distinct reason: the directory holds no `.archcore/`, it sits inside a plugin install cache, or a global source declared there does not resolve. The tool call itself still succeeds.
 
 If you haven't initialized the project yet:
 
@@ -212,23 +200,24 @@ If your agent isn't listed, you can still use Archcore documents manually. They 
 
 ### Documents exist but agent says none found
 
-The agent connects to MCP successfully but reports zero documents. This usually means your documents have validation errors, so the scan skips them.
+The agent connects to MCP successfully but reports zero documents. The server is reading a directory that holds no documents. The MCP scan indexes every `.md` file under `.archcore/` except hidden directories, symlinks, and the meta files `settings.json` and `.sync-state.json`; a malformed document is still listed, with an empty title and status. Validation errors do not hide documents from the MCP tools.
+
+**Common causes:**
+
+- The server resolved the wrong project root. See [Wrong working directory](#wrong-working-directory).
+- The project is not initialized: there is no `.archcore/` directory.
+- The files sit outside `.archcore/`.
 
 **Check:**
 
 ```bash
+ls .archcore/
 archcore status
 ```
 
-This reports any issues with file naming, frontmatter, or document structure.
+`archcore status` reports any issues with file naming, frontmatter, or document structure. Those issues do not explain a zero count, but they do need fixing.
 
-**Common causes:**
-
-- Filename doesn't match `slug.type.md` pattern (spaces, underscores, or uppercase in the slug)
-- Missing or invalid YAML frontmatter (`title` and `status` are required)
-- Unknown document type in the filename
-
-**Fix:** Correct the issues reported by `archcore status`. See [Validation errors](#validation-errors) below for detailed guidance on each error type.
+**Fix:** Point the server at the directory that contains `.archcore/`, or run `archcore init` and move the documents under `.archcore/`. Then correct the issues reported by `archcore status`. See [Validation errors](#validation-errors) below for detailed guidance on each error type.
 
 ## MCP server not starting
 
@@ -289,6 +278,8 @@ global source "company-standards" not found at "../company-standards/.archcore" 
 
 The message `invalid .archcore/settings.json: …` means the file itself is malformed. The server aborts rather than start with globals silently dropped. Run `archcore doctor` to see the exact parse or validation error.
 
+When the source is declared with a `../` path and the CLI runs inside a linked git worktree, a CLI older than v0.8.2 reports it as missing, because the worktree does not share the main checkout's parent directory. CLI v0.8.2 and later resolve the path from the main checkout. See [How `path` resolves](/cli/global-sources/#how-path-resolves).
+
 On non-server surfaces a missing global never blocks you: the session-start hook degrades to a local-only context summary with a warning naming the source, and `archcore status` reports it as a visible failure while still running its local checks.
 
 ### Server refuses to start inside a plugin cache
@@ -334,7 +325,7 @@ Errors from the install scripts and `archcore update`:
 | `unexpected redirect resolving latest release` | The redirect landed somewhere that is not a `/releases/tag/` page. Two causes occur in practice: a proxy or captive portal intercepting the request, or a repository with no published release, which GitHub answers with a redirect to the bare `/releases` page. |
 | `no Location header` / `parsing redirect location` | A redirect arrived without a usable `Location`. This indicates an intercepting proxy rather than GitHub. |
 | `Checksum verification failed` / `Checksum mismatch` | The download was corrupted. Run the install or `archcore update` again. |
-| `Unsupported operating system/architecture` | Prebuilt binaries cover `darwin`, `linux`, and `windows` on `amd64` and `arm64` only. Build from source with `go install github.com/archcore-ai/cli@latest`. |
+| `Unsupported operating system/architecture` | Prebuilt binaries cover `darwin`, `linux`, and `windows` on `amd64` and `arm64` only. |
 | `this installer requires bash` | The script was piped into `sh` or another POSIX shell. Pipe into `bash` instead. |
 | `Update failed` with a permission error | The binary sits in a directory without write access. Reinstall it to a writable location, or run `archcore update` with `sudo`. |
 
@@ -380,14 +371,16 @@ Slugs must match `^[a-z0-9]+(-[a-z0-9]+)*$`. See [Document format](/reference/do
 
 **What you see:** The type portion of the filename isn't recognized.
 
-**Why it happens:** The type (the middle part of `slug.type.md`) must be one of the 19 valid types.
+**Why it happens:** The type (the middle part of `slug.type.md`) must be one of the 21 valid types.
 
 **Valid types:**
 
+```text
+adr, rfc, rule, guide, spec, doc, evidence, prd, idea, plan, rnd, research,
+task-type, cpat, mrd, brd, urd, brs, strs, syrs, srs
 ```
-adr, rfc, rule, guide, spec, doc, prd, idea, plan, rnd, task-type, cpat,
-mrd, brd, urd, brs, strs, syrs, srs
-```
+
+`research` is a vision type and `evidence` is a knowledge type.
 
 **Common mistakes:**
 
@@ -397,7 +390,7 @@ mrd, brd, urd, brs, strs, syrs, srs
 | `setup.tutorial.md`     | `tutorial` is not a type  | Rename to `setup.guide.md`                        |
 | `api-spec.reference.md` | `reference` is not a type | Rename to `api-spec.spec.md` or `api-spec.doc.md` |
 
-**Fix:** Rename the file using one of the 19 valid types. See [Document types](/concepts/document-types/) for guidance on choosing.
+**Fix:** Rename the file using one of the 21 valid types. See [Document types](/concepts/document-types/) for guidance on choosing.
 
 ### Missing frontmatter
 

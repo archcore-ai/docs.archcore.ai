@@ -58,13 +58,14 @@ Then install the plugin (below). Two hosts need one more step: Cursor users regi
 		# then run /plugins, open Archcore, and select Install plugin
 		```
 
-		MCP is auto-registered via the plugin's `.codex.mcp.json`. Enable hooks for full coverage:
+		MCP is auto-registered via the plugin's `.codex.mcp.json`. Enable Codex's `hooks` feature for full coverage, with `codex --enable hooks` or in `~/.codex/config.toml`:
 
-		```bash
-		codex features enable plugin_hooks
+		```toml
+		[features]
+		hooks = true
 		```
 
-		`plugin_hooks` is under development in Codex (default off). Without it, commands, MCP tools, and agents work normally, but the write guard, code-alignment injection, and post-write checks won't fire.
+		Before Codex 0.129.0 the key is spelled `codex_hooks = true`. Without the feature, commands, MCP tools, and agents work normally, but the write guard, code-alignment injection, and post-write checks won't fire.
 	</TabItem>
 	<TabItem label="GitHub Copilot CLI">
 		Two steps, both required:

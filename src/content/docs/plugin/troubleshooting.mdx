@@ -192,19 +192,20 @@ Cursor only fires `afterMCPExecution` for successful MCP calls. If the MCP call 
 
 **Symptom:** On Codex CLI, the validation, cascade, precision, and pre-edit context-injection hooks don't run.
 
-Codex hooks are gated by an under-development feature flag (default off). Enable it:
+Codex hooks are gated by Codex's `hooks` feature. Enable it with `codex --enable hooks`, or add a `[features]` table to `~/.codex/config.toml`:
 
-```bash
-codex features enable plugin_hooks
+```toml
+[features]
+hooks = true
 ```
 
-After you enable the flag, restart the Codex session so it picks up the new hook configuration. If hooks still don't fire, verify your Codex version is `0.117.0` or later (`codex --version`).
+Before Codex 0.129.0 the key is spelled `codex_hooks = true`. After you enable the feature, restart the Codex session so it picks up the new hook configuration. If hooks still don't fire, verify your Codex version is `0.117.0` or later (`codex --version`).
 
 ## Codex CLI-specific: `apply_patch` writes not blocked
 
 **Symptom:** On Codex CLI, you used Codex's `apply_patch` tool to edit a `.archcore/*.md` file directly and the hook didn't block it.
 
-The Codex hooks file (`hooks/codex.hooks.json`) uses the matcher `Write|Edit|apply_patch` precisely to cover all three Codex write surfaces. If the matcher doesn't appear to be catching `apply_patch`, the most likely cause is that `plugin_hooks` is not enabled (see above). Without the feature flag, no hook fires, including the `PreToolUse` write guard.
+The Codex hooks file (`hooks/codex.hooks.json`) uses the matcher `Write|Edit|apply_patch` precisely to cover all three Codex write surfaces. If the matcher doesn't appear to be catching `apply_patch`, the most likely cause is that Codex's `hooks` feature is not enabled (see above). Without the feature, no hook fires, including the `PreToolUse` write guard.
 
 ## Codex CLI-specific: MCP server not found
 

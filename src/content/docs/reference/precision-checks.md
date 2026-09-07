@@ -5,14 +5,14 @@ description: "Every post-write precision check: what fires it, which document ty
 
 Precision checks measure a document against its type contract after `create_document` or `update_document` writes it. They run inside the `PostToolUse` hook, they report as text in front of the agent, and they never block a write. The [hooks reference](/cli/hooks/#after-a-write) covers the event that carries them.
 
-One report prints at most **5 findings**, followed by a count of what the cap dropped. Findings arrive in a fixed order, so the same document produces the same head of the list on every write.
+One report prints at most **12 findings**, followed by a count of what the cap dropped. Findings arrive in a fixed order, so the same document produces the same head of the list on every write.
 
 ```text
 [Archcore Precision] .archcore/auth/jwt-strategy.adr.md (advisory):
   - vague wording (robust) — replace with a concrete fact, version, threshold, or measurement
   - missing section: ## Alternatives Considered
   - one alternative recorded — a decision with nothing to compare against records a preference, not a choice
-  - +2 more finding(s) not shown (report cap 5)
+  - +2 more finding(s) not shown (report cap 12)
 ```
 
 The rules are data, not code. `templates/precision.go` in the CLI repository holds the lexicons, the section contracts, and the thresholds; `internal/advisory/precision.go` and `internal/advisory/restatement.go` read them. A project that installs no plugin gets the same checks, because they ship with the binary.
@@ -72,7 +72,7 @@ Modals are matched case-sensitively. A lowercase `must` in prose is not a graded
 | Type | Finding | Fires when |
 | ---- | ------- | ---------- |
 | `spec` | SHALL notation | The body uses `SHALL` instead of `MUST`, `SHOULD`, or `MAY` |
-| `spec` | Oversized spec | The body exceeds 80 lines |
+| `spec` | Oversized spec | The body exceeds 120 lines |
 | `spec` | Subjectless passive | A graded clause states an obligation with no obligated component as its subject. Up to 3 are named |
 | `prd` | EARS clause in a requirement | A numbered requirement opens with `WHEN`, `WHILE`, or `IF`. A `prd` requirement states an outcome, and the trigger and response form belongs in a `spec` |
 | `rule` | No file target | No graded clause names a path or a glob, so the [code-alignment injection](/cli/hooks/#code-alignment-injection) can never match the rule to an edited file |
@@ -86,11 +86,11 @@ Modals are matched case-sensitively. A lowercase `must` in prose is not a graded
 
 | Threshold | Value |
 | --------- | ----- |
-| Findings per report | 5 |
+| Findings per report | 12 |
 | Minimum body length | 200 characters |
 | Graded clause length | 25 words |
 | Procedure step length | 20 words |
-| `spec` body length | 80 lines |
+| `spec` body length | 120 lines |
 | Code block length in an ISO-profile type | 5 lines |
 | Restatement overlap | 0.85 |
 | Documents read per restatement check | 5 |

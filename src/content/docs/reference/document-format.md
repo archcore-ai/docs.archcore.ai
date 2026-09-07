@@ -3,7 +3,7 @@ title: Document Format
 description: File naming conventions, YAML frontmatter fields, content structure, and template generation for Archcore documents.
 ---
 
-An Archcore document is a Markdown file with YAML frontmatter and a `<slug>.<type>.md` filename. The parser requires `title` and `status`, accepts `tags`, and ignores every other frontmatter key. From CLI v0.8.3, `update_document` preserves the keys it does not own, so a key you add by hand survives an update through the MCP tool.
+An Archcore document is a Markdown file with YAML frontmatter and a `<slug>.<type>.md` filename. The parser requires `title` and `status`, accepts `tags`, and retains every other frontmatter key without interpreting or validating it. From CLI v0.8.3, `update_document` writes those retained keys back after `title`, `status`, and `tags`, so a key you add by hand survives an update through the MCP tool.
 
 ## File naming
 
@@ -56,7 +56,7 @@ Tags must match `^[a-z][a-z0-9_:|-]*$`: lowercase, with hyphens, underscores, co
 
 When tags are absent, the field is omitted from output. Documents without tags parse and work normally.
 
-`tags` is the only optional frontmatter field. The parser recognizes exactly three keys: `title`, `status`, and `tags`. Any other key (for example, an arbitrary `meta:` block) stays in the file, but Archcore never reads, validates, or syncs it.
+`tags` is the only optional frontmatter field. The parser interprets exactly three keys: `title`, `status`, and `tags`. Any other key (for example, an arbitrary `meta:` block) is retained as written: Archcore does not interpret or validate it, and `update_document` writes it back after the three owned keys. Sync sends the whole file as `content`, so such a key travels inside the file text and not as a structured frontmatter field.
 
 ## Content structure
 

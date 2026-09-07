@@ -18,7 +18,7 @@ When a project declares [global sources](/cli/global-sources/), the read tools (
 
 `list_documents` and `search_documents` both take a `source` parameter that scopes one call to `local`, `global`, or a declared source id. An unknown value fails the call instead of returning an empty page.
 
-Global documents are **read-only**: the write tools (`create_document`, `update_document`, `remove_document`) reject any global path, and `add_relation` refuses an edge that touches a global on either endpoint. When a local document and a global cover the same topic, the agent treats the local one as authoritative when reading them. Search ranking carries no source weight beyond the final tiebreak, which puts the local document first when two results tie on every other key.
+Global documents are **read-only**: the write tools (`create_document`, `update_document`, `remove_document`) reject any global path, and `add_relation` refuses an edge that touches a global on either endpoint. When a local document and a global cover the same topic, the agent treats the local one as authoritative when reading them. Search ranking carries no source weight. A global document's effective modification time is treated as zero, so when a local document and a global tie on score and type priority, the local one ranks first at the modification-time key.
 
 No MCP tool includes an absolute filesystem path in an error or a result. Every returned path is relative to the project root or to `.archcore/`.
 
@@ -133,7 +133,7 @@ Search documents by path reference, content words, or metadata. Unlike `list_doc
 | `source`      | string   | No          | Scope the search to one source: `local` (the project's own documents), `global` (every mounted global source), or a declared global source id. Omitted admits every source. |
 | `types`       | string[] | conditional | Filter by document types (e.g., `["adr", "rule"]`).                                                                          |
 | `status`      | string   | conditional | Filter by status: `draft`, `accepted`, or `rejected`.                                                                        |
-| `mtime_after` | string   | No          | Only include documents modified after this time. Accepts RFC3339 timestamps or a positive relative duration: `<N>h`, `<N>d`, `<N>w`, `<N>mo`, `<N>y`, e.g. `24h`, `30d`, `6mo`. |
+| `mtime_after` | string   | No          | Only include documents modified after this time. Accepts RFC3339 timestamps or a positive relative duration in hours or days: `<N>h` or `<N>d`, e.g. `24h`, `30d`, `90d`. Any other unit is rejected. |
 | `sort`        | string   | No          | Result ordering: `relevance` (default) or `mtime`.                                                                           |
 | `mode`        | string   | No          | Output detail: `snippets` (default) returns only matching excerpts; `full` additionally returns each result's complete document `body` (frontmatter stripped), so you can read the matched docs without a follow-up `get_document`. |
 | `limit`       | number   | No          | Maximum number of results. Defaults and caps are mode-dependent: `snippets` → default 50, max 200; `full` → default 3, max 20. Values above the cap are clamped; `0` or omitted maps to the mode default.       |
@@ -154,7 +154,7 @@ A single-word query behaves identically under `all` and `exact`.
 
   The score is `100 × (best path-ref specificity + Σ content-word specificities) + capped occurrence count`. Per word, a title hit scores 3, a hit on a markdown heading line scores 2, and any other body hit scores 1. The occurrence count is capped at 20, so a term-stuffed body cannot outrank a structural hit. A repeated path reference contributes its single best hit rather than a sum.
 
-  Type priority is `rule` 1, `adr` 2, `spec` 3, `cpat` 4, `guide` 5, `plan` 6, `idea` 7; every other type sorts last.
+  Type priority, from first to last, is `rule`, `adr`, `rfc`, `spec`, `cpat`, `guide`, `plan`, `idea`, `rnd`, `prd`, `brs`, `syrs`, `srs`, `strs`, `mrd`, `brd`, `urd`, `doc`, `task-type`; `research` and `evidence` sort after all of them.
 
   A global document's effective modification time is treated as zero, because a vendored global's mtime is its clone date and not a relevance signal. On a tie across every other key, the local document therefore ranks first.
 - `mtime`: orders purely by modification time, newest first.
@@ -377,6 +377,13 @@ Remove a directed relation between two documents.
 | `type`   | string | Yes      | Relation type        |
 
 **Returns:** `{source, target, type, removed}`. `removed` is `false` when no such edge exists.
+
+Since CLI v0.8.3 the tool applies the same endpoint checks as `add_relation`. It rejects:
+
+- an absolute path with `relation paths must be relative and within .archcore/`;
+- a path containing `..` with `source path must not contain '..'` or `target path must not contain '..'`;
+- an endpoint inside a declared global source with `cannot remove a relation involving a read-only global source document — relations connect local documents only`;
+- an endpoint that is not a `.md` file with `relation endpoints must be .md document files`.
 
 ---
 

@@ -7,7 +7,7 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 <PathBadge scope="cli" />
 
-Archcore supports 8 coding agents. Each one integrates through three mechanisms: **MCP servers**, **lifecycle hooks**, and an **instruction hint** — a short "use Archcore" nudge written into the agent's config files. `archcore init` installs MCP config and hooks where the host supports them; the instruction hint is opt-in on interactive runs and skipped non-interactively (see [Instruction hint](#instruction-hint)). Four hosts additionally carry the Archcore plugin: Claude Code, Cursor, Codex CLI, and GitHub Copilot.
+Archcore supports 8 coding agents. Each one integrates through three mechanisms: **MCP servers**, **lifecycle hooks**, and an **instruction hint** — a short "use Archcore" nudge written into the agent's config files. `archcore init` installs MCP config and hooks where the host supports them; the instruction hint is opt-in on interactive runs, written without a prompt when `--agent <id>` names the host, and skipped on a non-interactive run without `--agent` (see [Instruction hint](#instruction-hint)). Four hosts additionally carry the Archcore plugin: Claude Code, Cursor, Codex CLI, and GitHub Copilot.
 
 If you are still deciding, the [CLI page](https://archcore.ai/cli/) has the short version of this matrix.
 
@@ -95,7 +95,7 @@ There is no default agent. Archcore installs nothing until you pick an agent or 
 | -------------- | ------------- | ------------------------------ |
 | Claude Code    | `claude-code` | `.mcp.json`                    |
 | Cursor         | `cursor`      | `.cursor/mcp.json`             |
-| GitHub Copilot | `copilot`     | `.vscode/mcp.json`             |
+| GitHub Copilot | `copilot`     | `.mcp.json` (shared with Claude Code) |
 | Gemini CLI     | `gemini-cli`  | `.gemini/settings.json`        |
 | OpenCode       | `opencode`    | `opencode.json`                |
 | Codex CLI      | `codex-cli`   | `.codex/config.toml`           |
@@ -110,8 +110,7 @@ Cline stores its MCP config in VS Code's `globalStorage` rather than in a projec
 
 Archcore never silently overwrites a config it can't parse. When it writes an agent's MCP or hook config, the behavior depends on the file format:
 
-- **Standard JSON** covers `.claude/settings.json`, `.cursor/hooks.json`, `.mcp.json`, `opencode.json`, and other strict-JSON configs. If the file is corrupt or unparseable, Archcore backs it up to `{path}.bak` and starts fresh from a valid config. You'll see a warning naming the backup. When the backup write itself fails, the install aborts: the original is never overwritten without a confirmed backup.
-- **`.vscode/mcp.json`** (GitHub Copilot) is JSONC, so comments and trailing commas are valid even though they aren't strict JSON. Archcore leaves the file untouched and prints a manual-install hint rather than rewrite your other MCP servers.
+- **JSON** covers every JSON target Archcore writes: `.claude/settings.json`, `.cursor/hooks.json`, `.mcp.json`, `opencode.json`, and the rest. If the file is corrupt or unparseable, Archcore backs it up to `{path}.bak` and starts fresh from a valid config. You'll see a warning naming the backup. When the backup write itself fails, the install aborts: the original is never overwritten without a confirmed backup.
 - **`.codex/config.toml`** (Codex CLI) is TOML and sits outside the `.bak` policy. Codex hook wiring lives in a separate `.codex/hooks.json`, so one writer owns each file.
 
 All config writes are atomic (temp file plus rename), so a crash mid-write cannot truncate a live config.
@@ -126,7 +125,7 @@ Archcore recognizes its own hook entries by the literal `archcore hooks ` comman
 
 Installing the MCP server doesn't guarantee the agent will use it. The instruction hint is a short "use Archcore" nudge written into the agent's instruction file. It tells the model that Archcore's MCP tools exist and when to consult them. Without the hint, the tools sit idle and the agent never calls `list_documents` or `search_documents`.
 
-The hint is **opt-in** during interactive `archcore init` (the prompt defaults to yes). In non-interactive mode Archcore skips the hint and points you to `archcore instructions install`.
+The hint is **opt-in** during interactive `archcore init` (the prompt defaults to yes). `archcore init --agent <id>` writes the hint for the named host without a prompt, interactive or not. On a non-interactive run without `--agent`, Archcore skips the hint and points you to `archcore instructions install`.
 
 ### Where the hint lands
 

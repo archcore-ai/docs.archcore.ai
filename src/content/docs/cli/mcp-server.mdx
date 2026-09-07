@@ -18,7 +18,7 @@ Once MCP is configured, agents interact with your documents through 10 always-re
 | Action        | Tool                  | Description                                            |
 | ------------- | --------------------- | ------------------------------------------------------ |
 | Browse        | `list_documents`      | List documents filtered by type, category, or status   |
-| Search        | `search_documents`    | Substring and path-reference search across bodies      |
+| Search        | `search_documents`    | Word and path-reference search across bodies           |
 | Read          | `get_document`        | Get full document content with relations               |
 | Create        | `create_document`     | Create new documents from templates                    |
 | Update        | `update_document`     | Modify title, status, or content                       |
@@ -153,6 +153,17 @@ Example MCP config that pins an absolute project root:
   }
 }
 ```
+
+### Following the session's working directory
+
+From CLI v0.8.2, a server whose root is not pinned follows the working directory the client reports. On a tool call the server asks the client for its roots (`roots/list`) with a 500 ms timeout and reuses the decision for 2 s. It switches to a reported root only when every check passes:
+
+- The root is a `file://` URI that maps to an existing directory.
+- The directory is not a plugin install cache.
+- The directory contains `.archcore/`.
+- Every global source declared there resolves.
+
+Otherwise the server keeps the current root and writes one line to stderr per distinct reason; [CLI troubleshooting](/cli/troubleshooting/#wrong-working-directory) lists the reasons. A tool call never fails because of the query. The instructions the server returns at `initialize` come from the root at start time. `--project <path>` or `ARCHCORE_PROJECT_ROOT` pins the root for the process lifetime and turns the query off.
 
 ## Language support
 

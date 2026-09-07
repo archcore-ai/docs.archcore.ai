@@ -45,6 +45,15 @@ Rules of thumb:
 
 `globals` is allowed for every sync type (`none`, `cloud`, `on-prem`) and is never required.
 
+### How `path` resolves
+
+The same resolution applies to the MCP scan, the startup check, and `archcore status`:
+
+- An absolute path is used as-is.
+- A relative path that stays inside the project resolves against the project root. Inside a git worktree that is the worktree's own copy.
+- A relative path that leaves the project (one that starts with `../`) resolves against the project's position inside the repository's main checkout when the CLI runs in a linked git worktree (CLI v0.8.2 and later). The anchor is used only when it is an existing directory that holds `.archcore/`. Submodules, bare repositories, non-git directories, and machines without git fall back to the project root.
+- A clone at a different depth than the declared path expects still fails. The path is not searched for.
+
 ### Several sources
 
 ```json
@@ -73,9 +82,11 @@ Five states are fatal. Each one aborts startup and the document scan with a mess
 | Not a directory | `global source "<id>" at "<path>" is not a directory` |
 | Unreadable | `global source "<id>" at "<path>" is not readable` |
 | Self-overlap | `global source "<id>" at "<path>" resolves to the project's own .archcore` |
-| Duplicate path | `global sources "<a>" and "<b>" resolve to the same path "<path>"` |
+| Duplicate path | `global source "<id>" at "<path>" duplicates an earlier source's path` |
 
 At startup the missing message ends with `— clone it before starting the MCP server`, and the other four end with `— fix .archcore/settings.json before starting the MCP server`. Unreadable covers a subdirectory the document walk cannot enter, not only the top level.
+
+The duplicate-path message in the table is the form at MCP startup, in `archcore status`, in `archcore doctor`, and in the SessionStart `GLOBALS` block. Inside a tool-call scan the same state reads `global sources "<a>" and "<b>" resolve to the same path "<path>"`.
 
 A source that exists and is readable but holds zero recognized documents is a **warning, never fatal**. The server starts, the scan yields no documents from it, and `global source "<id>" at "<path>" contains no documents` appears on startup stderr, in `archcore status`, and in the SessionStart context.
 
@@ -111,7 +122,7 @@ Outside those read surfaces:
 
 - **Not writable through MCP.** `create_document` rejects a target under a declared global with `cannot create document in a read-only global source`; `update_document` and `remove_document` reject with `cannot update a read-only global source document` and `cannot remove a read-only global source document`. Those messages fire on in-tree paths. A write addressed at an external global (a `../` sibling or an absolute path) fails earlier with `invalid path: must start with ".archcore/"`, because the write tools cannot address a path outside `.archcore/` at all (see the [vendoring tip](#vendoring-a-global-in-tree)).
 - **Not writable from the editor.** The `PreToolUse` [write guard](/cli/hooks/#the-write-guard) refuses a direct editor write to a document inside a global, including a document inside an external global that the MCP tools cannot address.
-- **Not a relation endpoint.** `add_relation` refuses an edge whose source **or** target is a global, in either direction. Relations connect local documents only. (`remove_relation` stays open so you can clean up a pre-existing edge.)
+- **Not a relation endpoint.** `add_relation` and, since CLI v0.8.3, `remove_relation` refuse an edge whose source **or** target is a global, in either direction. Relations connect local documents only.
 - **Fail closed.** When `settings.json` is present but cannot be read, the write and relation tools reject with `cannot verify global sources: settings.json is unreadable` rather than proceed.
 - **Absent from CLI surfaces.** `archcore status` (tag hygiene, counts) and the session-start recap blocks operate on local documents only, and the `GLOBALS` block reports per-source counts rather than any global document. A consumer cannot fix an upstream global's tags and is not responsible for them.
 

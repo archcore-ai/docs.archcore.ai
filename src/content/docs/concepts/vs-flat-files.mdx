@@ -45,10 +45,10 @@ The type comes from the filename (`slug.type.md`), not from where the file lives
 
 ### Relations add meaning
 
-A database decision influenced a caching strategy, which produced coding rules, which led to a migration guide. Archcore makes these connections explicit with [directed relations](/concepts/relations/): `implements`, `extends`, `depends_on`, `related`.
+A database decision influenced a caching strategy, which produced coding rules, which led to a migration guide. Archcore makes these connections explicit with seven [directed relation types](/concepts/relations/): `implements`, `extends`, `depends_on`, `related`, `supports`, `contradicts`, and `supersedes`.
 
 ```text
-auth-redesign.prd.md ──implements──→ auth-redesign.plan.md
+auth-redesign.plan.md ──implements──→ auth-redesign.prd.md
 auth-redesign.plan.md ──depends_on──→ jwt-strategy.adr.md
 jwt-strategy.adr.md ──related──→ session-handling.rule.md
 ```

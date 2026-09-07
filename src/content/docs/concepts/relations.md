@@ -56,7 +56,7 @@ The agent uses the `add_relation` MCP tool with source, target, and relation typ
 
 `create_document` does not link the new document to anything. When other documents share its directory, the response includes a `nearby_documents` hint: up to 5 paths from the same directory, sorted alphabetically. The agent reviews each candidate and calls `add_relation` explicitly when a semantic link exists.
 
-A document created without a follow-up `add_relation` call stays unlinked. `archcore doctor` surfaces orphaned documents.
+A document created without a follow-up `add_relation` call stays unlinked. The plugin's [`/archcore:review`](/plugin/skills/#archcorereview) reports documents with no relations; `archcore status` and `archcore doctor` check relations, not unlinked documents.
 
 ### Validating relations with the CLI
 

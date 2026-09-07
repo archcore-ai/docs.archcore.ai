@@ -194,13 +194,13 @@ Three checks run, and a failure in one does not silence the others.
 | One type only | `SHALL` in a `spec`, oversized `spec`, subjectless passive, EARS clause in a `prd` requirement, `rule` with no file target, `adr` with one alternative, `cpat` without a code block |
 | Content ownership | A heading whose content another type owns, and a statement copied word for word from a linked document |
 
-One report carries at most 5 findings and ends with a count of what the cap dropped:
+One report carries at most 12 findings and ends with a count of what the cap dropped:
 
 ```text
 [Archcore Precision] .archcore/auth/jwt-strategy.adr.md (advisory):
   - vague wording (robust) — replace with a concrete fact, version, threshold, or measurement
   - missing section: ## Alternatives Considered
-  - +2 more finding(s) not shown (report cap 5)
+  - +2 more finding(s) not shown (report cap 12)
 ```
 
 [Precision checks](/reference/precision-checks/) lists every check, the types it grades, and the threshold behind it.

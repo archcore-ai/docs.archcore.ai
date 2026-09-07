@@ -61,7 +61,7 @@ For a step-by-step walkthrough, see the [CLI Quick Start](/cli/quick-start/).
 Check `.archcore/` structure and document health.
 
 ```bash
-archcore status
+archcore status [--project <path>]
 ```
 
 **Checks performed:**
@@ -72,11 +72,18 @@ archcore status
 - Document types are valid (one of the 21 types)
 - YAML frontmatter has required `title` and `status` fields
 - Frontmatter is valid YAML
+- Tag hygiene: an invalid tag format is a failure, and a tag used only once is a warning (possible typo)
 - Sync manifest JSON structure
 - Orphaned relations (documents referenced but not on disk)
-- Global source health: a fatal state (missing, unreadable, or not a directory) is a failure, an empty source is a warning, and a healthy source prints `global source "<id>" (<N> document(s))`
+- Global source health: any [fatal state](/cli/global-sources/#every-declared-global-is-mandatory) (missing, not a directory, unreadable, self-overlap, duplicate path) is a failure, an empty source is a warning, and a healthy source prints `global source "<id>" (<N> document(s))`
 
 When `status` finds orphaned relations, it hints: "Run 'archcore doctor --fix' to remove orphaned relations"
+
+**Flags:**
+
+| Flag               | Description                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| `--project <path>` | Project root to check. Defaults to the current directory; env: `ARCHCORE_PROJECT_ROOT`.          |
 
 ---
 
@@ -88,11 +95,10 @@ Full health check, with an optional fix pass.
 archcore doctor [--fix] [--agent <id>] [--project <path>]
 ```
 
-`doctor` runs all validation checks plus:
+`doctor` runs every [`archcore status`](#archcore-status) check, tag hygiene included, plus:
 
 - Verifies `settings.json` exists and is valid
 - Checks server reachability (if server URL is configured)
-- Reports tag hygiene issues (invalid format, singleton tags that may be typos)
 - Reports whether each wired host can act on its hook config
 
 If `doctor` finds any issue, it returns a non-zero exit code.
@@ -143,13 +149,23 @@ archcore config set <key> <value>  # Set a config value
 | `project_id`   | integer                    | Project ID for sync. Locked: `get` and `set` both return "not available yet" |
 | `archcore_url` | URL                        | Server URL for on-prem. Locked: `get` and `set` both return "not available yet" |
 | `language`     | language code              | Language for document content (e.g., `en`, `ru`) |
+| `codeAlignment.sourceRoots` | comma-separated list | Source roots for the code-alignment advisory. `get` only; when the key is unset, `get` prints the defaults. Edit the value in `settings.json` by hand |
+
+**Flags:**
+
+| Flag               | Description                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------- |
+| `--project <path>` | Project root containing `.archcore/`. Defaults to the current directory; env: `ARCHCORE_PROJECT_ROOT`. |
 
 **Examples:**
 
 ```bash
 archcore config set language ru
 archcore config get language
+archcore config get codeAlignment.sourceRoots
 ```
+
+See [Configuration](/cli/configuration/#code-alignment) for the default source roots and the validation rules.
 
 ---
 
@@ -204,12 +220,9 @@ archcore instructions remove    # Remove the hint
 | Flag               | Description                                                                                                                                     |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--agent <id>`     | Target a single agent host (e.g. `claude-code`, `cursor`, `gemini-cli`, `codex-cli`) instead of all detected ones. Accepted by both subcommands; not repeatable, so the last value wins. |
-| `--project <path>` | Project root containing `.archcore/`. Accepted by `install` only.                                                                                |
+| `--project <path>` | Project root to operate on. Accepted by both subcommands; `install` requires `.archcore/` there, `remove` does not.                              |
 
-The two subcommands resolve the project root differently, and the difference is easy to trip over:
-
-- `install` resolves it in order: the `--project` flag, then the `ARCHCORE_PROJECT_ROOT` environment variable, then the current working directory.
-- `remove` honors neither. It always operates on the current working directory, so run it from the project root.
+Both subcommands resolve the project root in order: the `--project` flag, then the `ARCHCORE_PROJECT_ROOT` environment variable, then the current working directory.
 
 Every target file (`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`) receives the hint inside a managed marker block:
 
@@ -295,9 +308,9 @@ Manage the Archcore plugin on the four hosts that ship one: Claude Code, Cursor,
 
 ```bash
 archcore plugin install [--agent <id>] [--project <path>] [--scope user|project]
-archcore plugin update  [--agent <id>] [--project <path>]
-archcore plugin remove  [--agent <id>] [--project <path>]
-archcore plugin status  [--agent <id>] [--project <path>]
+archcore plugin update  [--agent <id>]
+archcore plugin remove  [--agent <id>]
+archcore plugin status  [--agent <id>]
 ```
 
 Typing the verb is the consent for every host it targets, so each verb runs the same way with or without a terminal. This is the difference from [`archcore init`](#archcore-init), where consent comes from a checked host or an `--agent` flag.

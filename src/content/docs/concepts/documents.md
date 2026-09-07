@@ -14,14 +14,14 @@ Every document follows the pattern:
 ```
 
 - **Slug**: lowercase alphanumeric with hyphens. Must match `^[a-z0-9]+(-[a-z0-9]+)*$`
-- **Type**: one of the 19 valid types (see [Document Types](/concepts/document-types/))
+- **Type**: one of the 21 valid types (see [Document Types](/concepts/document-types/))
 - **Extension**: always `.md`
 
 **Valid:** `jwt-strategy`, `use-postgres`, `api-v2-migration`
 
 **Invalid:** `JWT_Strategy` (uppercase), `use postgres` (spaces), `my.decision` (dots in slug), `jwt_strategy` (underscores)
 
-If a filename has no recognized type segment, the scanner categorizes the document as `knowledge`.
+If a filename has no recognized type segment, the scanner categorizes the document as `knowledge`. `archcore status` reports such a file as an error with the message `filename must match <slug>.<type>.md`.
 
 ### Examples
 

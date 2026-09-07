@@ -144,13 +144,14 @@ Use this route when you prefer your host's own interface. The plugin still calls
 
 		Codex registers MCP automatically. The plugin's manifest references `.codex.mcp.json`, which runs `archcore mcp` from your `PATH`. That config uses no env-var substitution and no plugin-relative paths.
 
-		Enable hooks. Codex gates them behind an under-development feature flag that defaults to off:
+		Enable hooks. Codex gates them behind its `hooks` feature. Enable it with `codex --enable hooks`, or add a `[features]` table to `~/.codex/config.toml`:
 
-		```bash
-		codex features enable plugin_hooks
+		```toml
+		[features]
+		hooks = true
 		```
 
-		Without this flag, skills, MCP tools, and agents work normally, but the write guard, code-alignment injection, and post-write checks won't fire.
+		Before Codex 0.129.0 the key is spelled `codex_hooks = true`. Without this feature, skills, MCP tools, and agents work normally, but the write guard, code-alignment injection, and post-write checks won't fire.
 	</TabItem>
 	<TabItem label="GitHub Copilot CLI">
 		Two steps, both required:
@@ -195,7 +196,7 @@ Use this route when you prefer your host's own interface. The plugin still calls
 		codex plugin add archcore@archcore-plugins
 		```
 
-		If you want hooks active, run `codex features enable plugin_hooks`.
+		If you want hooks active, launch with `codex --enable hooks`, or add `[features]` with `hooks = true` to `~/.codex/config.toml` (`codex_hooks = true` before Codex 0.129.0).
 
 		On **GitHub Copilot CLI**, load the plugin directory directly:
 

@@ -79,13 +79,14 @@ One adapter covers both Codex surfaces, the CLI and the desktop app. They share 
 
 Codex applies project wiring only after two separate consents. It loads a project's `.codex/` layer only for a project marked `trust_level = "trusted"`, and it runs a command hook only after you review and trust it under `/hooks`. Writing the files grants neither, so wiring stays inert until you give both.
 
-Codex CLI uses the same `PostToolUse` semantics as Claude Code, and adds Codex's `apply_patch` tool to the `PreToolUse` matcher. A Codex-side feature flag gates Codex hooks:
+Codex CLI uses the same `PostToolUse` semantics as Claude Code, and adds Codex's `apply_patch` tool to the `PreToolUse` matcher. Codex's `hooks` feature gates Codex hooks. Enable it with `codex --enable hooks`, or add a `[features]` table to `~/.codex/config.toml`:
 
-```bash
-codex features enable plugin_hooks
+```toml
+[features]
+hooks = true
 ```
 
-The flag is under development in Codex and defaults to off. Without it, hooks are inert, and skills, MCP, and agents still work.
+Before Codex 0.129.0 the key is spelled `codex_hooks = true`. On Codex CLI 0.153.4, `codex features list` reports `hooks` as stable and enabled by default; check that feature on your installed version. Without it, hooks are inert, and skills, MCP, and agents still work.
 
 The path env var is `${PLUGIN_ROOT}`, Codex's canonical host-neutral name. There is no `${CODEX_PLUGIN_ROOT}` variable.
 
@@ -135,7 +136,7 @@ Tool whitelists are identical across formats. See [Built-in agents](/plugin/agen
 
 **Use Codex CLI if:**
 - You want a terminal-first agent that registers MCP for you.
-- You're comfortable enabling the `plugin_hooks` feature flag to get full hook coverage.
+- You're comfortable enabling Codex's `hooks` feature to get full hook coverage.
 
 **Use GitHub Copilot CLI if:**
 - You're already on Copilot and can run the one-time `archcore init --agent copilot` wiring step.

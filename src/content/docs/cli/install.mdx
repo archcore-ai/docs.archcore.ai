@@ -10,7 +10,7 @@ import PathBadge from '../../../components/PathBadge.astro';
 
 The CLI is a single binary. Install it with one command for your platform.
 
-Prebuilt binaries cover `darwin`, `linux`, and `windows` on `amd64` and `arm64`. On any other target, build from source with `go install github.com/archcore-ai/cli@latest`.
+Prebuilt binaries cover `darwin`, `linux`, and `windows` on `amd64` and `arm64`.
 
 ## Prerequisites
 
@@ -95,7 +95,7 @@ DO_NOT_TRACK=1 curl -fsSL https://archcore.ai/install.sh | bash
 
 The opt-out variables stop telemetry only. They do not disable updates.
 
-A build without an injected key sends nothing, so `go build`, `go install`, a fork, and a CI build are all inert.
+A build without an injected key sends nothing, so a local `go build`, a fork, and a CI build are all inert.
 
 The full policy is at <a href="https://archcore.ai/privacy" target="_blank">archcore.ai/privacy</a>.
 
@@ -121,7 +121,7 @@ archcore update
 
 After the binary phase, `archcore update` refreshes the Archcore plugin on every host that already carries it. A host without the plugin produces no output, and no command runs there. The [`archcore plugin` reference](/cli/commands/#archcore-plugin) covers the direct commands.
 
-Two other paths update the binary: re-run the install script, or run `go install github.com/archcore-ai/cli@latest`.
+Re-running the install script also updates the binary.
 
 ### Unattended update
 

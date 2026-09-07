@@ -21,7 +21,7 @@ Neither is the primary path. Which one you use is decided by the agent you run, 
 The two pieces do different jobs and change at different rates.
 
 1. **Parsing and exposing context.** Read files, validate structure, track relations, speak MCP. This part changes slowly, has to be a single stable binary, and must run anywhere (CI, editor, agent subprocess).
-2. **Applying context inside a conversation.** Know when to use an ADR vs. a spec vs. a guide. Drive multi-step tracks. Block unsafe writes. Audit the knowledge base. This part changes fast, is tied to the coding agent's API (skills, hooks, prompts), and is host-specific.
+2. **Applying context inside a conversation.** Know when to use an ADR vs. a spec vs. a guide. Drive multi-step tracks. Register the host's lifecycle hooks so the CLI's guardrails run. Audit the knowledge base. This part changes fast, is tied to the coding agent's API (skills, hooks, prompts), and is host-specific.
 
 Putting both in one package would couple their release cadences. Every plugin change would need a full CLI release. Splitting them lets each ship on its own schedule.
 
@@ -35,8 +35,8 @@ Putting both in one package would couple their release cadences. Every plugin ch
 | Expose MCP tools to agents                        | `archcore mcp`   | No               |
 | Install MCP configs and session hooks             | Yes              | No               |
 | Provide outcome-focused slash commands (`/archcore:document`, `/archcore:plan`, …) | No               | Yes              |
-| Block direct writes to `.archcore/*.md`           | No               | Yes              |
-| Detect cascade staleness after `update_document`  | No               | Yes              |
+| Block direct writes to `.archcore/*.md`           | Yes              | Registers the hook only (delegates to the CLI) |
+| Detect cascade staleness after `update_document`  | Yes              | Registers the hook only (delegates to the CLI) |
 | Host-specific plugin manifests and hook files     | No               | Yes              |
 
 The plugin does not implement its own MCP server. It reuses the one started by `archcore mcp`, so both layers read the same graph.
@@ -53,8 +53,8 @@ Neither layer runs the method behind a document. Archcore stores knowledge in ty
 │  Plugin (runtime)       │         │   *.md documents         │
 │  • Skills               │         │   settings.json          │
 │  • Built-in agents      │         │   .sync-state.json       │
-│  • Hooks (MCP-only,     │         └──────────▲───────────────┘
-│    validate, cascade)   │                    │
+│  • Hook launchers       │         └──────────▲───────────────┘
+│    (call archcore hooks)│                    │
 └──────────┬──────────────┘                    │
            │ MCP tools                         │
            │ (list/get/create/update/…)        │

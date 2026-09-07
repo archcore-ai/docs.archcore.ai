@@ -86,11 +86,12 @@ The natural lifecycle flows from **Vision -> Knowledge -> Experience**:
 Vision                       Knowledge              Experience
 ┌─────────────────────┐     ┌──────────┐           ┌──────────┐
 │ Product track       │     │   rfc    │           │          │
-│   idea rnd prd plan │──>  │   adr    │───>       │task-type │
-│                     │     │   rule   │───>       │   cpat   │
-│ Sources track       │     │  guide   │           │          │
-│   mrd brd urd       │──>  │   spec   │           │          │
-│                     │     │   doc    │           │          │
+│   idea rnd research │──>  │   adr    │───>       │task-type │
+│   prd plan          │     │   rule   │───>       │   cpat   │
+│                     │     │  guide   │           │          │
+│ Sources track       │     │   spec   │           │          │
+│   mrd brd urd       │──>  │   doc    │           │          │
+│                     │     │          │           │          │
 │ ISO track           │     │          │           │          │
 │   brs strs          │──>  │          │           │          │
 │   syrs srs          │     │          │           │          │
@@ -113,7 +114,7 @@ idea -> prd -> plan -> implementation
                       task-type / cpat (patterns learned)
 ```
 
-[Relations](/concepts/relations/) link documents across categories with four directed types: `implements`, `extends`, `depends_on`, and `related`. Agents get a graph of your repository context, including the connections between documents.
+[Relations](/concepts/relations/) link documents across categories with seven directed types on three axes: structural (`implements`, `extends`, `depends_on`, `related`), evidential (`supports`, `contradicts`), and temporal (`supersedes`). Agents get a graph of your repository context, including the connections between documents.
 
 ## Categories are virtual
 

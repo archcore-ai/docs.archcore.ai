@@ -77,7 +77,7 @@ A bounded investigation that answers an open question before a decision is made 
 | **When to use** | A bounded investigation is needed to answer a question before deciding or building |
 | **Template sections** | Research Goal, Context and Trigger, Questions / Hypotheses, Approach, Findings, Implications, Recommendation, Next Action, Risks and Unknowns, Related Materials |
 
-An `rnd` is the **Research Gate** in front of the committing tracks (`rnd` -> `idea`, `rnd` -> `adr` -> `spec` -> `plan`). Its status maps to the verdict:
+An `rnd` sits in front of the committing tracks (`rnd` -> `idea`, `rnd` -> `adr` -> `spec` -> `plan`). Its status maps to the verdict:
 
 - `draft`: still investigating
 - `accepted`: recommendation adopted, proceed or refine
@@ -135,7 +135,7 @@ Market analysis covering TAM/SAM/SOM, competitive landscape, market needs, and t
 |---|---|
 | **File extension** | `.mrd.md` |
 | **When to use** | Market analysis is needed before proposing a solution |
-| **Template sections** | Market Landscape, TAM/SAM/SOM, Competitive Analysis, Market Needs, Opportunity and Timing |
+| **Template sections** | Market Landscape, TAM / SAM / SOM, Competitive Analysis, Market Needs, Opportunity and Timing, Risks, References |
 
 #### BRD (Business Requirements Document)
 
@@ -145,7 +145,7 @@ Business justification with objectives, stakeholders, constraints, and ROI.
 |---|---|
 | **File extension** | `.brd.md` |
 | **When to use** | Business justification and organizational impact need documenting |
-| **Template sections** | Business Objectives, Stakeholders, Business Rules and Constraints, Success Metrics and ROI |
+| **Template sections** | Business Objectives, Stakeholders, Business Rules and Constraints, Success Metrics and ROI, Dependencies, Risks, References |
 
 #### URD (User Requirements Document)
 
@@ -155,7 +155,7 @@ User needs captured through personas, journeys, user requirements, usability, an
 |---|---|
 | **File extension** | `.urd.md` |
 | **When to use** | User needs, personas, and journeys need capturing during discovery |
-| **Template sections** | User Personas, User Journeys, User Requirements, Usability Requirements, Acceptance Criteria |
+| **Template sections** | User Personas, User Journeys, User Requirements, Usability Requirements, Acceptance Criteria, References |
 
 ### ISO track (decomposition)
 
@@ -215,7 +215,7 @@ Per-function and per-endpoint specifications with a verification matrix.
 
 Default to the Product track; move to Sources or ISO only when the project demands it.
 
-The Archcore plugin produces these documents through [`/archcore:plan`](/plugin/skills/#archcoreplan), which computes which of them a request actually needs. Naming `sdd`, `sources`, or `iso` in the invocation runs that track's path directly. Without the plugin, create the same documents through the MCP tools in the same order.
+The Archcore plugin produces these documents through [`/archcore:plan`](/plugin/skills/#archcoreplan), which computes which of them a request actually needs. Naming `sdd`, `sources`, `iso`, or `research` in the invocation runs that track's path directly. Without the plugin, create the same documents through the MCP tools in the same order.
 
 All three tracks can coexist. For example, use the Product track for a small feature while the full ISO track covers a safety-critical subsystem.
 
@@ -254,7 +254,7 @@ Records a decision that has been made.
 |---|---|
 | **File extension** | `.adr.md` |
 | **When to use** | A technical decision is made or finalized |
-| **Template sections** | Context, Decision, Alternatives Considered, Consequences |
+| **Template sections** | Context, Decision, Alternatives Considered, Consequences, Implementation Notes |
 
 ```markdown
 ---
@@ -288,7 +288,7 @@ Proposes a significant change for team review.
 |---|---|
 | **File extension** | `.rfc.md` |
 | **When to use** | A significant change is being proposed |
-| **Template sections** | Summary, Motivation, Detailed Design, Drawbacks, Alternatives |
+| **Template sections** | Summary, Motivation, Detailed Design, Drawbacks, Alternatives, Security Considerations, Testing Strategy, Rollout Plan, Unresolved Questions, Implementation Plan |
 
 ### Rule
 
@@ -337,7 +337,7 @@ Step-by-step instructions for completing a specific task.
 
 A normative behavior contract for something others rely on: a boundary (API/interface/schema/protocol) or a feature/subsystem. You can capture a spec after the code exists or specify it ahead of the code. If the implementation diverges from the spec, the spec takes precedence.
 
-A spec covers one subject and is not a general reference dump. Keep the body at or under 80 lines.
+A spec covers one subject and is not a general reference dump. Keep the body at or under 120 lines.
 
 | | |
 |---|---|
