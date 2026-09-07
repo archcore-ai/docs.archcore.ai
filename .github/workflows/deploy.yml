@@ -3,6 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Lets a host change (vars.POSTHOG_HOST) be rolled out without an empty
+  # commit — the analytics host is a repository variable, so switching it
+  # changes the built bundle with no diff to push.
+  workflow_dispatch:
 
 permissions:
   contents: read
