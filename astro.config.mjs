@@ -44,6 +44,9 @@ function requireAnalyticsKey() {
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://docs.archcore.ai',
+	// Every page is static HTML; keeping whitespace compression explicit means
+	// a future Astro default change cannot quietly grow the shipped HTML.
+	compressHTML: true,
 	vite: {
 		plugins: [requireAnalyticsKey()],
 	},
