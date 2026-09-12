@@ -1,0 +1,81 @@
+---
+title: Quick start with Archcore
+description: Follow one task through project context, planning, implementation, recorded decisions, and review.
+---
+
+Use Archcore through one working loop: read project context, plan a change, implement it, record what you learned, and review the result. The next task starts with that context already available.
+
+Complete [installation](/start/install/) first. This walkthrough uses the plugin commands in Claude Code, Cursor, Codex CLI, or GitHub Copilot CLI. Pick a small, real change in your repository.
+
+<span id="1-confirm-the-agent-can-read-context"></span>
+<span id="2-add-project-knowledge"></span>
+
+## Start with your project
+
+For an existing codebase without recorded context, run this once:
+
+```text
+/archcore:init
+```
+
+The agent examines the repository and proposes initial documents. Review the proposal before confirming. You do not need to document the whole codebase before starting work.
+
+If context already exists, ask:
+
+> Read the Archcore context relevant to this task. Tell me which decisions and rules apply, and what is still unknown.
+
+Look for document reads in the tool activity. If Archcore tools are missing, fix the [connection](/guides/troubleshooting/#agent-cannot-see-documents) first.
+
+## 1. Plan the change
+
+```text
+/archcore:plan add CSV export to the reporting API
+```
+
+Replace the example with your task. The agent reads existing context, asks about unresolved choices, and prepares the documents the change needs. Review the scope and intended behavior before choosing implementation. A small fix may need no new documents.
+
+## 2. Implement with that context
+
+Ask your coding agent:
+
+> Implement the agreed change. Follow the relevant Archcore decisions and rules. If the implementation conflicts with them, show me the conflict before changing the decision.
+
+Your agent performs the coding work with its normal tools. Archcore supplies the recorded context; it does not execute the plan itself.
+
+<span id="3-review-the-stored-document"></span>
+
+## 3. Keep the new knowledge
+
+When the work settles a decision worth reusing, record it:
+
+```text
+/archcore:document record the export-format decision and the reasons we agreed
+```
+
+Review the resulting draft in `.archcore/`. Ask for corrections, then explicitly accept it when its content is right. Update an existing record rather than creating a competing copy. If the task produced no new durable knowledge, skip this step.
+
+## 4. Review and close the task
+
+```text
+/archcore:review review the export changes against the agreed context
+```
+
+The agent checks the scoped work against project documents and reports findings. Resolve relevant issues, reconcile the plan with the work actually completed, and include code and context changes in your normal Git review.
+
+<span id="4-retrieve-it-in-a-new-session"></span>
+
+## Begin the next loop
+
+Open a new conversation in the same repository:
+
+> Read the recorded export decision and the current plan. Cite their paths and tell me what remains before we continue.
+
+The agent should retrieve the documents, distinguish drafts from accepted decisions, and use their content in its answer. A recap alone does not show that it read the full records.
+
+Repeat the loop for the next task; do not repeat initialization each time. The [interactive walkthrough](https://archcore.ai/how-to-use/) shows other starting points.
+
+## Next steps
+
+- [What to expect](/start/what-to-expect/) explains the effect on your agent and the limits of automatic context.
+- [Commands and examples](/guides/commands/) covers each skill in detail.
+- [Document types](/concepts/document-types/) helps you choose what to record.

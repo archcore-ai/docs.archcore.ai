@@ -5,7 +5,7 @@ description: Archcore has 21 document types, including ADR, RFC, rule, spec, evi
 
 Archcore has 21 document types organized into 3 categories: 12 vision, 7 knowledge, and 2 experience. Each type has a template that the Archcore CLI generates. If you have not installed the CLI yet, get it from the [CLI page](https://archcore.ai/cli/).
 
-The template sections listed below are what the CLI writes into a new document. A narrower set is checked after every write, and [Precision checks](/reference/precision-checks/) lists it per type.
+The template sections listed below are what the CLI writes into a new document. A narrower set is checked after every write, and [Precision checks](/reference/document-format/#precision-checks) lists it per type.
 
 ## Choosing the right type
 
@@ -83,7 +83,7 @@ An `rnd` sits in front of the committing tracks (`rnd` -> `idea`, `rnd` -> `adr`
 - `accepted`: recommendation adopted, proceed or refine
 - `rejected`: defer or stop
 
-A rejected `rnd` is a first-class outcome. Keep it in the repository, because "we investigated and decided not to" stays visible as a record of the dead end. By convention, `prd`/`plan`/`adr` `depends_on` an `rnd`, and an `rfc` may `extend` one; `rnd` never uses [`implements`](/concepts/relations/).
+A rejected `rnd` is a first-class outcome. Keep it in the repository, because "we investigated and decided not to" stays visible as a record of the dead end. By convention, `prd`/`plan`/`adr` `depends_on` an `rnd`, and an `rfc` may `extend` one; `rnd` never uses [`implements`](/concepts/project-context/#relations).
 
 :::note[RnD vs Idea vs ADR vs RFC]
 An **rnd** investigates an open question and must conclude with a recommendation. Use it for "should we" and "which way." An **idea** proposes a concept worth exploring, the "we could" case. An **adr** records a decision already made; gather evidence in an `rnd`, then record the resulting decision as an `adr`. An **rfc** puts a concrete proposal up for review. If there is nothing to propose yet, use `rnd`.
@@ -107,7 +107,7 @@ The status of a `research` records the state of its synthesis:
 - `accepted`: the synthesis is current as of its last revision
 - `rejected`: abandoned, or fully replaced through `supersedes`
 
-Sources are recorded as rows in the Sources table first. A source gets its own `evidence` document only when two documents rely on it, when a `contradicts` edge involves it, or when a newer material supersedes it. By convention, `rnd depends_on research` links a decision-bound investigation to the territory it draws on; a `research` never uses `implements` or `extends`. See [Relations](/concepts/relations/).
+Sources are recorded as rows in the Sources table first. A source gets its own `evidence` document only when two documents rely on it, when a `contradicts` edge involves it, or when a newer material supersedes it. By convention, `rnd depends_on research` links a decision-bound investigation to the territory it draws on; a `research` never uses `implements` or `extends`. See [Relations](/concepts/project-context/#relations).
 
 :::note[Research vs RnD vs Doc]
 A **research** maps a territory and closes when its scope is covered. An **rnd** answers one question and closes with a recommendation. A **doc** records reference information the team controls; a `research` records external knowledge with dated sources, coverage, and gaps.
@@ -215,7 +215,7 @@ Per-function and per-endpoint specifications with a verification matrix.
 
 Default to the Product track; move to Sources or ISO only when the project demands it.
 
-The Archcore plugin produces these documents through [`/archcore:plan`](/plugin/skills/#archcoreplan), which computes which of them a request actually needs. Naming `sdd`, `sources`, `iso`, or `research` in the invocation runs that track's path directly. Without the plugin, create the same documents through the MCP tools in the same order.
+The Archcore plugin produces these documents through [`/archcore:plan`](/guides/commands/#archcoreplan), which computes which of them a request actually needs. Naming `sdd`, `sources`, `iso`, or `research` in the invocation runs that track's path directly. Without the plugin, create the same documents through the MCP tools in the same order.
 
 All three tracks can coexist. For example, use the Product track for a small feature while the full ISO track covers a safety-critical subsystem.
 
@@ -224,7 +224,7 @@ All three tracks can coexist. For example, use the Product track for a small fea
 Sources and specifications have separate purposes:
 
 - **Layer A (sources)**: `mrd`, `brd`, `urd`, and `prd` capture raw requirements from market, business, and user perspectives.
-- **Layer B (specifications)**: `brs`, `strs`, `syrs`, and `srs` formalize what sources capture informally. The `implements` [relation](/concepts/relations/) connects the two layers.
+- **Layer B (specifications)**: `brs`, `strs`, `syrs`, and `srs` formalize what sources capture informally. The `implements` [relation](/concepts/project-context/#relations) connects the two layers.
 
 Formalization runs one way: from source to specification, never the reverse.
 
@@ -498,7 +498,7 @@ All files in `src/services/` and `src/handlers/`.
 
 ## Content ownership
 
-Each kind of content has one owning document type and one section inside it. A track produces several documents on one topic and links them with [`implements`](/concepts/relations/), so the boundary decides which of them a statement belongs in.
+Each kind of content has one owning document type and one section inside it. A track produces several documents on one topic and links them with [`implements`](/concepts/project-context/#relations), so the boundary decides which of them a statement belongs in.
 
 | Content kind | Owner | Section |
 |---|---|---|
@@ -514,4 +514,10 @@ Two documents holding one statement have no single owner. An edit to one leaves 
 
 The `prd` template carries four sections for this reason. A section it does not own is not offered to the author, and the graded behavior that satisfies a `prd` requirement goes in the linked `spec`.
 
-Two post-write checks report a crossing of the boundary. A foreign-section finding names a heading whose content another type owns. A restatement finding names a statement that survived a move from a linked document nearly word for word. Both are advisory and reject nothing. See [Precision checks](/reference/precision-checks/#content-ownership).
+Two post-write checks report a crossing of the boundary. A foreign-section finding names a heading whose content another type owns. A restatement finding names a statement that survived a move from a linked document nearly word for word. Both are advisory and reject nothing. See [Precision checks](/reference/document-format/#content-ownership).
+
+
+## Next steps
+
+- [Commands and examples](/guides/commands/) shows how to use this reference in your agent.
+- [Project context](/concepts/project-context/) explains the document model.

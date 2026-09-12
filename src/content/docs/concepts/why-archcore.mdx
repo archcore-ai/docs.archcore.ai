@@ -1,0 +1,72 @@
+---
+title: Why use Archcore
+description: Keep hard-won project knowledge available across tasks, sessions, and agents without documenting everything.
+---
+
+Archcore helps a coding agent work from your project's decisions instead of reconstructing them on every task. It keeps the reasoning, constraints, and unresolved questions that code alone does not explain.
+
+## Let useful context accumulate
+
+The long-term bet is that each resolved uncertainty can improve the starting point for later work. A decision made today can guide the next feature, a new teammate, or a different coding agent without another explanation from scratch.
+
+More relevant, accurate context gives an agent more project-specific information to work with. More text alone does not. Duplicated rules, stale decisions, and unsupported claims can obscure the information the task needs. The aim is to grow the project's usable knowledge, not its document count.
+
+## Record what is hard to reconstruct
+
+Prioritize knowledge that is complex, uncertain, or implicit:
+
+| What is difficult to recover | What to keep |
+|---|---|
+| Why an apparently simpler design was rejected | The decision, alternatives, and trade-offs |
+| Which behavior another system relies on | A boundary contract and its constraints |
+| What a difficult investigation established | Findings, evidence, and remaining uncertainty |
+| Which convention is enforced only through team memory | A scoped rule and its reason |
+| What repeatedly went wrong during a task | A reusable procedure or pattern |
+
+Do not narrate every function or copy readable implementation into documents. Reference the code and preserve the information a future reader cannot recover from it. Start with the area the agent is about to change.
+
+## Keep project knowledge with the code
+
+Documents live in `.archcore/`, travel with Git, and can be reviewed alongside code changes. They remain available when a conversation ends or the team changes agents.
+
+That durability requires maintenance. When behavior changes, review its records. Keep assumptions visible, update stale context, and resolve contradictions explicitly.
+
+## Give the agent a way to find context
+
+Document types distinguish intent, decisions, contracts, and learned patterns. Relations connect them. MCP lets the agent find and read the relevant records rather than loading the entire collection into every prompt.
+
+The intended effect is continuity: work starts from what the project already knows. Retrieval and correct application still depend on the agent; [What to expect](/start/what-to-expect/) describes observable signs and limits.
+
+## Instruction files
+
+A short instruction file can be enough for a small repository. Keep host-specific guidance there. Add typed records when reasoning, lifecycle, or relationships need a separate home.
+
+The [instruction hint](/guides/connect-your-agent/#instruction-hint) directs the agent to Archcore. [Import existing instructions](/guides/commands/#import-existing-instructions) incrementally instead of moving everything at once.
+
+## When to use Archcore
+
+Use Archcore when future work depends on knowledge that is expensive to rediscover or easy to miss.
+
+| Situation | Context worth keeping | How it helps the next task |
+|---|---|---|
+| An agent repeatedly proposes a design the team already rejected | An `adr` with the alternatives and the constraints behind the choice | The agent can assess whether those constraints still hold before reopening the decision |
+| A payment calculation has rounding exceptions that look unnecessary | A `spec` describing the required behavior and a decision explaining its origin | A refactor can be checked against the exceptions rather than removing them as cleanup |
+| A public API has consumers outside your repository | A `spec` for the depended-on behavior and compatibility constraints | The agent has a contract to consult before changing a response or error |
+| A third-party integration has undocumented ordering requirements | A `doc` of observed behavior, with source references and remaining uncertainty | The next change starts with the known constraints instead of repeating the investigation |
+| A production failure took days to explain | A `cpat` showing the failing pattern, its replacement, and where the lesson applies | Similar work has a concrete failure mode and correction to consider |
+| A technology choice remains unresolved after several experiments | An `rnd` with findings, rejected candidates, and the next decision needed | A later session can continue from the evidence instead of restarting the comparison |
+| A migration spans several sessions or engineers | A `plan` with actual progress, linked to its requirements and decisions | The next person or agent can identify unfinished work and the constraints it must preserve |
+| A convention exists only in review comments or a teammate's memory | A scoped `rule` naming the affected files and its rationale | The convention becomes available before the next review repeats the same correction |
+| Several repositories share standards but have local exceptions | A global source for shared defaults and local records for the exceptions | Agents can distinguish the organization-wide convention from the project's decision |
+
+Keep a record when another task can reuse it. A mechanical rename or a change that adds no lasting project knowledge does not need a document.
+
+## What Archcore leaves to the host
+
+Your host owns execution tools, permissions, and the coding process. Archcore stores and serves context; it does not replace investigation, engineering judgment, or testing. Specs are one part of that context, not a required starting point for every change.
+
+## Next steps
+
+- [Archcore overview](/) introduces the product.
+- [Quick start](/start/quick-start/) demonstrates one working loop.
+- [Project context](/concepts/project-context/) explains how the records fit together.

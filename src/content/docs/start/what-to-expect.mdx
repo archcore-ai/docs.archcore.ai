@@ -1,0 +1,69 @@
+---
+title: What to expect from Archcore
+description: See how project context can change agent behavior, what happens automatically, and what still needs review.
+---
+
+Archcore makes recorded project context available to your agent. You can ask it to read, create, update, and connect documents; supported lifecycle hooks also supply context during a session.
+
+Automatic behavior depends on your [agent's capabilities and configuration](/guides/connect-your-agent/#supported-hosts). MCP access alone does not provide lifecycle hooks or slash commands.
+
+## What should change in the agent's work
+
+The agent can use your recorded decisions when changing code. It has less to reconstruct from the implementation or ask you to explain again.
+
+| Situation | Observable sign that context is being used |
+|---|---|
+| You start a task in a familiar module | The agent reads and names the relevant rules or decisions before proposing changes |
+| A request conflicts with an accepted decision | The agent explains the conflict and asks you to resolve it before changing that decision |
+| You record a new constraint | A later task retrieves the record and explains how it affects the proposed code |
+| You continue in a new session | The agent reads saved decisions and plans, distinguishes drafts from accepted records, and identifies unfinished work |
+
+These are behaviors to look for, not guaranteed outcomes. A document on disk or a delivered hook message does not prove the agent read or applied it. Ask it to cite the relevant record and explain the consequence for the task; review the resulting code as well.
+
+The [long-term aim](/concepts/why-archcore/#let-useful-context-accumulate) is to retain useful knowledge between tasks. Outdated or contradictory context still needs correction; adding documents alone does not establish better code or fewer mistakes.
+
+## When a session starts
+
+With a working session-start hook, the agent receives a bounded recap: document counts, the current branch, work in progress, recent accepted documents, tags, and relation counts.
+
+The recap tells the agent what context exists. It does not load every document's complete text. To answer a specific project question, the agent can search and read the relevant documents through MCP.
+
+## Before the agent edits code
+
+On hosts that support pre-edit context injection, Archcore can supply the rules and specifications associated with the file about to change. That context is advisory: it informs the agent but does not prove that the resulting code follows it.
+
+GitHub Copilot CLI's pre-write event accepts a permission decision but cannot receive this context. On Codex CLI, hooks need its feature flag and a trusted project configuration; Windows hooks are unavailable in the documented integration.
+
+If automatic injection is unavailable, ask the agent to read the relevant context explicitly.
+
+## When you record or change a document
+
+Ask for the outcome you need, such as recording a decision or planning a feature. On plugin hosts, the [Archcore commands](/guides/commands/) provide shortcuts for these requests.
+
+Document changes go through MCP tools. With a working write guard, direct edits to `.archcore/` documents are blocked so the agent uses those tools. MCP mutations validate document structure; post-write hooks can also report precision findings and documents affected by a relation cascade.
+
+| Mechanism | Effect |
+|---|---|
+| Write guard | Can block a direct document write |
+| MCP validation | Can reject an invalid document mutation |
+| Context injection | Supplies information before an edit |
+| Post-write findings | Report issues for review; do not undo the write |
+
+The [connection guide](/guides/connect-your-agent/#lifecycle-hooks) explains the mechanisms and host configuration.
+
+## What you still decide
+
+Review proposed documents before accepting them. A `draft` is work in progress; `accepted` records your approval. A template or a successful validation check does not establish that the content is true.
+
+Archcore does not resolve conflicting decisions automatically. Relations can record a contradiction or replacement, but you and the agent still need to read the evidence and record the resolution.
+
+Your host supplies execution tools and permissions. Archcore supplies project context; a planning command does not replace your host's controls or establish the correctness of generated code.
+
+## Check that it works
+
+Ask the agent to read a known document and cite its path. Inspect the tool activity for the retrieval. If the record is missing or a hook does not run, use [Troubleshooting](/guides/troubleshooting/).
+
+## Next steps
+
+- [Try the quick start](/start/quick-start/) to observe context retrieval across sessions.
+- [Understand project context](/concepts/project-context/) to learn how documents and relations are organized.

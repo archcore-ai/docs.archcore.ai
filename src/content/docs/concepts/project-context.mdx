@@ -1,0 +1,111 @@
+---
+title: Project context in Archcore
+description: Understand Archcore documents, categories, statuses, file layout, relations, and shared global sources.
+---
+
+Project context is the knowledge recorded in your repository's `.archcore/` directory: what you intend to build, what the project has decided, and patterns learned from previous work. Agents discover and read it through MCP.
+
+A project can begin with one rule or decision. Add structure when it helps describe the work; you do not need every document type or a complete requirements hierarchy before using Archcore.
+
+## Documents and layout
+
+Each document is a Markdown file named `slug.type.md`. The suffix identifies its document type. Frontmatter carries its title, status, and optional tags.
+
+```text
+.archcore/
+  auth/
+    session-expiry.adr.md
+    token-validation.spec.md
+  conventions/
+    api-errors.rule.md
+  reporting/
+    export.plan.md
+```
+
+### Free-form organization
+
+The directory layout is **free-form**. Keep documents at the root or group them by domain, feature, or team. You do not need `vision/`, `knowledge/`, and `experience/` folders, and a document's location does not determine its type or category.
+
+The body is Markdown, not a rigid form enforced by the parser. The document type still supplies a content contract and writing conventions that the plugin follows. Free-form organization does not remove the filename, frontmatter, or type-specific requirements. [Document format](/reference/document-format/#writing-with-the-plugin) explains that distinction.
+
+Archcore also manages `settings.json` for configuration and `.sync-state.json` for local document metadata and relations. Change relations through MCP instead of editing their storage file by hand. [Configuration](/cli/configuration/) explains the settings.
+
+## Categories
+
+A document's type determines its category automatically.
+
+| Category | Question | Examples |
+|---|---|---|
+| Vision | What are we trying to build or investigate? | `idea`, `prd`, `plan`, `rnd`, `research` |
+| Knowledge | What do we know, require, or propose? | `adr`, `rule`, `spec`, `rfc`, `guide`, `doc`, `evidence` |
+| Experience | What pattern have we learned from work? | `task-type`, `cpat` |
+
+These categories are not a required sequence. A rule can exist before a plan. A decision can change after new research. [Document types](/concepts/document-types/) provides the complete catalog and selection guidance.
+
+## Status and review
+
+| Status | Meaning |
+|---|---|
+| `draft` | Work in progress, awaiting review |
+| `accepted` | Reviewed and approved |
+| `rejected` | Declined or superseded, retained for its history |
+
+For an investigation, acceptance applies to its result: an `rnd` closes on a recommendation; a `research` closes on coverage of its scope. Accepting evidence confirms the material and recorded extract, not every claim someone could infer from it.
+
+Review the content before changing status. Updating a relation does not change the document's status automatically.
+
+## Relations
+
+Relations record a directed connection between two documents. For example, a plan can `implement` its requirements through an `implements` relation, while a rule can be `related` to the decision behind it.
+
+| Relation type | Direction and meaning |
+|---|---|
+| `implements` | Specific document to the requirement it fulfills |
+| `extends` | New document to the document it builds on |
+| `depends_on` | Dependent document to the document it requires |
+| `related` | Source document to an associated document |
+| `supports` | Material to the statement it supports |
+| `contradicts` | Challenger to the statement it disputes |
+| `supersedes` | Newer document to the document it replaces |
+
+The first four types are structural; `supports` and `contradicts` are evidential; `supersedes` is temporal. Source and target are distinct local documents. A relation cannot target a mounted global document.
+
+Ask the agent to add the connection through `add_relation`:
+
+> Link the export plan to its requirements document with implements. Show me the source and target.
+
+`create_document` does not add relations itself. Its nearby-document hint can help the agent identify candidates for a subsequent `add_relation` call. `get_document` returns incoming and outgoing relations, so the agent can inspect both directions.
+
+### Common patterns
+
+| Situation | Connection |
+|---|---|
+| A plan fulfills product requirements | `plan implements prd` |
+| An investigation needs a territory survey | `rnd depends_on research` |
+| An external report backs a finding | `evidence supports research` |
+| A new decision replaces an old one | `adr supersedes adr` |
+| A formal specification expresses stakeholder needs | `strs implements urd` |
+
+The requirements sources `mrd`, `brd`, and `urd` are peers; connect them with `related`. A specification can `implement` its source. PRD and ISO requirements documents can be associated with `related` rather than treated as successive mandatory steps.
+
+By convention, a `research` document is not the source of `implements` or `extends`. These type-selection conventions guide authors; the engine validates relation values independently of document categories.
+
+### Contradictions and replacements
+
+Keep a `contradicts` relation until the disputed document names the materials and records the resolution. Adding a `supersedes` relation also leaves the older document and its status unchanged.
+
+The engine stores these connections; it does not resolve the dispute or move content. The evidential and temporal relation types do not trigger cascade notices. They require CLI 0.8.3 or later; older readers reject manifests containing them.
+
+## Global sources
+
+A global source exposes another context directory as read-only project context. For example, a team can share standards across repositories while each repository keeps its own decisions locally.
+
+Local documents take precedence when they cover the same topic. Each returned document identifies its source, so the agent can distinguish shared defaults from local context. Writes and relations remain local.
+
+Global sources are explicitly configured, mandatory when declared, and non-transitive: the project loads its direct sources rather than recursively loading their globals. [Configure global sources](/cli/configuration/#global-sources) covers paths, vendoring, and startup failures.
+
+## Next steps
+
+- [Document types](/concepts/document-types/) helps you choose what to record.
+- [Commands and examples](/guides/commands/) covers creating and reviewing context.
+- [MCP tools](/reference/mcp-tools/) gives the exact document and relation APIs.

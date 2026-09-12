@@ -7,10 +7,11 @@
     "start": "astro dev",
     "og:generate": "npx tsx scripts/generate-og-image.mts",
     "prebuild": "npm run og:generate",
-    "build": "npm run prebuild && astro build && npm run check:first-load",
+    "build": "astro build && node scripts/finalize-docs.mjs && npm run check:docs && npm run check:first-load",
     "preview": "astro preview",
     "astro": "astro",
-    "check:first-load": "node scripts/check-first-load.mjs --budget=25"
+    "check:first-load": "node scripts/check-first-load.mjs --budget=25",
+    "check:docs": "node scripts/check-docs.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.38.1",

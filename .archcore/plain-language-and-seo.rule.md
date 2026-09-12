@@ -32,8 +32,7 @@ creates and points to that file. It does not restate the policy.
 12. Each page MUST carry at least one outbound link to a related page.
 13. IF a page moves or is removed, THEN the author MUST add an entry to the `redirects` table in
     `@astro.config.mjs`.
-14. IF a claim cannot be verified against the Archcore CLI or plugin repository, THEN the author MUST
-    omit it.
+14. IF a claim cannot be verified against its owning source under the documentation-sources rule, THEN the author MUST omit it.
 15. WHEN an author writes a positioning sentence, a page `title`, or a `description` that states what
     Archcore is, the author MUST take the wording from the shared `product/canonical-narrative` and
     `product/surface-descriptors` rather than composing a variant for this site.
@@ -101,8 +100,9 @@ parallelism, and an `-ing` tail.
 
 - `@CLAUDE.md` routes agents to `@AGENTS.md` before any content edit.
 - `@AGENTS.md` carries the review checklist an author verifies before returning a page.
-- `npm run build` fails on a broken link or an invalid frontmatter field.
-- Review rejects a page that introduces a claim absent from the CLI or plugin repository.
+- `npm run build` checks schema validity, registered documentation links, and the captured migration baseline.
+- Current coverage gap: the article-link checker skips unregistered internal routes. Historical aliases establish identifier presence, not topic-correct placement.
+- Review rejects unsupported claims according to the owning source: global definitions, CLI behavior, or plugin behavior.
 
 ## References
 

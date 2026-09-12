@@ -1,0 +1,52 @@
+---
+title: Use Archcore with other tools
+description: Pair Archcore with Superpowers, OpenSpec, Spec Kit, or Serena, with links to setup instructions.
+---
+
+Archcore integrations make project decisions available to the tools you already use. Each recipe explains how the tools work together and which tool maintains each document. The [integration catalog](https://archcore.ai/integrations/) contains the full setup instructions and verification details.
+
+## Superpowers
+
+Use Superpowers for its design and implementation workflows, with Archcore supplying existing project decisions and recording new ones. Superpowers keeps its own plans; Archcore records reference those files instead of duplicating them.
+
+[Set up Superpowers + Archcore](https://archcore.ai/integrations/superpowers/).
+
+## OpenSpec
+
+Use OpenSpec to organize a proposed change, its design, specifications, tasks, and archive. Archcore adds the project decisions the change must respect and preserves the reasons behind newly approved choices.
+
+[Set up OpenSpec + Archcore](https://archcore.ai/integrations/openspec/).
+
+## Spec Kit
+
+Use Spec Kit to specify and plan feature work. Archcore brings existing decisions into that work and keeps new decision records linked to the feature files. Specifications and tasks remain in Spec Kit's native locations.
+
+[Set up Spec Kit + Archcore](https://archcore.ai/integrations/spec-kit/).
+
+## Serena
+
+Use Serena to navigate symbols, find references, and edit code. Archcore provides the decisions, rules, and specifications relevant to the change. Serena's code notes remain separate from durable project decisions in Archcore.
+
+[Set up Serena + Archcore](https://archcore.ai/integrations/serena/).
+
+<span id="apply-a-recipe"></span>
+<span id="check-responsibilities"></span>
+<span id="understand-verification-status"></span>
+
+## Before you connect a recipe
+
+These integrations are experimental. Check the selected page for its instruction revision, prerequisites, pilot evidence, and untested combinations. Evidence for an earlier recipe does not verify its current instructions or every host.
+
+Install both tools, then add the recipe's instructions to the file your agent reads. Keep them outside Archcore's [managed block](/guides/connect-your-agent/#instruction-hint). Follow the recipe's ownership rules so two tools do not maintain competing versions of the same specification.
+
+<span id="diagnose-a-problem"></span>
+
+## Your own agent setup
+
+For a custom harness or an unlisted tool, use [Connect your agent](/guides/connect-your-agent/) for MCP, hooks, and prompt instructions. Define which tool owns the work and which knowledge belongs in Archcore.
+
+## Next steps
+
+- [Browse the integration catalog](https://archcore.ai/integrations/) for current recipes and their evidence.
+- [Try the Archcore loop](/start/quick-start/) before combining workflows.
+- [Troubleshooting](/guides/troubleshooting/) covers missing tools and connection errors.

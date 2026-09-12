@@ -1,0 +1,2019 @@
+{
+  "date": "2026-09-12",
+  "commit": "80ac863",
+  "pages": [
+    {
+      "route": "/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Build with Specs. Code with Context."
+        },
+        {
+          "id": "start-here",
+          "text": "Start here"
+        },
+        {
+          "id": "browse-by-section",
+          "text": "Browse by section"
+        }
+      ]
+    },
+    {
+      "route": "/cli/agent-integrations/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Agent Integrations"
+        },
+        {
+          "id": "support-matrix",
+          "text": "Support matrix"
+        },
+        {
+          "id": "host-limitations",
+          "text": "Host limitations"
+        },
+        {
+          "id": "codex-cli",
+          "text": "Codex CLI"
+        },
+        {
+          "id": "github-copilot",
+          "text": "GitHub Copilot"
+        },
+        {
+          "id": "gemini-cli",
+          "text": "Gemini CLI"
+        },
+        {
+          "id": "auto-detection",
+          "text": "Auto-detection"
+        },
+        {
+          "id": "mcp-config-locations",
+          "text": "MCP config locations"
+        },
+        {
+          "id": "corrupt-config-handling",
+          "text": "Corrupt config handling"
+        },
+        {
+          "id": "wrapped-hook-commands",
+          "text": "Wrapped hook commands"
+        },
+        {
+          "id": "instruction-hint",
+          "text": "Instruction hint"
+        },
+        {
+          "id": "where-the-hint-lands",
+          "text": "Where the hint lands"
+        },
+        {
+          "id": "managed-marker-block",
+          "text": "Managed marker block"
+        },
+        {
+          "id": "manual-installation",
+          "text": "Manual installation"
+        },
+        {
+          "id": "full-integration-vs-mcp-only",
+          "text": "Full integration vs MCP only"
+        },
+        {
+          "id": "plugin-vs-cli-integration",
+          "text": "Plugin vs CLI integration"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/cli/commands/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "CLI Commands"
+        },
+        {
+          "id": "archcore-init",
+          "text": "archcore init"
+        },
+        {
+          "id": "archcore-status",
+          "text": "archcore status"
+        },
+        {
+          "id": "archcore-doctor",
+          "text": "archcore doctor"
+        },
+        {
+          "id": "archcore-config",
+          "text": "archcore config"
+        },
+        {
+          "id": "archcore-mcp",
+          "text": "archcore mcp"
+        },
+        {
+          "id": "archcore-instructions",
+          "text": "archcore instructions"
+        },
+        {
+          "id": "archcore-hooks",
+          "text": "archcore hooks"
+        },
+        {
+          "id": "archcore-plugin",
+          "text": "archcore plugin"
+        },
+        {
+          "id": "archcore-update",
+          "text": "archcore update"
+        },
+        {
+          "id": "archcore-version",
+          "text": "archcore —version"
+        },
+        {
+          "id": "archcore-help",
+          "text": "archcore —help"
+        }
+      ]
+    },
+    {
+      "route": "/cli/configuration/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "CLI Configuration"
+        },
+        {
+          "id": "settings-file",
+          "text": "Settings file"
+        },
+        {
+          "id": "minimal-config-local-only",
+          "text": "Minimal config (local only)"
+        },
+        {
+          "id": "with-language",
+          "text": "With language"
+        },
+        {
+          "id": "fields",
+          "text": "Fields"
+        },
+        {
+          "id": "sync-types",
+          "text": "Sync types"
+        },
+        {
+          "id": "none-local-only",
+          "text": "none (local only)"
+        },
+        {
+          "id": "cloud-cloud-sync",
+          "text": "cloud (cloud sync)"
+        },
+        {
+          "id": "on-prem-self-hosted-server",
+          "text": "on-prem (self-hosted server)"
+        },
+        {
+          "id": "global-sources",
+          "text": "Global sources"
+        },
+        {
+          "id": "code-alignment",
+          "text": "Code alignment"
+        },
+        {
+          "id": "validation-rules",
+          "text": "Validation rules"
+        },
+        {
+          "id": "unknown-fields",
+          "text": "Unknown fields"
+        },
+        {
+          "id": "managing-config",
+          "text": "Managing config"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/cli/global-sources/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Global Sources"
+        },
+        {
+          "id": "the-model-local--global-only",
+          "text": "The model: local → global only"
+        },
+        {
+          "id": "declaring-a-global",
+          "text": "Declaring a global"
+        },
+        {
+          "id": "how-path-resolves",
+          "text": "How path resolves"
+        },
+        {
+          "id": "several-sources",
+          "text": "Several sources"
+        },
+        {
+          "id": "every-declared-global-is-mandatory",
+          "text": "Every declared global is mandatory"
+        },
+        {
+          "id": "read-only-everywhere",
+          "text": "Read-only everywhere"
+        },
+        {
+          "id": "local-overrides-global",
+          "text": "Local overrides global"
+        },
+        {
+          "id": "vendoring-a-global-in-tree",
+          "text": "Vendoring a global in-tree"
+        },
+        {
+          "id": "1-place-the-content-under-archcoreglobalid",
+          "text": "1. Place the content under .archcore/global/&#x3C;id>"
+        },
+        {
+          "id": "2-point-path-at-the-directory-that-contains-the-documents",
+          "text": "2. Point path at the directory that contains the documents"
+        },
+        {
+          "id": "3-declare-it",
+          "text": "3. Declare it"
+        },
+        {
+          "id": "monorepo-root-as-a-global",
+          "text": "Monorepo root as a global"
+        },
+        {
+          "id": "constraints",
+          "text": "Constraints"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/cli/hooks/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Hooks"
+        },
+        {
+          "id": "the-three-events",
+          "text": "The three events"
+        },
+        {
+          "id": "session-start",
+          "text": "Session start"
+        },
+        {
+          "id": "the-globals-block",
+          "text": "The GLOBALS block"
+        },
+        {
+          "id": "the-recap-is-bounded",
+          "text": "The recap is bounded"
+        },
+        {
+          "id": "staleness-advisory",
+          "text": "Staleness advisory"
+        },
+        {
+          "id": "before-a-write",
+          "text": "Before a write"
+        },
+        {
+          "id": "the-write-guard",
+          "text": "The write guard"
+        },
+        {
+          "id": "code-alignment-injection",
+          "text": "Code-alignment injection"
+        },
+        {
+          "id": "after-a-write",
+          "text": "After a write"
+        },
+        {
+          "id": "installing",
+          "text": "Installing"
+        },
+        {
+          "id": "installed-wiring",
+          "text": "Installed wiring"
+        },
+        {
+          "id": "host-limitations",
+          "text": "Host limitations"
+        },
+        {
+          "id": "running-a-hook-by-hand",
+          "text": "Running a hook by hand"
+        },
+        {
+          "id": "removed-hooks",
+          "text": "Removed hooks"
+        },
+        {
+          "id": "do-you-need-hooks",
+          "text": "Do you need hooks?"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/cli/install/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Install the CLI"
+        },
+        {
+          "id": "prerequisites",
+          "text": "Prerequisites"
+        },
+        {
+          "id": "install",
+          "text": "Install"
+        },
+        {
+          "id": "install-options",
+          "text": "Install options"
+        },
+        {
+          "id": "analytics-and-opt-out",
+          "text": "Analytics and opt-out"
+        },
+        {
+          "id": "verify",
+          "text": "Verify"
+        },
+        {
+          "id": "update",
+          "text": "Update"
+        },
+        {
+          "id": "typed-update",
+          "text": "Typed update"
+        },
+        {
+          "id": "unattended-update",
+          "text": "Unattended update"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/cli/mcp-server/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "MCP Server for Project Context"
+        },
+        {
+          "id": "what-agents-can-do",
+          "text": "What agents can do"
+        },
+        {
+          "id": "install_host_config-is-gated",
+          "text": "install_host_config is gated"
+        },
+        {
+          "id": "bootstrapping-in-an-empty-repo",
+          "text": "Bootstrapping in an empty repo"
+        },
+        {
+          "id": "built-in-agent-instructions",
+          "text": "Built-in agent instructions"
+        },
+        {
+          "id": "global-sources",
+          "text": "Global sources"
+        },
+        {
+          "id": "installation",
+          "text": "Installation"
+        },
+        {
+          "id": "automatic-recommended",
+          "text": "Automatic (recommended)"
+        },
+        {
+          "id": "manual",
+          "text": "Manual"
+        },
+        {
+          "id": "manual-config",
+          "text": "Manual config"
+        },
+        {
+          "id": "pointing-the-server-at-a-project-root",
+          "text": "Pointing the server at a project root"
+        },
+        {
+          "id": "following-the-sessions-working-directory",
+          "text": "Following the session’s working directory"
+        },
+        {
+          "id": "language-support",
+          "text": "Language support"
+        },
+        {
+          "id": "session-hooks",
+          "text": "Session hooks"
+        },
+        {
+          "id": "how-the-session-start-hook-works",
+          "text": "How the session-start hook works"
+        },
+        {
+          "id": "installing-hooks",
+          "text": "Installing hooks"
+        },
+        {
+          "id": "hook-config-example",
+          "text": "Hook config example"
+        },
+        {
+          "id": "when-you-dont-need-hooks",
+          "text": "When you don’t need hooks"
+        },
+        {
+          "id": "protocol-details",
+          "text": "Protocol details"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/cli/overview/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "CLI Overview"
+        },
+        {
+          "id": "when-to-use-the-cli-directly",
+          "text": "When to use the CLI directly"
+        },
+        {
+          "id": "how-the-cli-fits",
+          "text": "How the CLI fits"
+        },
+        {
+          "id": "supported-agents",
+          "text": "Supported agents"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/cli/quick-start/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "CLI Quick Start"
+        },
+        {
+          "id": "prerequisites",
+          "text": "Prerequisites"
+        },
+        {
+          "id": "initialize-your-project",
+          "text": "Initialize your project"
+        },
+        {
+          "id": "verify-the-agent-sees-archcore",
+          "text": "Verify the agent sees Archcore"
+        },
+        {
+          "id": "create-your-first-document",
+          "text": "Create your first document"
+        },
+        {
+          "id": "use-it-in-conversations",
+          "text": "Use it in conversations"
+        },
+        {
+          "id": "build-on-it",
+          "text": "Build on it"
+        },
+        {
+          "id": "adopting-in-an-existing-repo",
+          "text": "Adopting in an existing repo"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/cli/troubleshooting/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "CLI Troubleshooting"
+        },
+        {
+          "id": "agent-cannot-see-documents",
+          "text": "Agent cannot see documents"
+        },
+        {
+          "id": "mcp-not-configured",
+          "text": "MCP not configured"
+        },
+        {
+          "id": "config-points-to-wrong-command",
+          "text": "Config points to wrong command"
+        },
+        {
+          "id": "archcore-not-in-path",
+          "text": "Archcore not in PATH"
+        },
+        {
+          "id": "wrong-working-directory",
+          "text": "Wrong working directory"
+        },
+        {
+          "id": "hooks-not-installed",
+          "text": "Hooks not installed"
+        },
+        {
+          "id": "config-was-reset-after-an-install",
+          "text": "Config was reset after an install"
+        },
+        {
+          "id": "agent-doesnt-support-mcp",
+          "text": "Agent doesn’t support MCP"
+        },
+        {
+          "id": "documents-exist-but-agent-says-none-found",
+          "text": "Documents exist but agent says none found"
+        },
+        {
+          "id": "mcp-server-not-starting",
+          "text": "MCP server not starting"
+        },
+        {
+          "id": "permission-denied",
+          "text": "Permission denied"
+        },
+        {
+          "id": "multiple-archcore-versions",
+          "text": "Multiple archcore versions"
+        },
+        {
+          "id": "missing-or-invalid-global-source",
+          "text": "Missing or invalid global source"
+        },
+        {
+          "id": "server-refuses-to-start-inside-a-plugin-cache",
+          "text": "Server refuses to start inside a plugin cache"
+        },
+        {
+          "id": "cannot-update-a-read-only-global-source-document",
+          "text": "”Cannot update a read-only global source document”"
+        },
+        {
+          "id": "context-appears-twice",
+          "text": "Context appears twice"
+        },
+        {
+          "id": "install-and-update-failures",
+          "text": "Install and update failures"
+        },
+        {
+          "id": "a-development-build-updates-on-every-run",
+          "text": "A development build updates on every run"
+        },
+        {
+          "id": "the-background-update-never-runs",
+          "text": "The background update never runs"
+        },
+        {
+          "id": "validation-errors",
+          "text": "Validation errors"
+        },
+        {
+          "id": "invalid-filename",
+          "text": "Invalid filename"
+        },
+        {
+          "id": "unknown-document-type",
+          "text": "Unknown document type"
+        },
+        {
+          "id": "missing-frontmatter",
+          "text": "Missing frontmatter"
+        },
+        {
+          "id": "invalid-status",
+          "text": "Invalid status"
+        },
+        {
+          "id": "orphaned-relations",
+          "text": "Orphaned relations"
+        },
+        {
+          "id": "invalid-tags",
+          "text": "Invalid tags"
+        },
+        {
+          "id": "invalid-yaml",
+          "text": "Invalid YAML"
+        },
+        {
+          "id": "using---fix",
+          "text": "Using --fix"
+        }
+      ]
+    },
+    {
+      "route": "/concepts/document-types/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Document Types"
+        },
+        {
+          "id": "choosing-the-right-type",
+          "text": "Choosing the right type"
+        },
+        {
+          "id": "vision",
+          "text": "Vision"
+        },
+        {
+          "id": "product-track-simple",
+          "text": "Product track (simple)"
+        },
+        {
+          "id": "prd-product-requirements-document",
+          "text": "PRD (Product Requirements Document)"
+        },
+        {
+          "id": "idea",
+          "text": "Idea"
+        },
+        {
+          "id": "rnd",
+          "text": "RnD"
+        },
+        {
+          "id": "research",
+          "text": "Research"
+        },
+        {
+          "id": "plan",
+          "text": "Plan"
+        },
+        {
+          "id": "sources-track-discovery",
+          "text": "Sources track (discovery)"
+        },
+        {
+          "id": "mrd-market-requirements-document",
+          "text": "MRD (Market Requirements Document)"
+        },
+        {
+          "id": "brd-business-requirements-document",
+          "text": "BRD (Business Requirements Document)"
+        },
+        {
+          "id": "urd-user-requirements-document",
+          "text": "URD (User Requirements Document)"
+        },
+        {
+          "id": "iso-track-decomposition",
+          "text": "ISO track (decomposition)"
+        },
+        {
+          "id": "brs-business-requirements-specification",
+          "text": "BRS (Business Requirements Specification)"
+        },
+        {
+          "id": "strs-stakeholder-requirements-specification",
+          "text": "StRS (Stakeholder Requirements Specification)"
+        },
+        {
+          "id": "syrs-system-requirements-specification",
+          "text": "SyRS (System Requirements Specification)"
+        },
+        {
+          "id": "srs-software-requirements-specification",
+          "text": "SRS (Software Requirements Specification)"
+        },
+        {
+          "id": "choosing-the-right-requirements-track",
+          "text": "Choosing the right requirements track"
+        },
+        {
+          "id": "sources-vs-specifications",
+          "text": "Sources vs specifications"
+        },
+        {
+          "id": "knowledge",
+          "text": "Knowledge"
+        },
+        {
+          "id": "adr-architecture-decision-record",
+          "text": "ADR (Architecture Decision Record)"
+        },
+        {
+          "id": "rfc-request-for-comments",
+          "text": "RFC (Request for Comments)"
+        },
+        {
+          "id": "rule",
+          "text": "Rule"
+        },
+        {
+          "id": "guide",
+          "text": "Guide"
+        },
+        {
+          "id": "spec",
+          "text": "Spec"
+        },
+        {
+          "id": "doc",
+          "text": "Doc"
+        },
+        {
+          "id": "evidence",
+          "text": "Evidence"
+        },
+        {
+          "id": "experience",
+          "text": "Experience"
+        },
+        {
+          "id": "task-type",
+          "text": "Task type"
+        },
+        {
+          "id": "cpat-code-pattern-change",
+          "text": "CPAT (Code Pattern Change)"
+        },
+        {
+          "id": "content-ownership",
+          "text": "Content ownership"
+        }
+      ]
+    },
+    {
+      "route": "/concepts/documents/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Documents &amp; Layout"
+        },
+        {
+          "id": "file-naming",
+          "text": "File naming"
+        },
+        {
+          "id": "examples",
+          "text": "Examples"
+        },
+        {
+          "id": "free-form-directories",
+          "text": "Free-form directories"
+        },
+        {
+          "id": "recommended-layouts",
+          "text": "Recommended layouts"
+        },
+        {
+          "id": "small-project-1-5-documents",
+          "text": "Small project (1-5 documents)"
+        },
+        {
+          "id": "growing-product-team-5-20-documents",
+          "text": "Growing product team (5-20 documents)"
+        },
+        {
+          "id": "platform--infrastructure-repo-20-documents",
+          "text": "Platform / infrastructure repo (20+ documents)"
+        },
+        {
+          "id": "special-files",
+          "text": "Special files"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/concepts/how-it-works/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "How Archcore Works"
+        },
+        {
+          "id": "core-principles",
+          "text": "Core principles"
+        },
+        {
+          "id": "local-first-git-versioned",
+          "text": "Local-first, git-versioned"
+        },
+        {
+          "id": "one-setup-every-agent",
+          "text": "One setup, every agent"
+        },
+        {
+          "id": "documentation-as-code",
+          "text": "Documentation as code"
+        },
+        {
+          "id": "simplicity-by-constraint",
+          "text": "Simplicity by constraint"
+        },
+        {
+          "id": "document-categories",
+          "text": "Document categories"
+        },
+        {
+          "id": "vision-what-to-build-and-why",
+          "text": "Vision: what to build and why"
+        },
+        {
+          "id": "knowledge-what-we-know",
+          "text": "Knowledge: what we know"
+        },
+        {
+          "id": "experience-what-we-learned",
+          "text": "Experience: what we learned"
+        },
+        {
+          "id": "how-categories-connect",
+          "text": "How categories connect"
+        },
+        {
+          "id": "how-knowledge-flows",
+          "text": "How knowledge flows"
+        },
+        {
+          "id": "categories-are-virtual",
+          "text": "Categories are virtual"
+        },
+        {
+          "id": "agents-read-write-and-connect",
+          "text": "Agents read, write, and connect"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/concepts/mental-model/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Mental Model"
+        },
+        {
+          "id": "why-two-pieces",
+          "text": "Why two pieces?"
+        },
+        {
+          "id": "who-does-what",
+          "text": "Who does what"
+        },
+        {
+          "id": "how-they-interact-at-runtime",
+          "text": "How they interact at runtime"
+        },
+        {
+          "id": "when-to-use-each-path",
+          "text": "When to use each path"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/concepts/relations/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Document Relations"
+        },
+        {
+          "id": "relation-types",
+          "text": "Relation types"
+        },
+        {
+          "id": "three-axes",
+          "text": "Three axes"
+        },
+        {
+          "id": "creating-relations",
+          "text": "Creating relations"
+        },
+        {
+          "id": "via-your-agent",
+          "text": "Via your agent"
+        },
+        {
+          "id": "linking-new-documents",
+          "text": "Linking new documents"
+        },
+        {
+          "id": "validating-relations-with-the-cli",
+          "text": "Validating relations with the CLI"
+        },
+        {
+          "id": "viewing-relations",
+          "text": "Viewing relations"
+        },
+        {
+          "id": "common-patterns",
+          "text": "Common patterns"
+        },
+        {
+          "id": "decision-flow",
+          "text": "Decision flow"
+        },
+        {
+          "id": "rfc-to-adr",
+          "text": "RFC to ADR"
+        },
+        {
+          "id": "experience-links",
+          "text": "Experience links"
+        },
+        {
+          "id": "research-links",
+          "text": "Research links"
+        },
+        {
+          "id": "requirements-track",
+          "text": "Requirements track"
+        },
+        {
+          "id": "storage",
+          "text": "Storage"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/concepts/use-cases/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Use Cases"
+        },
+        {
+          "id": "record-architecture-decisions",
+          "text": "Record architecture decisions"
+        },
+        {
+          "id": "define-coding-rules",
+          "text": "Define coding rules"
+        },
+        {
+          "id": "plan-implementation-work",
+          "text": "Plan implementation work"
+        },
+        {
+          "id": "build-project-context",
+          "text": "Build project context"
+        },
+        {
+          "id": "whats-next",
+          "text": "What’s next"
+        }
+      ]
+    },
+    {
+      "route": "/concepts/vs-flat-files/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Flat Files vs Archcore"
+        },
+        {
+          "id": "where-flat-files-break-down",
+          "text": "Where flat files break down"
+        },
+        {
+          "id": "what-archcore-does-differently",
+          "text": "What Archcore does differently"
+        },
+        {
+          "id": "typed-documents-instead-of-undifferentiated-text",
+          "text": "Typed documents instead of undifferentiated text"
+        },
+        {
+          "id": "free-form-directory-structure",
+          "text": "Free-form directory structure"
+        },
+        {
+          "id": "relations-add-meaning",
+          "text": "Relations add meaning"
+        },
+        {
+          "id": "status-lifecycle",
+          "text": "Status lifecycle"
+        },
+        {
+          "id": "cross-agent-agent-native",
+          "text": "Cross-agent, agent-native"
+        },
+        {
+          "id": "when-to-switch",
+          "text": "When to switch"
+        },
+        {
+          "id": "side-by-side",
+          "text": "Side-by-side"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/concepts/what-is-archcore/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "What is Archcore?"
+        },
+        {
+          "id": "the-problem",
+          "text": "The problem"
+        },
+        {
+          "id": "how-archcore-solves-this",
+          "text": "How Archcore solves this"
+        },
+        {
+          "id": "why-not-flat-instruction-files",
+          "text": "Why not flat instruction files?"
+        },
+        {
+          "id": "what-you-get-after-setup",
+          "text": "What you get after setup"
+        },
+        {
+          "id": "two-ways-to-use-archcore",
+          "text": "Two ways to use Archcore"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/plugin/agents/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Built-in Agents"
+        },
+        {
+          "id": "archcore-assistant",
+          "text": "archcore-assistant"
+        },
+        {
+          "id": "when-skills-call-it",
+          "text": "When skills call it"
+        },
+        {
+          "id": "what-its-good-at",
+          "text": "What it’s good at"
+        },
+        {
+          "id": "archcore-auditor",
+          "text": "archcore-auditor"
+        },
+        {
+          "id": "when-skills-call-it-1",
+          "text": "When skills call it"
+        },
+        {
+          "id": "what-its-good-at-1",
+          "text": "What it’s good at"
+        },
+        {
+          "id": "host-file-formats",
+          "text": "Host file formats"
+        },
+        {
+          "id": "why-two-agents-not-one",
+          "text": "Why two agents, not one"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/plugin/how-it-works/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "How the Plugin Works"
+        },
+        {
+          "id": "the-session-lifecycle",
+          "text": "The session lifecycle"
+        },
+        {
+          "id": "where-the-policy-lives",
+          "text": "Where the policy lives"
+        },
+        {
+          "id": "mechanism-1-session-start-recap",
+          "text": "Mechanism 1: session-start recap"
+        },
+        {
+          "id": "mechanism-2-pre-edit-context-injection",
+          "text": "Mechanism 2: pre-edit context injection"
+        },
+        {
+          "id": "mechanism-3-the-mcp-only-principle",
+          "text": "Mechanism 3: the MCP-only principle"
+        },
+        {
+          "id": "mechanism-4-post-write-checks",
+          "text": "Mechanism 4: post-write checks"
+        },
+        {
+          "id": "hook-guarantees",
+          "text": "Hook guarantees"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/plugin/install/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Install the Plugin"
+        },
+        {
+          "id": "install-with-the-cli",
+          "text": "Install with the CLI"
+        },
+        {
+          "id": "claude-code-auto-update",
+          "text": "Claude Code auto-update"
+        },
+        {
+          "id": "keep-the-plugin-current",
+          "text": "Keep the plugin current"
+        },
+        {
+          "id": "install-during-archcore-init",
+          "text": "Install during archcore init"
+        },
+        {
+          "id": "install-per-host",
+          "text": "Install per host"
+        },
+        {
+          "id": "offline--pinned-cli",
+          "text": "Offline / pinned CLI"
+        },
+        {
+          "id": "plugin-environment-variables",
+          "text": "Plugin environment variables"
+        },
+        {
+          "id": "verify",
+          "text": "Verify"
+        },
+        {
+          "id": "uninstall",
+          "text": "Uninstall"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/plugin/overview/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Plugin Overview"
+        },
+        {
+          "id": "what-you-get",
+          "text": "What you get"
+        },
+        {
+          "id": "when-to-use-the-plugin",
+          "text": "When to use the plugin"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/plugin/skills/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Plugin Skills"
+        },
+        {
+          "id": "all-four-commands-at-a-glance",
+          "text": "All four commands at a glance"
+        },
+        {
+          "id": "archcoreinit",
+          "text": "/archcore:init"
+        },
+        {
+          "id": "what-a-depth-buys",
+          "text": "What a depth buys"
+        },
+        {
+          "id": "archcoreplan",
+          "text": "/archcore:plan"
+        },
+        {
+          "id": "what-the-route-is-computed-from",
+          "text": "What the route is computed from"
+        },
+        {
+          "id": "the-five-routes",
+          "text": "The five routes"
+        },
+        {
+          "id": "the-route-announcement",
+          "text": "The route announcement"
+        },
+        {
+          "id": "when-the-answer-is-no-document",
+          "text": "When the answer is no document"
+        },
+        {
+          "id": "expert-paths",
+          "text": "Expert paths"
+        },
+        {
+          "id": "archcoredocument",
+          "text": "/archcore:document"
+        },
+        {
+          "id": "decision-track",
+          "text": "Decision track"
+        },
+        {
+          "id": "describe-track",
+          "text": "Describe track"
+        },
+        {
+          "id": "archcorereview",
+          "text": "/archcore:review"
+        },
+        {
+          "id": "how-a-slash-command-activates",
+          "text": "How a slash command activates"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/plugin/supported-hosts/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Supported AI agents"
+        },
+        {
+          "id": "support-matrix",
+          "text": "Support matrix"
+        },
+        {
+          "id": "host-specific-differences",
+          "text": "Host-specific differences"
+        },
+        {
+          "id": "plugin-manifest",
+          "text": "Plugin manifest"
+        },
+        {
+          "id": "mcp-server-registration",
+          "text": "MCP server registration"
+        },
+        {
+          "id": "hook-files",
+          "text": "Hook files"
+        },
+        {
+          "id": "cursor",
+          "text": "Cursor"
+        },
+        {
+          "id": "codex-cli",
+          "text": "Codex CLI"
+        },
+        {
+          "id": "github-copilot-cli",
+          "text": "GitHub Copilot CLI"
+        },
+        {
+          "id": "command-surfaces",
+          "text": "Command surfaces"
+        },
+        {
+          "id": "agents",
+          "text": "Agents"
+        },
+        {
+          "id": "choosing-a-host",
+          "text": "Choosing a host"
+        },
+        {
+          "id": "other-agents",
+          "text": "Other agents"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/plugin/troubleshooting/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Plugin Troubleshooting"
+        },
+        {
+          "id": "archcore-commands-dont-appear",
+          "text": "/archcore:* commands don’t appear"
+        },
+        {
+          "id": "plugin-failed-to-load",
+          "text": "”Plugin failed to load”"
+        },
+        {
+          "id": "mcp-server-not-found-claude-code",
+          "text": "MCP server not found (Claude Code)"
+        },
+        {
+          "id": "mcp-server-not-found-cursor",
+          "text": "MCP server not found (Cursor)"
+        },
+        {
+          "id": "cursor-mcp-attached-to-the-wrong-project",
+          "text": "Cursor: MCP attached to the wrong project"
+        },
+        {
+          "id": "writes-blocked-unexpectedly",
+          "text": "Writes blocked unexpectedly"
+        },
+        {
+          "id": "validation-fails-after-every-write",
+          "text": "Validation fails after every write"
+        },
+        {
+          "id": "automatic-context-injection-didnt-fire",
+          "text": "Automatic context injection didn’t fire"
+        },
+        {
+          "id": "update-your-cli-nudge-at-session-start",
+          "text": "”Update your CLI” nudge at session start"
+        },
+        {
+          "id": "a-declared-global-source-is-missing",
+          "text": "A declared global source is missing"
+        },
+        {
+          "id": "cascade-warnings-overwhelm-the-output",
+          "text": "Cascade warnings overwhelm the output"
+        },
+        {
+          "id": "cursor-specific-aftermcpexecution-not-firing",
+          "text": "Cursor-specific: afterMCPExecution not firing"
+        },
+        {
+          "id": "codex-cli-specific-hooks-not-firing",
+          "text": "Codex CLI-specific: hooks not firing"
+        },
+        {
+          "id": "codex-cli-specific-apply_patch-writes-not-blocked",
+          "text": "Codex CLI-specific: apply_patch writes not blocked"
+        },
+        {
+          "id": "codex-cli-specific-mcp-server-not-found",
+          "text": "Codex CLI-specific: MCP server not found"
+        },
+        {
+          "id": "codex-cli-specific-path-env-var",
+          "text": "Codex CLI-specific: path env var"
+        },
+        {
+          "id": "copilot-specific-no-archcore-mcp-tools-in-the-session",
+          "text": "Copilot-specific: no Archcore MCP tools in the session"
+        },
+        {
+          "id": "copilot-specific-no-context-before-a-source-edit",
+          "text": "Copilot-specific: no context before a source edit"
+        },
+        {
+          "id": "copilot-specific-hooks-appear-to-run-twice",
+          "text": "Copilot-specific: hooks appear to run twice"
+        },
+        {
+          "id": "claude-code-specific-both-write-and-edit-blocked",
+          "text": "Claude Code-specific: both Write and Edit blocked"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/reference/document-format/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Document Format"
+        },
+        {
+          "id": "file-naming",
+          "text": "File naming"
+        },
+        {
+          "id": "frontmatter",
+          "text": "Frontmatter"
+        },
+        {
+          "id": "required-fields",
+          "text": "Required fields"
+        },
+        {
+          "id": "status-values",
+          "text": "Status values"
+        },
+        {
+          "id": "optional-fields",
+          "text": "Optional fields"
+        },
+        {
+          "id": "tags",
+          "text": "tags"
+        },
+        {
+          "id": "content-structure",
+          "text": "Content structure"
+        },
+        {
+          "id": "code-references",
+          "text": "Code references"
+        },
+        {
+          "id": "template-generation",
+          "text": "Template generation"
+        }
+      ]
+    },
+    {
+      "route": "/reference/mcp-tools/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "MCP Tools Reference"
+        },
+        {
+          "id": "source-annotation-and-global-sources",
+          "text": "Source annotation and global sources"
+        },
+        {
+          "id": "list_documents",
+          "text": "list_documents"
+        },
+        {
+          "id": "search_documents",
+          "text": "search_documents"
+        },
+        {
+          "id": "get_document",
+          "text": "get_document"
+        },
+        {
+          "id": "create_document",
+          "text": "create_document"
+        },
+        {
+          "id": "update_document",
+          "text": "update_document"
+        },
+        {
+          "id": "remove_document",
+          "text": "remove_document"
+        },
+        {
+          "id": "add_relation",
+          "text": "add_relation"
+        },
+        {
+          "id": "remove_relation",
+          "text": "remove_relation"
+        },
+        {
+          "id": "list_relations",
+          "text": "list_relations"
+        },
+        {
+          "id": "init_project",
+          "text": "init_project"
+        },
+        {
+          "id": "install_host_config",
+          "text": "install_host_config"
+        }
+      ]
+    },
+    {
+      "route": "/reference/precision-checks/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Precision Checks"
+        },
+        {
+          "id": "prose-profiles",
+          "text": "Prose profiles"
+        },
+        {
+          "id": "checks-that-run-on-every-type",
+          "text": "Checks that run on every type"
+        },
+        {
+          "id": "checks-driven-by-the-profile-tables",
+          "text": "Checks driven by the profile tables"
+        },
+        {
+          "id": "checks-for-one-type",
+          "text": "Checks for one type"
+        },
+        {
+          "id": "thresholds",
+          "text": "Thresholds"
+        },
+        {
+          "id": "checked-sections",
+          "text": "Checked sections"
+        },
+        {
+          "id": "content-ownership",
+          "text": "Content ownership"
+        },
+        {
+          "id": "restatement",
+          "text": "Restatement"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/reference/skills/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Plugin Skills Reference"
+        },
+        {
+          "id": "all-four-commands",
+          "text": "All four commands"
+        },
+        {
+          "id": "archcoreinit-depth-budget",
+          "text": "/archcore:init depth budget"
+        },
+        {
+          "id": "archcoreplan-routes",
+          "text": "/archcore:plan routes"
+        },
+        {
+          "id": "computed-values",
+          "text": "Computed values"
+        },
+        {
+          "id": "route-table",
+          "text": "Route table"
+        },
+        {
+          "id": "π-engagement",
+          "text": "Π engagement"
+        },
+        {
+          "id": "expert-paths",
+          "text": "Expert paths"
+        },
+        {
+          "id": "archcoredocument-tracks",
+          "text": "/archcore:document tracks"
+        },
+        {
+          "id": "decision-cascade",
+          "text": "Decision cascade"
+        },
+        {
+          "id": "archcorereview-modes",
+          "text": "/archcore:review modes"
+        },
+        {
+          "id": "document-types",
+          "text": "Document types"
+        },
+        {
+          "id": "see-also",
+          "text": "See also"
+        }
+      ]
+    },
+    {
+      "route": "/start/choose/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Choose Plugin or CLI"
+        },
+        {
+          "id": "the-short-answer",
+          "text": "The short answer"
+        },
+        {
+          "id": "pick-your-path",
+          "text": "Pick your path"
+        },
+        {
+          "id": "how-they-compare",
+          "text": "How they compare"
+        },
+        {
+          "id": "the-mental-model",
+          "text": "The mental model"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/start/migrate-from-flat-files/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Migrate from Flat Files"
+        },
+        {
+          "id": "why-migrate-at-all",
+          "text": "Why migrate at all"
+        },
+        {
+          "id": "the-incremental-playbook",
+          "text": "The incremental playbook"
+        },
+        {
+          "id": "step-1-initialize",
+          "text": "Step 1: initialize"
+        },
+        {
+          "id": "step-2-identify-the-top-3-things-agents-need",
+          "text": "Step 2: identify the top 3 things agents need"
+        },
+        {
+          "id": "step-3-ask-your-agent-to-do-the-conversion",
+          "text": "Step 3: ask your agent to do the conversion"
+        },
+        {
+          "id": "step-4-link-the-documents",
+          "text": "Step 4: link the documents"
+        },
+        {
+          "id": "step-5-leave-the-rest-for-now",
+          "text": "Step 5: leave the rest for now"
+        },
+        {
+          "id": "common-mapping",
+          "text": "Common mapping"
+        },
+        {
+          "id": "when-to-keep-the-flat-file",
+          "text": "When to keep the flat file"
+        },
+        {
+          "id": "common-migration-patterns",
+          "text": "Common migration patterns"
+        },
+        {
+          "id": "from-a-giant-claudemd",
+          "text": "From a giant CLAUDE.md"
+        },
+        {
+          "id": "from-docsadr",
+          "text": "From docs/adr/"
+        },
+        {
+          "id": "from-a-wiki-or-notion",
+          "text": "From a wiki or Notion"
+        },
+        {
+          "id": "verify",
+          "text": "Verify"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    },
+    {
+      "route": "/start/plugin-quick-start/",
+      "headings": [
+        {
+          "id": "starlight__on-this-page",
+          "text": "On this page"
+        },
+        {
+          "id": "_top",
+          "text": "Plugin Quick Start"
+        },
+        {
+          "id": "1-install-the-plugin",
+          "text": "1. Install the plugin"
+        },
+        {
+          "id": "2-verify",
+          "text": "2. Verify"
+        },
+        {
+          "id": "3-make-your-repo-legible-optional",
+          "text": "3. Make your repo legible (optional)"
+        },
+        {
+          "id": "4-record-your-first-decision",
+          "text": "4. Record your first decision"
+        },
+        {
+          "id": "5-see-the-context-the-agent-now-has",
+          "text": "5. See the context the agent now has"
+        },
+        {
+          "id": "6-try-a-multi-step-plan",
+          "text": "6. Try a multi-step plan"
+        },
+        {
+          "id": "7-review-before-you-merge",
+          "text": "7. Review before you merge"
+        },
+        {
+          "id": "what-you-get",
+          "text": "What you get"
+        },
+        {
+          "id": "next-steps",
+          "text": "Next steps"
+        }
+      ]
+    }
+  ],
+  "redirects": {
+    "/agents/cli/": "/cli/commands/",
+    "/agents/mcp-server/": "/cli/mcp-server/",
+    "/agents/supported-agents/": "/cli/agent-integrations/",
+    "/cli/init/": "/cli/quick-start/",
+    "/concepts/context-layers/": "/concepts/how-it-works/",
+    "/concepts/directory-structure/": "/concepts/documents/",
+    "/concepts/philosophy/": "/concepts/how-it-works/",
+    "/getting-started/first-10-minutes/": "/start/plugin-quick-start/",
+    "/getting-started/installation/": "/cli/install/",
+    "/getting-started/quick-start/": "/start/plugin-quick-start/",
+    "/getting-started/why-not-flat-files/": "/concepts/vs-flat-files/",
+    "/integrations/hooks/": "/cli/hooks/",
+    "/integrations/mcp-server/": "/cli/mcp-server/",
+    "/integrations/supported-agents/": "/cli/agent-integrations/",
+    "/plugin/intent-commands/": "/plugin/skills/#all-four-commands-at-a-glance",
+    "/plugin/tracks/": "/plugin/skills/#archcoreplan",
+    "/reference/cli-commands/": "/cli/commands/",
+    "/reference/configuration/": "/cli/configuration/",
+    "/reference/mcp-prompts/": "/plugin/skills/#archcoreplan",
+    "/reference/tracks/": "/plugin/skills/#archcoreplan",
+    "/reference/troubleshooting/": "/cli/troubleshooting/",
+    "/start/quick-start/": "/start/plugin-quick-start/",
+    "/start/vs-flat-files/": "/concepts/vs-flat-files/",
+    "/troubleshooting/agent-not-seeing-documents/": "/cli/troubleshooting/",
+    "/troubleshooting/mcp-not-starting/": "/cli/troubleshooting/",
+    "/troubleshooting/validation-errors/": "/cli/troubleshooting/",
+    "/use-cases/architecture-decisions/": "/concepts/use-cases/",
+    "/use-cases/coding-rules/": "/concepts/use-cases/",
+    "/use-cases/implementation-plans/": "/concepts/use-cases/",
+    "/use-cases/shared-project-memory/": "/concepts/use-cases/"
+  },
+  "bundles": [
+    "/llms.txt",
+    "/llms-full.txt",
+    "/llms-small.txt",
+    "/_llms-txt/cli.txt",
+    "/_llms-txt/plugin.txt",
+    "/_llms-txt/concepts.txt"
+  ]
+}

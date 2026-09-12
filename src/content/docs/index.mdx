@@ -1,61 +1,36 @@
 ---
 title: Build with Specs. Code with Context.
-description: Archcore is a git-native context layer for AI coding agents. Manage specs, architecture, decisions, rules, and plans.
+description: Archcore keeps project decisions, rules, specs, and plans in Git and makes them available to AI coding agents.
 head:
   - tag: title
     content: Archcore Docs — Spec-Driven Development & Context Engineering
 ---
 
-import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+Archcore is a git-native context layer for AI coding agents. It keeps specs, architecture, decisions, rules, and plans in your repository and makes that project context available as your agent works.
 
-Archcore is a git-native context layer for AI coding agents. Use it to manage specs, architecture, decisions, rules, plans, and project knowledge, and make the right context available throughout spec-driven development and implementation. Agents read it through MCP rather than re-reading flat Markdown files every turn.
+Start with a decision or rule your agent needs for its next task. Record it in `.archcore/`, review the document, and retrieve it in a later session. The same project documents are available across your connected agents.
 
-## Start here
+## Start using Archcore
 
-<CardGrid>
-	<LinkCard
-		title="Choose Plugin or CLI"
-		href="/start/choose/"
-		description="Two entry points into the same .archcore/. Pick the one that fits your agent."
-	/>
-	<LinkCard
-		title="Plugin Quick Start"
-		href="/start/plugin-quick-start/"
-		description="Install the plugin in Claude Code, Cursor, Codex CLI, or Copilot CLI and run your first track."
-	/>
-	<LinkCard
-		title="CLI Quick Start"
-		href="/cli/quick-start/"
-		description="Install the binary and create your first document from any agent."
-	/>
-	<LinkCard
-		title="Migrate from Flat Files"
-		href="/start/migrate-from-flat-files/"
-		description="Move from CLAUDE.md / .cursorrules / AGENTS.md to a typed, linked graph."
-	/>
-</CardGrid>
+1. [Install Archcore](/start/install/) and connect your coding agent.
+2. [Follow the quick start](/start/quick-start/) to record and reuse project context.
+3. [See what to expect](/start/what-to-expect/) during a session, including what happens automatically.
 
-## Browse by section
+## Use it in your project
 
-<CardGrid>
-	<Card title="Plugin" icon="puzzle">
-		Slash commands, tracks, and built-in agents for Claude Code, Cursor, Codex CLI, and Copilot CLI.
+| Your task | Where to go |
+|---|---|
+| Record a decision, plan a change, or review a branch | [Commands and examples](/guides/commands/) |
+| Add Archcore to an agent or your own harness | [Connect your agent](/guides/connect-your-agent/) |
+| Use Archcore alongside another tool | [Integrations](/guides/integrations/) |
+| Diagnose a missing tool, hook, or document | [Troubleshooting](/guides/troubleshooting/) |
 
-		[Plugin overview →](/plugin/overview/)
-	</Card>
-	<Card title="CLI" icon="seti:powershell">
-		The single binary that reads `.archcore/`, builds the graph, and speaks MCP.
+## Understand the model
 
-		[CLI overview →](/cli/overview/)
-	</Card>
-	<Card title="Concepts" icon="open-book">
-		What Archcore is, how it works, document types, and the mental model.
+Archcore supports spec-driven development and context engineering. Specs describe intended behavior; project context also includes the decisions, constraints, and rules behind that behavior.
 
-		[What is Archcore? →](/concepts/what-is-archcore/)
-	</Card>
-	<Card title="Reference" icon="document">
-		Document format, MCP tools, and plugin skills.
+[Why Archcore](/concepts/why-archcore/) explains the design choices and tradeoffs. [Project context](/concepts/project-context/) explains how documents, categories, and relations fit together.
 
-		[Document format →](/reference/document-format/)
-	</Card>
-</CardGrid>
+## Next steps
+
+[Install Archcore](/start/install/) to begin, or open the [CLI command reference](/cli/commands/) for a specific terminal task.

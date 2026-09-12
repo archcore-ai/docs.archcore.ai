@@ -1,0 +1,97 @@
+---
+title: Install Archcore
+description: Install Archcore on your platform, connect your coding agent, and check that project tools are available.
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+Install Archcore, then initialize it in your project and connect the agent you use. Complete any host-specific steps printed by the installer before starting the quick start.
+
+<details>
+<summary>Prefer to install from your AI agent?</summary>
+
+You can also add Archcore through **Claude Code**, **Codex CLI**, **Cursor**, or **GitHub Copilot CLI**. Follow the [installation instructions for your agent](/guides/connect-your-agent/#install-per-host) to add the Archcore plugin.
+
+This is another entry point to the same Archcore setup. The plugin needs the Archcore executable on `PATH`; it does not download it. If the executable is missing, complete step 1 below. Then connect your project and check the connection in steps 2 and 3.
+
+</details>
+
+## 1. Install on your machine
+
+On macOS and Linux, you need `bash`, `curl`, `tar`, and `sha256sum` or `shasum`. On Windows, use PowerShell 5.1 or later. In WSL, use the Linux command inside WSL.
+
+<Tabs>
+  <TabItem label="macOS / Linux">
+    ```bash
+    curl -fsSL https://archcore.ai/install.sh | bash
+    ```
+  </TabItem>
+  <TabItem label="Windows">
+    ```powershell
+    irm https://archcore.ai/install.ps1 | iex
+    ```
+    Open a new PowerShell window after installation so it picks up the updated `PATH`.
+  </TabItem>
+</Tabs>
+
+Check that the executable is available:
+
+```bash
+archcore --version
+```
+
+The command prints the installed version. If it is not found, follow [PATH troubleshooting](/guides/troubleshooting/#archcore-not-in-path).
+
+## 2. Connect your project
+
+In your project's root directory, run:
+
+```bash
+archcore init
+```
+
+Archcore creates `.archcore/` and configures supported agents. If it asks you to select agents, select the ones you use. Selecting a host also authorizes installation of the Archcore plugin where that host supports it.
+
+If Archcore detects an existing agent configuration, it can configure that agent without installing the plugin. Follow the printed installation hint, or name the host explicitly:
+
+```bash
+archcore init --agent claude-code
+```
+
+Replace `claude-code` with your [agent ID](/guides/connect-your-agent/#supported-hosts). On an interactive run, accept the instruction-hint prompt to tell the agent when to consult Archcore. A named `--agent` writes that hint without another prompt.
+
+| Agent | Complete this before continuing |
+|---|---|
+| Claude Code | Restart the session after setup |
+| Cursor | Add the plugin in Cursor's UI; confirm MCP points at your project |
+| Codex CLI | Restart the session; enable its hooks feature for automatic context and write guards |
+| GitHub Copilot CLI | Run setup in the project so its MCP entry exists; restart the session |
+| Other agents | Follow the [connection instructions](/guides/connect-your-agent/) for the available capabilities |
+
+[Host setup details](/guides/connect-your-agent/#supported-hosts) cover the additional steps. In CI, plugin installation commands are printed rather than executed. `--yes` without `--agent` also leaves that step for you.
+
+## 3. Check the connection
+
+Open a new agent session in the same project and ask:
+
+> Use Archcore to list this project's documents. If the list is empty, report that without creating anything.
+
+The agent should call `list_documents`. An empty list is a valid result for a new project. A missing tool or connection error means setup is incomplete; see [Troubleshooting](/guides/troubleshooting/).
+
+Terminal setup prepares the directory and connection. The [quick start](/start/quick-start/) adds your first project knowledge.
+
+## Update Archcore
+
+```bash
+archcore update
+```
+
+This updates the executable and refreshes the plugin on hosts that already carry it. The [command reference](/cli/commands/#archcore-update) describes background updates and the check-only option.
+
+## Other installation details
+
+For pinned versions, custom directories, and offline use, see [installation settings](/cli/configuration/#installation-settings). The installer and update path send anonymous installation events; [privacy and opt-out](/cli/configuration/#analytics-and-opt-out) describes their scope.
+
+## Next steps
+
+[Follow the quick start](/start/quick-start/) to record a real project decision and retrieve it in another session.

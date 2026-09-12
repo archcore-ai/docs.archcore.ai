@@ -1,14 +1,13 @@
 import satori from "satori";
 import { Resvg } from "@resvg/resvg-js";
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync } from "fs";
-import { join, dirname, basename, relative } from "path";
+import { join, dirname, relative } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = join(__dirname, "..");
 const publicDir = join(rootDir, "public");
 const docsDir = join(rootDir, "src", "content", "docs");
-const changelogDir = join(rootDir, "src", "content", "changelog");
 
 // Load fonts
 const interBold = readFileSync(join(__dirname, "fonts", "Inter-Bold.ttf"));
@@ -33,7 +32,6 @@ const SECTION_MAP: Record<string, string> = {
   concepts: "Concepts",
   agents: "Agents & Tools",
   reference: "Reference",
-  changelog: "Changelog",
 };
 
 const fonts = [
@@ -48,17 +46,6 @@ interface PageInfo {
   title: string;
   description?: string;
   section?: string;
-}
-
-// Slugify a changelog filename the same way Astro's glob loader derives the
-// entry id: lowercase, drop punctuation (dots included), spaces → hyphens. For
-// semver-named entries this collapses `0.4.0` → `040`, matching the page route.
-function changelogSlug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
 }
 
 function parseFrontmatter(content: string): { title?: string; description?: string } {
@@ -102,33 +89,6 @@ function discoverPages(): PageInfo[] {
       section: section ? SECTION_MAP[section] : undefined,
     });
   }
-
-  // Changelog entries.
-  // The output filename must match Astro's content-collection id (used by
-  // Head.astro to build the og:image URL), not the raw filename. Astro's glob
-  // loader slugifies the id — for version-named entries that strips the dots
-  // (e.g. `0.4.0.md` → id `040` → /changelog/040/). Mirror that here, or the
-  // generated PNG (`0.4.0.png`) never matches the requested URL (`040.png`).
-  for (const file of collectFiles(changelogDir, [".md"])) {
-    const name = basename(file, ".md");
-    const slug = changelogSlug(name);
-    const content = readFileSync(file, "utf-8");
-    const { title, description } = parseFrontmatter(content);
-    pages.push({
-      slug: `changelog/${slug}`,
-      title: title || `v${name}`,
-      description,
-      section: "Changelog",
-    });
-  }
-
-  // Changelog index (custom Astro page, not in content collection)
-  pages.push({
-    slug: "changelog",
-    title: "Changelog",
-    description: "All notable changes to Archcore.",
-    section: "Changelog",
-  });
 
   return pages;
 }

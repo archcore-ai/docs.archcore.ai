@@ -1,32 +1,34 @@
 ---
-title: "Update documentation from CLI context"
+title: "Update documentation from upstream sources"
 status: accepted
 ---
 
 ## What
 
-Standard task for syncing the documentation site text with the current state of `.archcore/` in the CLI repository (https://github.com/archcore-ai/cli).
+Maintain reader-facing documentation from its owning upstream sources. Current procedure for @src/content/docs/ and @src/content/changelog/.
 
 ## When to Use
 
-- A new CLI version is released
-- Documents in `.archcore/` of the CLI repository have changed
-- Need to verify the docs site is up to date
+An engine release, runtime release, or accepted product-definition change affects public documentation.
 
 ## Steps
 
-1. Open the CLI repository and read the contents of `.archcore/` — this is the source of truth
-2. Compare CLI `.archcore/` documents with current pages in `src/content/docs/`
-3. Identify discrepancies: new features, changed behavior, removed capabilities
-4. Update the corresponding `.md` / `.mdx` files in the docs repository
-5. Verify no information exists that is not present in CLI
+1. Identify affected pages through their owning subjects in the documentation journey contract.
+2. Read product definitions from the mounted global source.
+3. Read engine behavior from the CLI repository's source and context.
+4. Read runtime behavior from the plugin repository's source and context.
+5. Record the branch, revision, and release state behind each changed behavioral claim.
+6. Report same-subject source disagreements before changing public claims.
+7. Update the owning page and replace repeated explanations with links.
+8. Preserve public identifiers and historical release quotations.
+9. Run the production build and review the affected rendered pages.
 
 ## Example
 
-CLI adds a new document type `cpat`. An updated `doc` appears in CLI `.archcore/` describing types → update `src/content/docs/concepts/document-types.md`.
+A CLI installation change updates the installation or connection page. A plugin command change updates Commands and examples.
+A new document type first receives an upstream definition, then updates the type catalog and affected tool reference.
 
 ## Things to Watch Out For
 
-- Do not add information from memory — only from CLI context
-- Watch for renamed commands and flags
-- Verify that code examples in documentation match actual behavior
+A development branch is not proof of released behavior. The CLI owns engine semantics, not the product vocabulary or runtime command semantics.
+The structure checks in @scripts/check-docs.mjs preserve navigation and existing public addresses.

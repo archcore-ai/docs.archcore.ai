@@ -216,6 +216,71 @@
       "source": "research-and-evidence-docs.plan.md",
       "target": "update-docs-from-cli.task-type.md",
       "type": "depends_on"
+    },
+    {
+      "source": "documentation/documentation-journey.spec.md",
+      "target": "documentation/unified-product-documentation.prd.md",
+      "type": "implements"
+    },
+    {
+      "source": "documentation/unified-documentation-migration.plan.md",
+      "target": "documentation/documentation-journey.spec.md",
+      "type": "implements"
+    },
+    {
+      "source": "documentation/unified-documentation-migration.plan.md",
+      "target": "documentation/documentation-migration-inventory.doc.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "documentation/documentation-migration-inventory.doc.md",
+      "target": "documentation/documentation-journey.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "documentation/documentation-journey.spec.md",
+      "target": "documentation-sources.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "documentation/documentation-journey.spec.md",
+      "target": "plain-language-and-seo.rule.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "documentation/documentation-journey.spec.md",
+      "target": "infrastructure/first-load-javascript-budget.adr.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "documentation/documentation-journey.spec.md",
+      "target": "content-structure.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "documentation/unified-documentation-migration.plan.md",
+      "target": "docs-seo-fixes.plan.md",
+      "type": "related"
+    },
+    {
+      "source": "documentation/unified-documentation-migration.plan.md",
+      "target": "adding-docs-page.guide.md",
+      "type": "related"
+    },
+    {
+      "source": "documentation/unified-documentation-migration.plan.md",
+      "target": "update-docs-from-cli.task-type.md",
+      "type": "related"
+    },
+    {
+      "source": "documentation/unified-documentation-migration.plan.md",
+      "target": "archcore-docs-site.doc.md",
+      "type": "related"
+    },
+    {
+      "source": "documentation/unified-documentation-migration.plan.md",
+      "target": "content-structure.rule.md",
+      "type": "related"
     }
   ]
 }

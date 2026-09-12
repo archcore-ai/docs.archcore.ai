@@ -1,11 +1,10 @@
 ---
 title: CLI Configuration
-description: "Every field in .archcore/settings.json: sync, language, globals, and codeAlignment, with validation rules for each."
+description: Configure document language, global sources, code alignment, installation settings, and updates.
 ---
 
-import PathBadge from '../../../components/PathBadge.astro';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-<PathBadge scope="cli" />
 
 ## Settings file
 
@@ -32,68 +31,19 @@ Archcore stores configuration in `.archcore/settings.json`. `archcore init` crea
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `sync` | string | Yes | Sync type: `none`, `cloud`, or `on-prem` |
-| `project_id` | integer | No | Project identifier for cloud/on-prem sync |
-| `archcore_url` | string | No | Server URL for on-prem sync |
 | `language` | string | No | Language code for document content |
 | `globals` | array | No | Read-only external knowledge bases to mount. See [Global sources](#global-sources) |
 | `codeAlignment` | object | No | Tunes the pre-write code-alignment advisory. See [Code alignment](#code-alignment) |
 
-## Sync types
+<span id="sync-types"></span>
 
-### `none` (local only)
-
-Documents stay local. No server communication.
-
-```json
-{
-  "sync": "none"
-}
-```
-
-**Allowed fields:** `sync`, `language`, `globals`, `codeAlignment`
-**Forbidden fields:** `project_id`, `archcore_url`
-
-### `cloud` (cloud sync)
-
-Syncs to `https://app.archcore.ai`.
-
-```json
-{
-  "sync": "cloud",
-  "project_id": 42
-}
-```
-
-**Allowed fields:** `sync`, `project_id`, `language`, `globals`, `codeAlignment`
-**Forbidden fields:** `archcore_url`
-
-:::note
-Cloud sync is not yet available. `archcore config` refuses to set `sync`, and refuses to read or write `project_id` and `archcore_url`, while sync features are unreleased.
+:::note[Sync is reserved for future use]
+Cloud and on-prem sync are not available. Keep the generated `"sync": "none"` setting. The `sync`, `project_id`, and `archcore_url` settings are reserved for future functionality; there is no sync setup to complete today. Share documents through Git.
 :::
 
-### `on-prem` (self-hosted server)
+## Shared context settings
 
-Syncs to a self-hosted Archcore server.
-
-```json
-{
-  "sync": "on-prem",
-  "project_id": 42,
-  "archcore_url": "https://archcore.internal.company.com"
-}
-```
-
-**Allowed fields:** `sync`, `project_id`, `archcore_url`, `language`, `globals`, `codeAlignment`
-**Required fields:** `archcore_url`
-
-:::note
-On-prem sync is not yet available.
-:::
-
-## Global sources
-
-The `globals` array mounts other `.archcore/` knowledge bases into your project as read-only sources: company standards, platform conventions, or a monorepo root. Every sync type allows it.
+The `globals` array mounts other `.archcore/` knowledge bases into your project as read-only sources: company standards, platform conventions, or a monorepo root.
 
 ```json
 {
@@ -111,11 +61,11 @@ The `globals` array mounts other `.archcore/` knowledge bases into your project 
 
 Every declared global is mandatory. If its directory is absent, the MCP server fails fast at startup. Globals are read-only everywhere outside the MCP read tools, and local documents take precedence over a same-topic global. An older `settings.json` that still carries a per-entry `"required"` key keeps working; the key is accepted and ignored.
 
-See [Global sources](/cli/global-sources/) for the full model, vendoring, and the monorepo-root pattern.
+See [Global sources](/cli/configuration/#global-sources) for the full model, vendoring, and the monorepo-root pattern.
 
 ## Code alignment
 
-The `codeAlignment` object tunes the **code-alignment advisory**, which runs on the pre-write hook event and names the documents that constrain the source file an agent is about to edit. Every sync type allows it, as with `globals`.
+The `codeAlignment` object tunes the **code-alignment advisory**, which runs on the pre-write hook event and names the documents that constrain the source file an agent is about to edit.
 
 ```json
 {
@@ -153,15 +103,11 @@ src, lib, app, pkg, cmd, internal, apps, packages, modules, components
 
 `codeAlignment.sourceRoots` is readable but not writable through `archcore config`. Edit `.archcore/settings.json` by hand to change it.
 
-See [Hooks](/cli/hooks/) for what the advisory emits and when it fires.
+See [Hooks](/guides/connect-your-agent/#lifecycle-hooks) for what the advisory emits and when it fires.
 
 ## Validation rules
 
-- `sync` must be one of: `none`, `cloud`, `on-prem`
-- Fields must be consistent with the sync type (e.g., `archcore_url` is forbidden for `cloud`)
-- `project_id` must be `null` or a number
 - `language` must be a non-empty string without spaces
-- `archcore_url` must not be empty when sync is `on-prem`
 - Each `globals` entry must have a non-empty `id` (lowercase alphanumeric with hyphens, not `local`) and non-empty `path`; `id` must be unique across the array
 - `codeAlignment` must be an object and `codeAlignment.sourceRoots` an array of relative paths inside the project
 - Optional fields use `omitempty`, so omitted fields take code-level defaults
@@ -170,12 +116,11 @@ See [Hooks](/cli/hooks/) for what the advisory emits and when it fires.
 
 A field this CLI does not recognize is tolerated on read and preserved on write. Config keys from a newer version, and keys you added by hand, survive an older binary rewriting `settings.json`.
 
-Three cases:
+Known and unknown fields are handled differently:
 
 | Case | Outcome |
 |------|---------|
 | Field unknown to this binary | Captured, load succeeds, written back verbatim |
-| Known field in the wrong sync mode | Hard error. `archcore_url` under `sync: "cloud"` still fails |
 | Known field with a malformed value | Hard error. Value validation stays strict |
 
 The same protection applies one level down: an unrecognized key nested inside `codeAlignment` survives the round trip too.
@@ -193,9 +138,6 @@ This tolerance is a deliberate trade: the parser no longer catches a typo in a f
 ## Managing config
 
 ```bash
-# View current sync type
-archcore config
-
 # Get a specific value
 archcore config get language
 
@@ -203,9 +145,306 @@ archcore config get language
 archcore config set language en
 ```
 
-`language` is the only key `set` accepts today. `get` also reads `sync` and `codeAlignment.sourceRoots`. Edit `globals` and `codeAlignment` by hand in `.archcore/settings.json`.
+`language` is the only key `set` accepts today. `get` also reads `codeAlignment.sourceRoots`. Edit `globals` and `codeAlignment` by hand in `.archcore/settings.json`.
+
+
+## Global sources
+
+Declare shared context directories in `globals`. The [project context model](/concepts/project-context/#global-sources) explains local precedence and read-only access.
+
+### Declaring a global
+
+Add a `globals` array to the consuming project's `.archcore/settings.json`. Each entry is `{ id, path }`:
+
+```json
+{
+  "sync": "none",
+  "globals": [
+    { "id": "company-standards", "path": "../company-standards/.archcore" }
+  ]
+}
+```
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `id` | Yes | Stable identifier. Becomes the `source_id` on every document from this source. Must match `^[a-z0-9][a-z0-9-]*$`, must not be the reserved value `local`, and must be unique across the array. |
+| `path` | Yes | Points at the global's **`.archcore` directory** (not the project root). May be relative (including `../` for siblings and parents), absolute, or in-tree under the reserved `.archcore/global/` directory. |
+
+Rules of thumb:
+
+- **`path` points at `.archcore`, not the repo root.** `../company-standards/.archcore`, not `../company-standards`.
+- **`.mcp.json` stays generic.** Global wiring lives in `settings.json`. The MCP launch config is always `{"command": "archcore", "args": ["mcp"]}`, and there are no launch flags or markers for globals.
+- **Distinct `id`s for distinct sources.** Two repos whose directories are both named `standards` stay distinguishable because `source_id` is the explicit `id`, not the path basename.
+
+`globals` is optional.
+
+### How `path` resolves
+
+The same resolution applies to the MCP scan, the startup check, and `archcore status`:
+
+- An absolute path is used as-is.
+- A relative path that stays inside the project resolves against the project root. Inside a git worktree that is the worktree's own copy.
+- A relative path that leaves the project (one that starts with `../`) resolves against the project's position inside the repository's main checkout when the CLI runs in a linked git worktree (CLI v0.8.2 and later). The anchor is used only when it is an existing directory that holds `.archcore/`. Submodules, bare repositories, non-git directories, and machines without git fall back to the project root.
+- A clone at a different depth than the declared path expects still fails. The path is not searched for.
+
+### Several sources
+
+```json
+{
+  "sync": "none",
+  "globals": [
+    { "id": "company",  "path": "../company-standards/.archcore" },
+    { "id": "platform", "path": "../platform-standards/.archcore" }
+  ]
+}
+```
+
+### Every declared global is mandatory
+
+There is no optional or "skip if missing" global. If a declared source is unusable, the MCP server **fails fast at startup**:
+
+```text
+global source "company-standards" not found at "../company-standards/.archcore" — clone it before starting the MCP server
+```
+
+Five states are fatal. Each one aborts startup and the document scan with a message built from the declared `id` and `path`, never from an absolute filesystem path:
+
+| Fatal state | Message |
+| ----------- | ------- |
+| Missing | `global source "<id>" not found at "<path>"` |
+| Not a directory | `global source "<id>" at "<path>" is not a directory` |
+| Unreadable | `global source "<id>" at "<path>" is not readable` |
+| Self-overlap | `global source "<id>" at "<path>" resolves to the project's own .archcore` |
+| Duplicate path | `global source "<id>" at "<path>" duplicates an earlier source's path` |
+
+At startup the missing message ends with `— clone it before starting the MCP server`, and the other four end with `— fix .archcore/settings.json before starting the MCP server`. Unreadable covers a subdirectory the document walk cannot enter, not only the top level.
+
+The duplicate-path message in the table is the form at MCP startup, in `archcore status`, in `archcore doctor`, and in the SessionStart `GLOBALS` block. Inside a tool-call scan the same state reads `global sources "<a>" and "<b>" resolve to the same path "<path>"`.
+
+A source that exists and is readable but holds zero recognized documents is a **warning, never fatal**. The server starts, the scan yields no documents from it, and `global source "<id>" at "<path>" contains no documents` appears on startup stderr, in `archcore status`, and in the SessionStart context.
+
+Failing fast is deliberate. A typo in `path`, or a source that was never cloned, would otherwise yield zero global documents with no signal, and the agent would run against silently incomplete context, the exact failure globals exist to prevent.
+
+:::note
+An invalid `settings.json` (a parse or validation error) also aborts MCP startup, with `invalid .archcore/settings.json: …`. The server does not start with globals silently dropped.
+:::
+
+The non-server surfaces never block your session, so they degrade instead of failing:
+
+- **The session-start hook** discloses every declared source in a [`GLOBALS` block](/guides/connect-your-agent/#the-globals-block): the agent sees that the source exists, how many documents it holds, and its top-level directories, with no global content injected. On any fatal state the hook falls back to a local-only context summary and renders the source's warning inside the block, so your local documents are never dropped. An empty source warns there too; an invalid `settings.json` warns on its own and suppresses the block.
+- **`archcore status`** reports a fatal source as a visible failure (counted as an issue, non-zero exit) and an empty source as a warning, while still running its structural local-file checks.
+
+### Read-only everywhere
+
+A mounted global is a read-only context surface. Two surfaces expose it: the MCP read tools (`list_documents`, `get_document`, `search_documents`) and the [pre-write code-alignment injection](/guides/connect-your-agent/#code-alignment-injection), which marks every global document `[global]`. Every other surface refuses it.
+
+Every global document carries source annotation on read:
+
+| Field | Value on a global | Value on a local |
+|-------|-------------------|------------------|
+| `source_id` | the declared `id` (e.g. `company-standards`) | `local` |
+| `source_kind` | `global` | `local` |
+| `read_only` | `true` | _(omitted)_ |
+| `global` | `true` | _(omitted)_ |
+
+A read can be scoped to one source: `list_documents` and `search_documents` both take a `source` parameter accepting `local`, `global`, or a declared source id.
+
+`search_documents` matches on words rather than on an exact substring, so an approximate query still reaches a global whose author phrased the title differently. It returns a `coverage` map naming each searched source and the number of documents scanned in it, which makes an empty result a verified absence rather than an unsearched corpus. `list_documents` returns `by_source` counts and interleaves sources on the page, so a large local corpus cannot evict a mounted global from the first page. The [MCP tools reference](/reference/mcp-tools/) carries the full parameter tables.
+
+Outside those read surfaces:
+
+- **Not writable through MCP.** `create_document` rejects a target under a declared global with `cannot create document in a read-only global source`; `update_document` and `remove_document` reject with `cannot update a read-only global source document` and `cannot remove a read-only global source document`. Those messages fire on in-tree paths. A write addressed at an external global (a `../` sibling or an absolute path) fails earlier with `invalid path: must start with ".archcore/"`, because the write tools cannot address a path outside `.archcore/` at all (see the [vendoring tip](#vendoring-a-global-in-tree)).
+- **Not writable from the editor.** The `PreToolUse` [write guard](/guides/connect-your-agent/#the-write-guard) refuses a direct editor write to a document inside a global, including a document inside an external global that the MCP tools cannot address.
+- **Not a relation endpoint.** `add_relation` and, since CLI v0.8.3, `remove_relation` refuse an edge whose source **or** target is a global, in either direction. Relations connect local documents only.
+- **Fail closed.** When `settings.json` is present but cannot be read, the write and relation tools reject with `cannot verify global sources: settings.json is unreadable` rather than proceed.
+- **Absent from CLI surfaces.** `archcore status` (tag hygiene, counts) and the session-start recap blocks operate on local documents only, and the `GLOBALS` block reports per-source counts rather than any global document. A consumer cannot fix an upstream global's tags and is not responsible for them.
+
+To record that a local document follows a global rule, link **local → local** documents and treat the global as background context. Do not link to the global, and do not fix it in your project. Corrections belong upstream in the source repository.
+
+### Local overrides global
+
+When a local document and a global one cover the same topic, the **local document is authoritative** for your project. The concrete trigger is a shared slug: when a local `error-handling.rule.md` and a company-wide `error-handling.rule.md` share that slug, the agent applies the local document as the effective rule and treats the global one as background. Global sources are organization-wide defaults, and the local project refines or overrides them.
+
+The scan surfaces **both** documents and never drops the global. Precedence is a reading convention your agent applies by inspecting `source_kind`, `source_id`, and `read_only` on each result; the agent never infers authority from a path or a title. The server performs no deduplication, so the lineage stays visible: the agent sees that a local override exists, applies it, and still has the general default for context. Every write targets a local document.
+
+### Vendoring a global in-tree
+
+Instead of pointing at a sibling repo, you can vendor the global content **inside** your project under the reserved `.archcore/global/` directory. The local document scan skips any directory named `global` at any depth, so vendored content is invisible until you declare it.
+
+This is the most self-contained distribution form. It assumes nothing about clone layout, and it yields the clean read-only write message.
+
+:::caution
+Never name a **local** document directory `global`. The local scan skips any directory named `global` at any depth, so documents under one silently disappear from the corpus. When a local document folder seems to have disappeared, that name is the usual cause; rename the directory.
+:::
+
+### 1. Place the content under `.archcore/global/<id>`
+
+Pick a distribution mechanism:
+
+```bash
+# Committed vendored copy — reproducible, travels with the repo
+git clone <global-repo-url> .archcore/global/company
+rm -rf .archcore/global/company/.git
+git add .archcore/global/company && git commit -m "vendor company global"
+
+# …or a git submodule, pinned to a ref
+git submodule add <global-repo-url> .archcore/global/company
+
+# …or gitignore + clone on setup (a missing clone fails the server fast)
+echo ".archcore/global/" >> .gitignore
+```
+
+### 2. Point `path` at the directory that contains the documents
+
+- Cloned a whole repo (it has its own `.archcore/`): `path: ".archcore/global/company/.archcore"`.
+- Vendored only the document tree (`knowledge/` directly under the folder): `path: ".archcore/global/company"`.
+
+When the documents do not appear after declaring, `path` points at the wrong level: it must reach the directory whose subtree holds the `*.type.md` files, often `…/.archcore` after cloning a whole repository.
+
+### 3. Declare it
+
+```json
+{
+  "sync": "none",
+  "globals": [ { "id": "company", "path": ".archcore/global/company" } ]
+}
+```
+
+An in-tree global vendored under a folder **not** named `global`, such as `.archcore/globals/<id>`, is de-duplicated by the scan: it appears exactly once, as a read-only global, never also as a writable local. The reserved `.archcore/global/` layout stays the recommended, self-documenting one.
+
+:::tip
+In-tree vendoring produces the clearer write-path error. A write attempt on a vendored global returns the clean `cannot update a read-only global source document`, whereas a `../` sibling fails writes with `invalid path: must start with ".archcore/"` (a cosmetic difference in the write-path message; reads succeed for both). Vendored copies and submodules are snapshots: re-clone or `git submodule update` to pull upstream changes. An automated refresh command is planned but not implemented.
+:::
+
+### Monorepo root as a global
+
+A monorepo's root `.archcore/` and a sub-app's `.archcore/` collapse into the same mechanism. The root is local-to-itself and a global to any sub-app that references it:
+
+```json
+// apps/web/.archcore/settings.json
+{
+  "sync": "none",
+  "globals": [ { "id": "root", "path": "../../.archcore" } ]
+}
+```
+
+The web app's agent reads the root's shared conventions read-only, while each app keeps its own writable `.archcore/`.
+
+### Constraints
+
+- **One writable primary per server.** Writing two independent local projects in one session is not supported; exactly one primary is writable.
+- **Transitive globals are not followed.** The server reads the primary's `globals` only and ignores a global's own `globals`.
+- **Distribution is manual for now.** Getting the source onto disk (clone / submodule / vendor) is your responsibility. An automated refresh command and lockfiles are planned, with no accepted approach yet.
+
+
+## Installation settings
+
+
+The install scripts accept five environment variables (same on Unix and Windows):
+
+| Variable                    | Default (Unix)    | Default (Windows)                       | Purpose                                                                  |
+| --------------------------- | ----------------- | --------------------------------------- | ------------------------------------------------------------------------ |
+| `ARCHCORE_VERSION`          | latest            | latest                                  | Pin to a specific release tag (e.g. `v1.0.0`).                            |
+| `ARCHCORE_INSTALL_DIR`      | `~/.local/bin`    | `%LOCALAPPDATA%\Programs\archcore`      | Override the install directory.                                          |
+| `GITHUB_TOKEN`              | None              | None                                    | Authenticate asset downloads from a private repository. Version resolution reads a public redirect and uses no token. |
+| `DO_NOT_TRACK`              | None              | None                                    | Any value other than `0` disables analytics, in the installer and in the CLI. |
+| `ARCHCORE_TELEMETRY_OPTOUT` | None              | None                                    | Any value other than `0` disables analytics. Tool-specific equivalent of `DO_NOT_TRACK`. |
+
+<Tabs>
+	<TabItem label="macOS / Linux">
+		```bash
+		ARCHCORE_VERSION=v1.0.0 ARCHCORE_INSTALL_DIR=/usr/local/bin \
+		  curl -fsSL https://archcore.ai/install.sh | bash
+		```
+	</TabItem>
+	<TabItem label="Windows">
+		```powershell
+		$env:ARCHCORE_VERSION = 'v1.0.0'; $env:ARCHCORE_INSTALL_DIR = 'C:\tools\archcore'
+		irm https://archcore.ai/install.ps1 | iex
+		```
+	</TabItem>
+</Tabs>
+
+
+## Analytics and opt-out
+
+Archcore sends anonymous events from two places: the install scripts, and the CLI's update path.
+
+| Sender          | Events                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------- |
+| Install script  | `cli_installed` on success, `cli_install_failed` with a stage category on failure                   |
+| CLI update path | `cli_updated` on success, `cli_update_failed` with a `stage` category, `cli_update_skipped` with a `reason` |
+
+The update path covers a typed `archcore update` and the unattended attempt described under [Update behavior](#update-behavior). A `trigger` property separates a typed `manual` run from an unattended `auto` one. `archcore update --check` sends nothing.
+
+No event carries an error message, a file path, a directory name, a user name, a host name, or repository data.
+
+Both senders resolve their identifier from the same file, so one machine is one identifier: `${XDG_STATE_HOME:-$HOME/.local/state}/archcore/install-id` on Unix, `%USERPROFILE%\.local\state\archcore\install-id` on Windows.
+
+The installer prints a one-line notice when it sends its event. When a manual event is delivered, `archcore update` prints one disclosure line naming an opt-out variable and the privacy page.
+
+Two variables opt out of both senders: `DO_NOT_TRACK` and `ARCHCORE_TELEMETRY_OPTOUT`, at any value other than `0`. Both are read before any filesystem access, so an opted-out machine also creates no identifier file:
+
+```bash
+curl -fsSL https://archcore.ai/install.sh | DO_NOT_TRACK=1 bash
+```
+
+The opt-out variables stop telemetry only. They do not disable updates.
+
+A build without an injected key sends nothing, so a local `go build`, a fork, and a CI build are all inert.
+
+The full policy is at <a href="https://archcore.ai/privacy" target="_blank">archcore.ai/privacy</a>.
+
+
+## Update behavior
+
+The CLI updates on two paths. You type `archcore update`, or the MCP server runs one unattended attempt in the background of a session. Both replace the same binary through the same code.
+
+### Typed update
+
+```bash
+archcore update
+```
+
+`archcore update` reads the latest release tag from the `https://github.com/archcore-ai/cli/releases/latest` redirect (no GitHub API request), downloads the binary for your OS and architecture, verifies the checksum, and replaces the binary in place. The [`archcore update` reference](/cli/commands/#archcore-update) covers the `--check` flag.
+
+After the binary phase, `archcore update` refreshes the Archcore plugin on every host that already carries it. A host without the plugin produces no output, and no command runs there. The [`archcore plugin` reference](/cli/commands/#archcore-plugin) covers the direct commands.
+
+Re-running the install script also updates the binary.
+
+### Unattended update
+
+`archcore mcp` starts one unattended attempt in the background, 60 seconds after it begins serving. The attempt proceeds only when all of these conditions hold, in this order:
+
+1. The binary carries the official-build marker from the release workflow.
+2. The running version is not `dev`.
+3. No CI environment variable is set.
+4. No other process holds the 24-hour claim for this binary path.
+5. The install directory is writable.
+6. The latest version parses and is strictly newer.
+
+The running process keeps executing the image it started with. The new version applies at the next launch. A locally built binary carries no official-build marker and never self-updates, which is the intended behavior.
+
+No environment variable disables unattended update. Making the install directory root-owned is the supported way to stop a machine from updating itself, and it costs no bandwidth: the refusal happens before any download.
+
+
+## Offline / pinned CLI
+
+The plugin always runs whichever `archcore` is on your shell's `PATH`. In an offline or air-gapped environment, install the CLI by any supported method (curl, PowerShell, or build from source), then put it on `PATH` before you launch your coding agent. The [CLI install guide](/start/install/) covers each method.
+
+To pin a specific binary, install it to a directory you control and put that directory first on `PATH`.
+
+### Plugin environment variables
+
+| Variable                      | Effect                                                                     |
+| ----------------------------- | ---------------------------------------------------------------------------- |
+| `ARCHCORE_DISABLE_INJECTION`  | `=1` turns off the pre-edit context injection globally.                     |
+| `ARCHCORE_HIDE_EMPTY_NUDGE`   | `=1` suppresses the session-start nudge that suggests `/archcore:init`.     |
+| `ARCHCORE_HIDE_WIRING_NUDGE`  | `=1` suppresses the Copilot advisory about a project with no MCP wiring.    |
+
 
 ## Next steps
 
-- [Commands](/cli/commands/): every `archcore config` flag and subcommand.
-- [CLI troubleshooting](/cli/troubleshooting/): settings-related errors.
+- [Install Archcore](/start/install/) for the primary setup sequence.
+- [Project context](/concepts/project-context/) for document and source semantics.
+- [CLI commands](/cli/commands/) for settings and update arguments.

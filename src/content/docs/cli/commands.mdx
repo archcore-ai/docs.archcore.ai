@@ -3,9 +3,6 @@ title: CLI Commands
 description: "Every archcore subcommand: init, status, doctor, config, mcp, instructions, hooks, plugin, update, and global flags."
 ---
 
-import PathBadge from '../../../components/PathBadge.astro';
-
-<PathBadge scope="cli" />
 
 ## archcore init
 
@@ -40,7 +37,7 @@ In non-interactive contexts (no TTY), `init` skips the instruction hint. Add it 
 
 **Plugin delivery:**
 
-`init` also delivers the [Archcore plugin](/plugin/overview/), and an explicit host selection is the only thing that authorizes it.
+`init` also delivers the [Archcore plugin](/guides/commands/), and an explicit host selection is the only thing that authorizes it.
 
 - The interactive picker marks every plugin-capable host with "also installs the Archcore plugin". Codex CLI and GitHub Copilot are marked "machine-level, outside this project", because their plugin stores have no repository scope. The screen states that a checked host is also the consent to install the plugin on it, and that nothing is installed for a host you leave unchecked.
 - Checking a host in that picker installs its plugin after wiring, with no second prompt.
@@ -52,7 +49,7 @@ In non-interactive contexts (no TTY), `init` skips the instruction hint. Add it 
 
 See [`archcore plugin`](#archcore-plugin) for the commands each host runs.
 
-For a step-by-step walkthrough, see the [CLI Quick Start](/cli/quick-start/).
+For a step-by-step walkthrough, see the [CLI Quick Start](/start/quick-start/).
 
 ---
 
@@ -75,7 +72,7 @@ archcore status [--project <path>]
 - Tag hygiene: an invalid tag format is a failure, and a tag used only once is a warning (possible typo)
 - Sync manifest JSON structure
 - Orphaned relations (documents referenced but not on disk)
-- Global source health: any [fatal state](/cli/global-sources/#every-declared-global-is-mandatory) (missing, not a directory, unreadable, self-overlap, duplicate path) is a failure, an empty source is a warning, and a healthy source prints `global source "<id>" (<N> document(s))`
+- Global source health: any [fatal state](/cli/configuration/#every-declared-global-is-mandatory) (missing, not a directory, unreadable, self-overlap, duplicate path) is a failure, an empty source is a warning, and a healthy source prints `global source "<id>" (<N> document(s))`
 
 When `status` finds orphaned relations, it hints: "Run 'archcore doctor --fix' to remove orphaned relations"
 
@@ -193,7 +190,7 @@ Coding agents connect to this stdio server and launch it as a subprocess. You do
 
 60 seconds after it starts serving, `archcore mcp` runs one background update attempt on its own goroutine. The attempt writes nothing to stdout and never delays a JSON-RPC response. See [unattended update](#archcore-update) for the conditions that must hold before anything is replaced.
 
-See [MCP server](/cli/mcp-server/) for details.
+See [MCP server](/guides/connect-your-agent/#mcp) for details.
 
 ---
 
@@ -298,7 +295,7 @@ archcore hooks copilot post-tool-use
 
 Every leaf is hidden. An unrecognized host or event writes empty stdout and exits 0, because stdout is the hook protocol channel: anything else printed there would land in the agent's context.
 
-See [Hooks](/cli/hooks/) for the full guard and advisory detail.
+See [Hooks](/guides/connect-your-agent/#lifecycle-hooks) for the full guard and advisory detail.
 
 ---
 
@@ -364,7 +361,7 @@ Each host command is bounded at 30 seconds, and the whole step at 120 seconds. A
 
 OpenCode, Gemini CLI, Roo Code, and Cline ship no Archcore plugin, so `archcore plugin` never addresses them.
 
-For installing the plugin from a host's own UI or CLI, see [Install the plugin](/plugin/install/).
+For installing the plugin from a host's own UI or CLI, see [Install the plugin](/start/install/).
 
 ---
 
@@ -417,7 +414,7 @@ The update paths report three anonymous events: `cli_updated`, `cli_update_faile
 - `archcore update --check` sends nothing.
 - When a manual event is delivered, `archcore update` prints one disclosure line naming the opt-out variable and `https://archcore.ai/privacy`.
 - A build without an injected key sends nothing.
-- Set `DO_NOT_TRACK` or `ARCHCORE_TELEMETRY_OPTOUT` to any value other than `0` to stop every event. These are the same two variables the [analytics and opt-out](/cli/install/#analytics-and-opt-out) section describes.
+- Set `DO_NOT_TRACK` or `ARCHCORE_TELEMETRY_OPTOUT` to any value other than `0` to stop every event. These are the same two variables the [analytics and opt-out](/start/install/#analytics-and-opt-out) section describes.
 
 ---
 
@@ -438,3 +435,9 @@ Show help for every command.
 ```bash
 archcore --help
 ```
+
+
+## Next steps
+
+- [Commands and examples](/guides/commands/) shows how to use this reference in your agent.
+- [Project context](/concepts/project-context/) explains the document model.

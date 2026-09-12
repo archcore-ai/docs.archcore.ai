@@ -1,0 +1,135 @@
+---
+title: Archcore commands and examples
+description: Initialize project context, record decisions, plan changes, and review work through your coding agent.
+---
+
+Use Archcore in your agent to record project knowledge, plan a change, or review work against existing decisions. Describe the outcome in conversation or use one of the four slash commands below.
+
+Slash commands require the Archcore plugin in a [supported host](/guides/connect-your-agent/#supported-hosts). Other MCP agents can read and write the same documents through natural-language requests. For terminal operations, use the [CLI command reference](/cli/commands/).
+
+## Choose an action
+
+| You want to | Command | Result |
+|---|---|---|
+| Create initial context from this repository | `/archcore:init` | A preview of project documents and host wiring |
+| Scope a change before implementation | `/archcore:plan` | A document package based on the request and existing context |
+| Record a decision or describe existing code | `/archcore:document` | A typed document based on the supplied facts |
+| Check changes against project context | `/archcore:review` | Findings about code and recorded documents |
+
+<span id="initialize-project-context"></span>
+
+## /archcore:init
+
+```text
+/archcore:init
+```
+
+Use this in a repository with existing code. The agent examines its structure and proposes an initial set of documents. Review the preview before confirming document creation and host wiring. An empty project has no implemented architecture to describe.
+
+This is separate from terminal `archcore init`, which creates `.archcore/` and configures your agent. See [installation](/start/install/).
+
+| Option | Effect |
+|---|---|
+| `--depth=light\|standard\|deep` | Sets the synthesis budget; the default is `standard` |
+| `--mode=small\|medium\|large` | Overrides detected repository scale |
+| `--domain=<slug>` | Focuses a run on one domain |
+| `--refresh` | Adds missing context in a previously seeded repository and refreshes host wiring |
+
+```text
+/archcore:init --depth=light
+/archcore:init --domain=payments
+/archcore:init --refresh
+```
+
+Depth limits the proposed coverage; it is not a target number of documents. Review the count in the preview, especially for a large repository.
+
+<span id="plan-a-change"></span>
+
+## /archcore:plan
+
+```text
+/archcore:plan add CSV export to the reporting API
+```
+
+The agent reads project context and code, identifies missing information, and announces the proposed document package. A small fix can need no new documents. One capability can need a spec and a plan; a larger initiative can need requirements and several specs.
+
+Questions concern information the agent could not establish from the available sources. Review the resulting plan before choosing whether to implement it. An interrupted package can resume from its draft documents.
+
+<span id="expert-paths"></span>
+
+For a specific planning workflow, name an expert path:
+
+| Path | Use it for |
+|---|---|
+| `sdd` | A full requirements, specification, and plan package |
+| `sources` | Market, business, and user requirements sources |
+| `iso` | The formal BRS, StRS, SyRS, and SRS requirements chain |
+| `research` | An investigation, closed by scope coverage or a recommendation |
+
+```text
+/archcore:plan research compare storage options for our pending database decision
+```
+
+A pending decision or named candidates select `rnd`; a territory investigation selects `research`. `rnd` and `evidence` are not separate expert paths. To file one external material, use:
+
+```text
+/archcore:document evidence https://example.com/report
+```
+
+The URL above is a placeholder: replace it with the material you want to record. Research and evidence vocabulary requires Archcore CLI 0.8.3 or later. On an older CLI, research falls back to `rnd` and reports the required version.
+
+You can also name a route: `null`, `decision`, `amendment`, `capability`, or `umbrella`. This fixes package composition while the agent still grounds the request. The [plugin source](https://github.com/archcore-ai/plugin/tree/main/plugins/archcore/skills/plan) owns the internal routing rules.
+
+<span id="record-a-decision-or-existing-behavior"></span>
+
+## /archcore:document
+
+Use a decision your project actually made:
+
+```text
+/archcore:document record our decision to use PostgreSQL and the reasons we discussed
+```
+
+A settled decision is an `adr`; an open proposal is an `rfc`. Review the result before marking it accepted. The agent can offer related rules, guides, or implementation documents when the decision calls for them.
+
+To describe existing code, name the module and the information you need:
+
+```text
+/archcore:document describe src/payments and its public boundaries
+```
+
+Use [document types](/concepts/document-types/) to distinguish a behavioral contract (`spec`) from a reference description (`doc`). Record current behavior from source; do not turn an undocumented assumption into an accepted contract.
+
+<span id="review-changes-and-context"></span>
+
+## /archcore:review
+
+```text
+/archcore:review
+/archcore:review --drift
+/archcore:review --deep
+```
+
+On a branch with changes, review checks the work against recorded context. On the default branch, or without a branch diff, the default command reports project health. `--drift` checks for stale documents; `--deep` expands the audit to coverage and relations.
+
+Name a path or topic to narrow the review. Ask to close out completed work when you want the agent to reconcile the recorded plan with the implementation. Document acceptance and permanent removal remain explicit decisions.
+
+## Import existing instructions
+
+Start with one decision, rule, or procedure that the agent will need soon. Ask:
+
+> Extract the API error convention from AGENTS.md into an Archcore rule. Preserve its meaning and show me the draft before changing the source instructions.
+
+Review the new document and check retrieval in a fresh session. Then remove duplicated project knowledge from the source instruction file, keeping agent-specific settings and the Archcore managed block.
+
+`/archcore:init` can also import existing `CLAUDE.md`, `AGENTS.md`, and `.cursorrules` content as part of its preview. Review the import before approving it. [Project context](/concepts/project-context/) explains file organization and relations.
+
+## Delegation
+
+Some commands delegate multi-document work to `archcore-assistant` or read-only auditing to `archcore-auditor`. You normally request the outcome through the commands above; the skill chooses its helper. The host controls tool permissions.
+
+## Next steps
+
+- [Quick start](/start/quick-start/) demonstrates the plan, implement, record, and review loop.
+- [What to expect](/start/what-to-expect/) explains automatic behavior and its limits.
+- [Document types](/concepts/document-types/) provides the full type-selection reference.

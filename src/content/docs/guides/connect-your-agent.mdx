@@ -1,0 +1,460 @@
+---
+title: Connect Archcore to your agent
+description: Configure MCP, lifecycle hooks, and instruction hints for a supported coding agent or your own harness.
+---
+
+Archcore connects to your agent through MCP tools, lifecycle hooks, and an instruction hint. Use [Install Archcore](/start/install/) for initial setup; this page covers host differences and custom connections.
+
+## Supported hosts
+
+| Host | Agent ID | MCP configuration | Lifecycle hooks | Archcore commands |
+|---|---|---|---|---|
+| Claude Code | `claude-code` | Automatic | Supported | Plugin |
+| Cursor | `cursor` | Project setup or manual entry | Supported, with host limits | Plugin installed in UI |
+| Codex CLI | `codex-cli` | Automatic | Feature flag; trusted project; no Windows hooks | Plugin |
+| GitHub Copilot CLI | `copilot` | Project setup required | Write guard; no pre-edit context injection | Plugin |
+| Gemini CLI | `gemini-cli` | Automatic | Wiring provided; runtime verification remains unconfirmed | No plugin |
+| OpenCode | `opencode` | Automatic | Requires a separate host adapter; no declarative hook install | No shipped Archcore plugin |
+| Roo Code | `roo-code` | Automatic | No lifecycle hooks | No plugin |
+| Cline | `cline` | Manual through its MCP UI | No lifecycle hooks | No plugin |
+
+MCP availability means the agent can use document tools. It does not imply slash-command or hook support. Copilot support here refers to GitHub Copilot CLI, not VS Code agent mode or cloud-agent sandboxes.
+
+## MCP
+
+The Archcore CLI runs the local MCP server as `archcore mcp`. Your agent launches it as a subprocess and communicates over stdin/stdout. For a custom harness, configure the executable and project root explicitly:
+
+```json
+{
+  "mcpServers": {
+    "archcore": {
+      "command": "archcore",
+      "args": ["mcp", "--project", "/absolute/path/to/your-project"]
+    }
+  }
+}
+```
+
+Replace the path with the repository you want to serve. Your host can use a different configuration shape; the executable, arguments, and stdio transport remain the connection inputs.
+
+The project root resolves in this order: `--project`, `ARCHCORE_PROJECT_ROOT`, then the working directory. An explicit flag or environment value pins the root for the server's lifetime. Without either, the server can follow valid client-reported roots. See [root diagnostics](/guides/troubleshooting/#wrong-working-directory).
+
+An empty repository can connect: the agent can call `init_project` to create `.archcore/`. That tool does not configure the host. The separately gated `install_host_config` tool requires a user-approved host-wiring plan. See the [MCP tools reference](/reference/mcp-tools/).
+
+### Install the connection separately
+
+```bash
+archcore mcp install --agent claude-code
+```
+
+Replace the ID for your host. Cline requires its own UI rather than a project config written by this command.
+
+| Host | Project MCP config |
+|---|---|
+| Claude Code, GitHub Copilot CLI | `.mcp.json` |
+| Cursor | `.cursor/mcp.json` |
+| Codex CLI | `.codex/config.toml` |
+| Gemini CLI | `.gemini/settings.json` |
+| OpenCode | `opencode.json` |
+| Roo Code | `.roo/mcp.json` |
+| Cline | VS Code globalStorage, managed through the host UI |
+
+After configuration, restart the session and request `list_documents`. An empty list is valid; a missing tool or connection error is not.
+
+## Lifecycle hooks
+
+Hooks connect Archcore to host events. [What to expect](/start/what-to-expect/) explains their user-visible effects.
+
+| Event | Effect | Can block an action? |
+|---|---|---|
+| `SessionStart` | Bounded project recap | No |
+| `PreToolUse` | Direct-write guard and supported pre-edit context injection | The write guard can |
+| `PostToolUse` | Document structure, relation-cascade, and precision findings | No |
+
+```bash
+archcore hooks install --agent claude-code
+```
+
+Use the host's supported event names and payload format when writing a custom adapter. The command leaves `archcore hooks <agent-id> <event>` translate those protocols; simply adding a generic hook name does not make a new harness compatible.
+
+Run `archcore doctor` to inspect the setup. A written configuration does not prove that the host delivered an event. Check an actual session before relying on automatic behavior.
+
+### Codex CLI
+
+Enable hooks with `codex --enable hooks`, or add this to your existing `~/.codex/config.toml`:
+
+```toml
+[features]
+hooks = true
+```
+
+Before Codex 0.129.0, the key is `codex_hooks`. Project-local hooks require a trusted `.codex/` layer. The documented integration does not run hooks on Windows. MCP tools and skills can still work without hooks.
+
+### GitHub Copilot CLI
+
+Run `archcore init --agent copilot` in the project. Its plugin does not register an MCP server, so project setup supplies the connection.
+
+The pre-write event accepts a permission decision but cannot receive context. The direct-write guard works; pre-edit context injection does not. Copilot also reads Claude Code settings, so a repository configured for both can produce duplicate hooks. See [duplicate-context troubleshooting](/guides/troubleshooting/#context-appears-twice).
+
+### Cursor
+
+Cursor manages plugins through its UI. Add `https://github.com/archcore-ai/plugin` in the Plugins panel, then confirm MCP is registered for your project. Project setup with `archcore init --agent cursor` can write the MCP entry; a plugin-only installation does not supply it.
+
+For a user-scoped entry, use the [Cursor MCP template](https://github.com/archcore-ai/plugin/blob/main/docs/cursor.mcp.example.json) and retain `--project` with `${workspaceFolder}`. This prevents different windows from sharing the wrong project root.
+
+### Other hosts
+
+Gemini CLI has hook wiring, but an executed host session has not confirmed the integration's tool-event behavior. OpenCode exposes hooks through host plugin code; the CLI does not write a declarative hook configuration there. Roo Code and Cline use document tools without Archcore lifecycle hooks.
+
+## Instruction hint
+
+An instruction hint tells the model that Archcore tools exist and when to consult project context. It is distinct from the server's tool instructions and from lifecycle events.
+
+```bash
+archcore instructions install --agent claude-code
+```
+
+Claude Code receives the hint in `CLAUDE.md` and `AGENTS.md`; Gemini CLI uses `GEMINI.md`; the other listed hosts use `AGENTS.md`. Interactive `archcore init` asks before writing the hint. A named `--agent` authorizes it; noninteractive initialization without a named agent skips it.
+
+Archcore manages only the text between these markers:
+
+```markdown
+<!-- archcore:start -->
+...
+<!-- archcore:end -->
+```
+
+Keep your own instructions outside the managed block. For a custom harness, place equivalent guidance in the system or project instructions your host actually loads: ask the agent to discover applicable Archcore documents, read them before the relevant work, and use MCP for document changes. Prompt guidance informs model behavior; it does not enforce it.
+
+Use `archcore instructions remove` to remove managed hints. The [CLI reference](/cli/commands/#archcore-instructions) covers targeted removal and older layouts.
+
+## Install per host
+
+If you install from your agent's interface, [install the Archcore executable](/start/install/) first. The plugin invokes `archcore` from `PATH`; it does not download the executable.
+
+| Host | Plugin installation |
+|---|---|
+| Claude Code | `/plugin marketplace add archcore-ai/plugin`, then `/plugin install archcore@archcore-plugins` |
+| Cursor | Add the repository URL through the Plugins panel |
+| Codex CLI | `codex plugin marketplace add archcore-ai/plugin`, then install Archcore through `/plugins` |
+| GitHub Copilot CLI | `copilot plugin install archcore-ai/plugin:plugins/archcore`, then `archcore init --agent copilot` in the project |
+
+Codex CLI and Copilot CLI plugin installations are machine-level. Restart the agent after changes. Use `archcore plugin status` to inspect installation state and the [CLI reference](/cli/commands/#archcore-plugin) for updates and removal.
+
+## Hook output and limits
+
+<details>
+<summary>Event payloads, recap limits, and installed wiring</summary>
+
+### The three events
+
+| Event | What runs | Can block |
+| ----- | --------- | --------- |
+| `SessionStart` | project recap, staleness advisory | No |
+| `PreToolUse` | write guard, code-alignment injection | **Yes**, the write guard |
+| `PostToolUse` | structure validation, relation cascade notice, precision findings | No |
+
+Each host spells these events its own way. See [Installed wiring](#installed-wiring). Archcore installs one hook entry per (host, event) pair, and the process picks the check to run from the tool name in the payload.
+
+Everything except the write guard is **advisory**: it adds text to the agent's context and never changes what the agent is allowed to do.
+
+
+### Session start
+
+The recap goes into the agent's working context before you type anything. Its sections, in order:
+
+1. Header and the MCP tool line.
+2. The invalid-settings warning, when `.archcore/settings.json` is present but cannot be parsed or validated.
+3. `CORPUS`: document counts by category and by status, including rejected.
+4. `BRANCH`: the checked-out branch, when it resolves.
+5. `GLOBALS`: one line per declared [global source](/cli/configuration/#global-sources), when at least one source is declared.
+6. `IN PROGRESS`: drafts, newest first.
+7. `RECENTLY ACCEPTED`: documents accepted in the last 30 days, newest first.
+8. The staleness advisory, when due.
+9. `EXISTING TAGS`: the top 20 tags by frequency.
+10. `DOCUMENT RELATIONS`: the relation count and the tools that manage it.
+11. A closing pointer to the MCP server instructions.
+
+Example output:
+
+```text
+[Archcore — Git-native context for AI coding agents]
+You have MCP tools available: list_documents, get_document, search_documents, create_document, update_document, remove_document, add_relation, remove_relation, list_relations.
+
+CORPUS: 42 documents — knowledge 30, vision 9, experience 3 · draft 11, accepted 30, rejected 1
+BRANCH: feature/payments
+
+IN PROGRESS (draft, newest first):
+  - .archcore/payments/stripe-webhooks.adr.md — "Stripe Webhook Retry Policy"
+  … and 7 more — list_documents(status="draft")
+
+RECENTLY ACCEPTED (last 30 days):
+  - .archcore/auth/jwt-strategy.adr.md — "JWT Session Strategy"
+
+EXISTING TAGS: payments, auth, api, security, cli
+
+DOCUMENT RELATIONS: 18 relation(s) stored.
+  Use list_relations, add_relation, remove_relation MCP tools to manage.
+
+Refer to MCP server instructions for document types, workflow rules, and usage guidance.
+```
+
+#### The `GLOBALS` block
+
+When `.archcore/settings.json` declares at least one [global source](/cli/configuration/#global-sources), the recap carries a `GLOBALS` block after `BRANCH`, or after `CORPUS` when the branch does not resolve. It tells the agent that a global exists, how large it is, and what it covers:
+
+```text
+GLOBALS (read-only, query via MCP read tools):
+  - archcore — 42 docs (knowledge 40, vision 1, experience 1) · product/ 14, concepts/ 14, architecture/ 7, market/ 4, web/ 3
+  ⚠ global source "company" not found at "../company/.archcore" — clone it or fix .archcore/settings.json
+  Local documents take precedence over same-topic globals.
+```
+
+One line renders per declared source, in declaration order. A healthy source's line carries the declared `id`, its document count, its per-category counts, and its top-level directories with document counts, ordered by count descending and alphabetically on a tie. The directory list is the source's vocabulary: enough for an agent to phrase a query against a corpus it has never read.
+
+What the block does and does not do:
+
+- **Every count comes from filenames and directory names.** The block reads no global document's content, and it adds no corpus scan to session start. The numbers come from the walk that already classifies each declared source.
+- **No global document path, title, or tag appears in it.** Global content stays behind the MCP read tools.
+- **A declared source's warning renders inside the block**, prefixed with `⚠`, and the remaining sources still render. An invalid `settings.json` is the one case that behaves differently: it produces a standalone warning and no `GLOBALS` block at all.
+- **The precedence sentence closes the block** when at least one healthy source rendered a count line.
+- **`CORPUS` switches its label.** While the block renders, the corpus count reads `local documents`, and the connected banner gains the total global document count: `… · 102 docs + 42 global`.
+
+When no global source is declared, neither the block nor its heading appears, and `CORPUS` keeps its plain `documents` label.
+
+#### The recap is bounded
+
+The recap is a budgeted summary, not an index of your knowledge base:
+
+- **At most 24 document lines** across `IN PROGRESS` and `RECENTLY ACCEPTED` combined. A truncated block says how many documents were omitted and names the `list_documents` filter that returns them.
+- **`EXISTING TAGS` caps at 20**, ranked by frequency. The ranking draws on every local document, rejected ones included, so the agent reuses your vocabulary instead of inventing synonyms.
+- **Rejected documents never appear in either block**, but they are counted in `CORPUS`.
+- **`GLOBALS` caps at 8 source lines and 6 directories per line.** When either cap drops entries, the block names how many it dropped. The banner total still counts every healthy source, including one the block truncated away.
+- Every document line carries the full `.archcore/`-prefixed path, so you can pass it to `get_document` unchanged.
+
+Output length follows that budget, not corpus size. A 300-document project and a 3000-document project produce recaps that differ only by the width of the `CORPUS` counters. The `GLOBALS` block carries its own ceilings for the same reason: its size follows those ceilings, never the size of the mounted corpus.
+
+No global document line appears in the recap. The `GLOBALS` block reports per-source counts only, and global documents themselves are surfaced through the MCP read tools and the code-alignment injection.
+
+:::note
+The recap degrades rather than fails. A global source in any fatal state falls back to a local-only scan and renders its warning inside the `GLOBALS` block, so your local documents are never dropped; an empty source warns there too. An invalid `settings.json` warns with `invalid .archcore/settings.json: … — global sources not loaded` and continues without the block. Outside a git tree, or on a detached `HEAD`, the `BRANCH` line is omitted rather than filled with a placeholder.
+:::
+
+#### Staleness advisory
+
+When the session starts, Archcore compares the last commit that touched `.archcore/` against everything committed since, and names the documents that mention the directories that moved. Archcore rate-limits the advisory to **once per 24 hours per project**, and it does not consume that budget when it finds nothing to report.
+
+
+### Before a write
+
+`PreToolUse` fires when the agent is about to write a file. Two things happen, in a fixed order.
+
+#### The write guard
+
+This is the only guard in the whole system that can deny. It runs **first and alone**, and the deny decision is computed before any advisory work starts. A failure anywhere in the advisory path cannot change the verdict on your edit.
+
+It blocks a direct write to a document in `.archcore/`, and refuses exactly what the MCP write tools refuse: both consult the same predicate, so a path the tools reject cannot be reached by going around them. It also refuses a document inside a global source mounted from outside the store. The MCP tools cannot address that path at all, so the guard checks it separately.
+
+The guard does not block non-document files under `.archcore/`: `settings.json`, `.sync-state.json`, and anything non-Markdown.
+
+The reason the agent receives:
+
+```text
+Direct writes to .archcore/ documents are not allowed. Use Archcore MCP tools instead:
+- create_document: create a new document
+- update_document: modify an existing document
+- remove_document: delete a document
+This ensures validation, templates, and the sync manifest stay consistent.
+```
+
+On most hosts the deny goes to stderr with exit code 2. On GitHub Copilot it is a `permissionDecision` JSON document on stdout with exit code 0. Copilot reads any non-zero exit as a deny and discards the reason with it, so the zero exit carries the explanation to the user.
+
+#### Code-alignment injection
+
+An agent about to edit a source file has no reason to know a rule constrains it. This advisory finds the documents that mention the file's directory and puts the most specific ones in front of the edit:
+
+```text
+[Archcore Context] Before editing src/api/handlers/users.ts:
+- rule: API Error Envelope [api/error-envelope.rule.md]
+- adr: Handler Layering [api/handler-layering.adr.md]
+```
+
+What it does and does not do:
+
+- **Source roots.** The file must sit under a source root. The defaults are `src`, `lib`, `app`, `pkg`, `cmd`, `internal`, `apps`, `packages`, `modules`, `components`. Setting `codeAlignment.sourceRoots` in `.archcore/settings.json` **replaces** that list. It does not extend it.
+- **Only five document types are injected**, ranked in this order: `rule`, `cpat`, `adr`, `spec`, `guide`. A plan or an idea is context for a discussion, not a constraint on a line of code.
+- **Caps.** At most 3 documents and 2048 runes reach the host. The document found by the deepest matching directory wins.
+- **Globals are included** and marked `[global]`, so the reader does not try to update what they cannot write.
+- **`.archcore/` paths are skipped.** Editing a document is the write guard's business.
+- **`ARCHCORE_DISABLE_INJECTION=1`** turns the injection off entirely.
+
+```json
+{
+  "sync": "none",
+  "codeAlignment": {
+    "sourceRoots": ["services", "libs"]
+  }
+}
+```
+
+:::caution
+Archcore does not deliver code-alignment context on GitHub Copilot. Its pre-write event carries only a permission decision, so the write guard runs there and the injection does not. See [Host limitations](#host-limitations).
+:::
+
+
+### After a write
+
+`PostToolUse` fires after one of five Archcore MCP tools changed something: `create_document`, `update_document`, `remove_document`, `add_relation`, or `remove_relation`. It only reports; the tool has already run, so nothing here can deny.
+
+Three checks run, and a failure in one does not silence the others.
+
+**Structure validation** reports the same problems `archcore doctor` finds, capped at 5 per run:
+
+```text
+[Archcore Validation] Issues found after the write:
+  - .archcore/auth/jwt-strategy.adr.md: missing required field "status"
+  … and 3 more — run archcore doctor
+```
+
+**Relation cascade notice** fires only on `update_document`, and only for incoming `implements`, `depends_on`, and `extends` relations. A `related` edge is an association, not a dependency, so it is excluded:
+
+```text
+[Archcore Cascade] auth/jwt-strategy.adr.md changed. Documents that may need review:
+  - auth/session-refresh.spec.md (implements this document)
+```
+
+**Precision findings** measure the written document against the document contract. They fire on `create_document` and `update_document` only. The checks fall into four groups:
+
+| Group | Examples |
+| ----- | -------- |
+| Every document type | Vague wording, missing section, foreign section, frontmatter, placeholder body, cross-document links, long code block, restatement |
+| Types with graded clauses or procedure steps | Requirement over 25 words, step over 20 words, compound requirement, condition after the obligation, open-ended list, ambiguous alternative, misplaced BCP 14 modal |
+| One type only | `SHALL` in a `spec`, oversized `spec`, subjectless passive, EARS clause in a `prd` requirement, `rule` with no file target, `adr` with one alternative, `cpat` without a code block |
+| Content ownership | A heading whose content another type owns, and a statement copied word for word from a linked document |
+
+One report carries at most 12 findings and ends with a count of what the cap dropped:
+
+```text
+[Archcore Precision] .archcore/auth/jwt-strategy.adr.md (advisory):
+  - vague wording (robust) — replace with a concrete fact, version, threshold, or measurement
+  - missing section: ## Alternatives Considered
+  - +2 more finding(s) not shown (report cap 12)
+```
+
+[Precision checks](/reference/document-format/#precision-checks) lists every check, the types it grades, and the threshold behind it.
+
+The advisory validates the document path through the containment-safe read guard before opening the file, so a symlink out of `.archcore/` produces no findings at all. The restatement check reads the sync manifest to find linked documents, and returns nothing when the manifest will not load.
+
+
+### Installing
+
+Hooks are installed automatically during `archcore init`. To install them by hand:
+
+```bash
+archcore hooks install                    # every detected agent
+archcore hooks install --agent cursor     # one agent
+archcore hooks install --project /path    # a project root other than the cwd
+```
+
+`hooks install` also writes the MCP config for the same agents.
+
+Re-installing updates the Archcore entry in place and keeps every field Archcore does not own. A `timeout` you added on a host where Archcore writes none, or a key written by a newer Archcore, survives; a timeout Archcore does own (Gemini CLI, GitHub Copilot) is reset to Archcore's value. An entry that differs only by a field Archcore does not own stays untouched, and the file keeps its bytes and its mtime.
+
+#### Installed wiring
+
+Five hosts receive install wiring:
+
+| Host | Config file | Session event | Pre-write event and matcher | Post-write event and matcher |
+| ---- | ----------- | ------------- | --------------------------- | ---------------------------- |
+| Claude Code | `.claude/settings.json` | `SessionStart` | `PreToolUse`, `Write\|Edit` | `PostToolUse`, MCP document tools |
+| Codex CLI | `.codex/hooks.json` | `SessionStart` | `PreToolUse`, `Write\|Edit\|apply_patch` | `PostToolUse`, MCP document tools |
+| Cursor | `.cursor/hooks.json` | `sessionStart` | `preToolUse`, `Write` | `afterMCPExecution`, no matcher |
+| Gemini CLI | `.gemini/settings.json` | `SessionStart` | `BeforeTool`, `write_file` | `AfterTool`, MCP document tools |
+| GitHub Copilot | `.github/hooks/archcore.json` | `sessionStart` | `preToolUse`, `create\|edit\|str_replace_editor\|apply_patch` | `postToolUse`, MCP document tools |
+
+The MCP document-tool matcher covers `create_document`, `update_document`, `remove_document`, `add_relation`, and `remove_relation` under every name spelling a host may deliver.
+
+Archcore writes a 1-second timeout on the pre-write event and a 3-second timeout on the session and post-write events. GitHub Copilot takes those values in seconds (`timeoutSec`) and Gemini CLI takes them in milliseconds (`timeout`); Claude Code, Codex CLI, and Cursor entries carry no timeout field.
+
+**OpenCode** is not wired. Its hooks are JavaScript plugins and cannot be declared in a config file, so Archcore ships the `archcore hooks opencode <event>` leaves for a plugin to delegate to but writes nothing. **Roo Code** and **Cline** get no hooks at all. Roo Code supports `onSave` only, which is not a lifecycle event. All three still work through [MCP](/guides/connect-your-agent/#mcp).
+
+Example Claude Code entry, written by `archcore hooks install`:
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "archcore hooks claude-code session-start" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          { "type": "command", "command": "archcore hooks claude-code pre-tool-use" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+#### Host limitations
+
+A host can accept a hook config and still not run it. After a successful install, `archcore hooks install` prints what stands between the file and a hook that fires. **Silence means the wiring works.**
+
+- **Codex CLI** hooks are experimental and off by default (enable with `codex --enable hooks`, or `[features]` with `hooks = true`; `codex_hooks = true` before Codex 0.129.0). They do not run on Windows at all, and project-local hooks load only when the project's `.codex/` layer is trusted.
+- **GitHub Copilot** carries only a permission decision in its `preToolUse` event, so the write guard runs and the code-alignment injection does not. Copilot also reads `.claude/settings.json`, so a project wired for both hosts produces duplicate output. The verdict stays correct.
+- **Gemini CLI** tool events (`BeforeTool` / `AfterTool`) come from the published reference and are not confirmed against a running host.
+
+`archcore doctor` prints the same notes, but only for a host whose config holds an Archcore hook command. A detected host that was never wired is not reported on, and with nothing wired `doctor` says nothing about hooks rather than claiming they are healthy.
+
+:::note
+If an older Archcore plugin is installed, its hooks and the CLI's may both fire. `hooks install` and `doctor` report it. The cost is duplicated output, never a wrong verdict. Updating the plugin resolves it.
+:::
+
+
+### Running a hook by hand
+
+Each host invokes one hidden leaf per event:
+
+```bash
+archcore hooks <host> <event>
+```
+
+Hosts: `claude-code`, `cursor`, `gemini-cli`, `copilot`, `codex-cli`, `opencode`.
+Events: `session-start`, `pre-tool-use`, `post-tool-use`.
+
+The payload arrives as one JSON object on stdin, so pipe something in when you run a leaf yourself:
+
+```bash
+echo '{}' | archcore hooks claude-code session-start
+```
+
+An unrecognized host or event writes **empty stdout and exits 0**. On a hook, stdout is the protocol channel. A usage message there would land several hundred bytes of help text in the model's context, so silence is the correct answer.
+
+The same reasoning drives the rest of the failure behavior: empty, truncated, or non-JSON stdin allows; an unresolvable project root allows; an internal panic is recovered, reported on stderr, and allows. A hook that cannot read its input never blocks your work.
+
+
+### Removed hooks
+
+Archcore removed the `Stop` and prompt-time hook families, and they have not returned. The prompt-time family covered the `UserPromptSubmit`, `BeforeSubmitPrompt`, and `BeforeAgent` event spellings. They matched keywords against natural language: phrases like "step 1:", "always", and "root cause" fired in ordinary conversation, and agents were blocked or handed instructions they did not need.
+
+`PreToolUse` and `PostToolUse` match on tool names and file paths, not on message text.
+
+:::caution
+A config written by an older Archcore may still carry `Stop`, `UserPromptSubmit`, `BeforeSubmitPrompt`, or `BeforeAgent` entries pointing at commands that no longer exist. Re-running `archcore hooks install` will not add them back, but it will not remove them either. Delete them by hand.
+:::
+
+
+</details>
+
+## Next steps
+
+- [Quick start](/start/quick-start/) verifies document creation and retrieval.
+- [Integrations](/guides/integrations/) covers cooperation with other tools.
+- [Troubleshooting](/guides/troubleshooting/) covers connection and lifecycle failures.

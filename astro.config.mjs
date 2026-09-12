@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightLlmsTxt from 'starlight-llms-txt';
+import { docsSidebar, docsRedirects } from './src/data/docs-navigation.mjs';
 
 /**
  * Fails a production build with no PostHog key instead of publishing pages
@@ -51,49 +52,24 @@ export default defineConfig({
 		plugins: [requireAnalyticsKey()],
 	},
 	redirects: {
-		// Legacy paths
-		'/getting-started/installation/': '/cli/install/',
-		'/getting-started/quick-start/': '/start/plugin-quick-start/',
-		'/getting-started/first-10-minutes/': '/start/plugin-quick-start/',
-		'/getting-started/why-not-flat-files/': '/concepts/vs-flat-files/',
-		'/concepts/philosophy/': '/concepts/how-it-works/',
-		'/concepts/context-layers/': '/concepts/how-it-works/',
-		'/concepts/directory-structure/': '/concepts/documents/',
-		'/use-cases/architecture-decisions/': '/concepts/use-cases/',
-		'/use-cases/coding-rules/': '/concepts/use-cases/',
-		'/use-cases/shared-project-memory/': '/concepts/use-cases/',
-		'/use-cases/implementation-plans/': '/concepts/use-cases/',
-		'/integrations/mcp-server/': '/cli/mcp-server/',
-		'/integrations/supported-agents/': '/cli/agent-integrations/',
-		'/integrations/hooks/': '/cli/hooks/',
-		'/reference/cli-commands/': '/cli/commands/',
-		'/troubleshooting/agent-not-seeing-documents/': '/cli/troubleshooting/',
-		'/troubleshooting/mcp-not-starting/': '/cli/troubleshooting/',
-		'/troubleshooting/validation-errors/': '/cli/troubleshooting/',
-
-		// IA restructure — Get Started group retired in favor of path-based layout
-		'/start/quick-start/': '/start/plugin-quick-start/',
-		'/start/vs-flat-files/': '/concepts/vs-flat-files/',
-
-		// Former "Agents & Tools" group folded under /cli/
-		'/agents/supported-agents/': '/cli/agent-integrations/',
-		'/agents/mcp-server/': '/cli/mcp-server/',
-		'/agents/cli/': '/cli/commands/',
-
-		// CLI-specific reference pages moved under /cli/
-		'/reference/configuration/': '/cli/configuration/',
-		'/reference/troubleshooting/': '/cli/troubleshooting/',
-
-		// Plugin Skills consolidation — Intent Commands and Tracks merged into Skills
-		'/plugin/intent-commands/': '/plugin/skills/#all-four-commands-at-a-glance',
-		'/plugin/tracks/': '/plugin/skills/#archcoreplan',
-		'/reference/tracks/': '/plugin/skills/#archcoreplan',
-
-		// MCP track prompts removed in CLI v0.7.0 — track orchestration is plugin-owned
-		'/reference/mcp-prompts/': '/plugin/skills/#archcoreplan',
-
-		// `archcore init` deep-dive folded into CLI Quick Start
-		'/cli/init/': '/cli/quick-start/',
+		...docsRedirects,
+		'/changelog/': 'https://github.com/archcore-ai/cli/releases',
+		'/changelog/001/': 'https://github.com/archcore-ai/cli/releases/tag/v0.0.1',
+		'/changelog/010/': 'https://github.com/archcore-ai/cli/releases/tag/v0.1.0',
+		'/changelog/012/': 'https://github.com/archcore-ai/cli/releases/tag/v0.1.2',
+		'/changelog/014/': 'https://github.com/archcore-ai/cli/releases/tag/v0.1.4',
+		'/changelog/022/': 'https://github.com/archcore-ai/cli/releases/tag/v0.2.2',
+		'/changelog/034/': 'https://github.com/archcore-ai/cli/releases/tag/v0.3.4',
+		'/changelog/037/': 'https://github.com/archcore-ai/cli/releases/tag/v0.3.7',
+		'/changelog/040/': 'https://github.com/archcore-ai/cli/releases/tag/v0.4.0',
+		'/changelog/0410/': 'https://github.com/archcore-ai/cli/releases/tag/v0.4.10',
+		'/changelog/050/': 'https://github.com/archcore-ai/cli/releases/tag/v0.5.0',
+		'/changelog/070-cli/': 'https://github.com/archcore-ai/cli/releases/tag/v0.7.0',
+		'/changelog/070-plugin/': 'https://github.com/archcore-ai/plugin/releases/tag/v0.7.0',
+		'/changelog/073-cli/': 'https://github.com/archcore-ai/cli/releases/tag/v0.7.3',
+		'/changelog/074-plugin/': 'https://github.com/archcore-ai/plugin/releases/tag/v0.7.4',
+		'/changelog/082-plugin/': 'https://github.com/archcore-ai/plugin/releases/tag/v0.8.2',
+		'/changelog/083-cli/': 'https://github.com/archcore-ai/cli/releases/tag/v0.8.3',
 	},
 	integrations: [
 		starlight({
@@ -115,9 +91,12 @@ export default defineConfig({
 					projectName: 'Archcore',
 					description:
 						'Archcore is a git-native context layer for AI coding agents, covering spec-driven development and context engineering. Typed markdown documents (specs, architecture decisions, rules, plans) stored in a .archcore/ directory in your repository and served to agents over MCP.',
+					promote: ['index', 'start/install', 'start/quick-start', 'start/what-to-expect'],
 					customSets: [
-						{ label: 'CLI', paths: ['cli/**'] },
-						{ label: 'Plugin', paths: ['plugin/**'] },
+						{ label: 'Start', paths: ['index', 'start/**'] },
+						{ label: 'Guides', paths: ['guides/**'] },
+						{ label: 'CLI', paths: ['cli/**', 'guides/connect-your-agent'] },
+						{ label: 'Plugin', paths: ['guides/commands', 'guides/connect-your-agent', 'start/**'] },
 						{ label: 'Concepts', paths: ['concepts/**'] },
 					],
 				}),
@@ -183,85 +162,13 @@ export default defineConfig({
 				},
 			],
 			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/archcore-ai/cli' },
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/archcore-ai/plugin' },
 				{ icon: 'discord', label: 'Discord', href: 'https://discord.gg/5YC8pdjD' },
 				{ icon: 'x.com', label: 'X', href: 'https://x.com/archcore_ai' },
 				{ icon: 'telegram', label: 'Telegram', href: 'https://t.me/archcore_ai' },
 			],
 			customCss: ['./src/styles/custom.css'],
-			sidebar: [
-				{
-					label: 'Start Here',
-					items: [
-						{ label: 'Overview', slug: '' },
-						{ label: 'Choose Plugin or CLI', slug: 'start/choose' },
-						{ label: 'Plugin Quick Start', slug: 'start/plugin-quick-start' },
-						{ label: 'CLI Quick Start', slug: 'cli/quick-start' },
-						{ label: 'Migrate from Flat Files', slug: 'start/migrate-from-flat-files' },
-					],
-				},
-				{
-					label: 'Plugin',
-					items: [
-						{ label: 'Overview', slug: 'plugin/overview' },
-						{ label: 'Install', slug: 'plugin/install' },
-						{ label: 'Supported AI agents', slug: 'plugin/supported-hosts' },
-						{ label: 'How Plugin Works', slug: 'plugin/how-it-works' },
-						{ label: 'Skills', slug: 'plugin/skills' },
-						{ label: 'Built-in Agents', slug: 'plugin/agents' },
-						{ label: 'Troubleshooting', slug: 'plugin/troubleshooting' },
-					],
-				},
-				{
-					label: 'CLI',
-					items: [
-						{ label: 'Overview', slug: 'cli/overview' },
-						{ label: 'Install', slug: 'cli/install' },
-						{ label: 'Quick Start', slug: 'cli/quick-start' },
-						{ label: 'Commands', slug: 'cli/commands' },
-						{ label: 'MCP Server', slug: 'cli/mcp-server' },
-						{ label: 'Hooks', slug: 'cli/hooks' },
-						{ label: 'Agent Integrations', slug: 'cli/agent-integrations' },
-						{ label: 'Global Sources', slug: 'cli/global-sources' },
-						{ label: 'Configuration', slug: 'cli/configuration' },
-						{ label: 'Troubleshooting', slug: 'cli/troubleshooting' },
-					],
-				},
-				{
-					label: 'Concepts',
-					items: [
-						{ label: 'What Is Archcore?', slug: 'concepts/what-is-archcore' },
-						{ label: 'Mental Model', slug: 'concepts/mental-model' },
-						{ label: 'How It Works', slug: 'concepts/how-it-works' },
-						{ label: 'Document Types', slug: 'concepts/document-types' },
-						{ label: 'Documents & Layout', slug: 'concepts/documents' },
-						{ label: 'Relations', slug: 'concepts/relations' },
-						{ label: 'Flat Files vs Archcore', slug: 'concepts/vs-flat-files' },
-						{ label: 'Use Cases', slug: 'concepts/use-cases' },
-					],
-				},
-				{
-					label: 'Reference',
-					items: [
-						{ label: 'Document Format', slug: 'reference/document-format' },
-						{ label: 'Precision Checks', slug: 'reference/precision-checks' },
-						{ label: 'MCP Tools', slug: 'reference/mcp-tools' },
-						{ label: 'Plugin Skills', slug: 'reference/skills' },
-					],
-				},
-				{
-					// Return path to archcore.ai. Without this group the docs are a
-					// one-way street: marketing links in, nothing links back out.
-					label: 'Product',
-					items: [
-						{ label: 'archcore.ai', link: 'https://archcore.ai/' },
-						{ label: 'Plugin page', link: 'https://archcore.ai/plugin/' },
-						{ label: 'CLI page', link: 'https://archcore.ai/cli/' },
-						{ label: 'What is repo memory?', link: 'https://archcore.ai/learn/repo-memory/' },
-						{ label: 'Blog', link: 'https://archcore.ai/blog/' },
-					],
-				},
-			],
+			sidebar: docsSidebar,
 		}),
 	],
 });

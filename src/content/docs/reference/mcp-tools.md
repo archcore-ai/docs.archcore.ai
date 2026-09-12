@@ -7,7 +7,7 @@ The Archcore MCP server exposes 10 tools that AI agents use to interact with you
 
 ## Source annotation and global sources
 
-When a project declares [global sources](/cli/global-sources/), the read tools (`list_documents`, `search_documents`, `get_document`) return documents from both the local project and the mounted globals. Every returned document carries source annotation so the agent can tell them apart:
+When a project declares [global sources](/cli/configuration/#global-sources), the read tools (`list_documents`, `search_documents`, `get_document`) return documents from both the local project and the mounted globals. Every returned document carries source annotation so the agent can tell them apart:
 
 | Field | Local document | Global document |
 | ----- | -------------- | --------------- |
@@ -253,7 +253,7 @@ Read a document's full content with its relations.
 
 ## create_document
 
-Create a new document. Generates from template if no content is provided. Rejects a target directory under a [global source](/cli/global-sources/). Globals are read-only.
+Create a new document. Generates from template if no content is provided. Rejects a target directory under a [global source](/cli/configuration/#global-sources). Globals are read-only.
 
 **Parameters:**
 
@@ -286,7 +286,7 @@ Creates: .archcore/database/use-postgres.adr.md
 
 ## update_document
 
-Modify an existing document's title, status, or content. Rejects a path under a [global source](/cli/global-sources/). Globals are read-only.
+Modify an existing document's title, status, or content. Rejects a path under a [global source](/cli/configuration/#global-sources). Globals are read-only.
 
 **Parameters:**
 
@@ -308,7 +308,7 @@ From CLI v0.8.3 the tool preserves frontmatter keys it does not own. A key a per
 
 ## remove_document
 
-Permanently delete a document and all its relations. Rejects a path under a [global source](/cli/global-sources/). Globals are read-only.
+Permanently delete a document and all its relations. Rejects a path under a [global source](/cli/configuration/#global-sources). Globals are read-only.
 
 **Parameters:**
 
@@ -326,7 +326,7 @@ This is a destructive action. Prefer `update_document` with `status: "rejected"`
 
 ## add_relation
 
-Create a directed relation between two documents. Refuses an edge whose source **or** target is a [global source](/cli/global-sources/) document, in either direction. Relations connect local documents only. Both paths must name distinct existing documents inside the project; an absolute path or a path outside the project is rejected. The tool changes the manifest only. It does not change a document's status and does not resolve a contradiction.
+Create a directed relation between two documents. Refuses an edge whose source **or** target is a [global source](/cli/configuration/#global-sources) document, in either direction. Relations connect local documents only. Both paths must name distinct existing documents inside the project; an absolute path or a path outside the project is rejected. The tool changes the manifest only. It does not change a document's status and does not resolve a contradiction.
 
 **Parameters:**
 
@@ -348,7 +348,7 @@ The seven relation types sit on three axes:
 | `contradicts` | evidential | is the challenger that disputes the target statement |
 | `supersedes` | temporal | is the newer document that replaces the target |
 
-`supports`, `contradicts`, and `supersedes` require CLI v0.8.3. An older CLI rejects a manifest that contains them. See [Relations](/concepts/relations/) for the conventions on which type pairs take which edge.
+`supports`, `contradicts`, and `supersedes` require CLI v0.8.3. An older CLI rejects a manifest that contains them. See [Relations](/concepts/project-context/#relations) for the conventions on which type pairs take which edge.
 
 **Returns:** `{source, target, type, added}`. `added` is `false` when the edge already existed.
 
@@ -465,3 +465,9 @@ Paths report what actually landed on disk, not what was attempted. An instructio
 **Why it declares itself non-destructive:** every write is scoped to Archcore's own content. Hook installs touch only marker-recognized entries, so foreign hooks survive. MCP config writes merge only Archcore-owned fields, so your fields and other servers survive. Instruction writes replace only the span between the Archcore markers and land atomically. Archcore renames a temp file into place and preserves the file's permissions. Calling again converges: existing Archcore entries are kept or updated in place.
 
 **When agents call this:** only when you have explicitly asked to set up or wire Archcore into your host **and** confirmed a plan the agent stated first (which agent, which files). Noticing that hooks look missing is not a trigger. Neither is a generic "set up my project", nor routine document work. An agent that spots an unwired project asks; it does not act.
+
+
+## Next steps
+
+- [Commands and examples](/guides/commands/) shows how to use this reference in your agent.
+- [Project context](/concepts/project-context/) explains the document model.

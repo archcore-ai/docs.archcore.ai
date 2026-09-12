@@ -1,6 +1,27 @@
 ---
-import Default from '@astrojs/starlight/components/SocialIcons.astro';
+import config from 'virtual:starlight/user-config';
+import { Icon } from '@astrojs/starlight/components';
+
+const links = config.social || [];
 ---
 
-<a href="/changelog/" class="header-changelog-link">Changelog</a>
-<Default><slot /></Default>
+{links.map(({ label, href, icon }) => (
+  <a href={href} target="_blank" rel="me noopener noreferrer" class="sl-flex">
+    <span class="sr-only">{label}</span>
+    <Icon name={icon} />
+  </a>
+))}
+<slot />
+
+<style>
+  @layer starlight.core {
+    a {
+      color: var(--sl-color-text-accent);
+      padding: 0.5em;
+      margin: -0.5em;
+    }
+    a:hover {
+      color: var(--sl-color-white);
+    }
+  }
+</style>

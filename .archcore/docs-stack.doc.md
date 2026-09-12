@@ -25,12 +25,13 @@ Content is stored as `.md` / `.mdx` files in `src/content/docs/` (and a separate
 
 ## Build pipeline
 
-The `prebuild` step generates per-page OG images into `public/og/` via `scripts/generate-og-image.mts` before `astro build` runs. See the `og-image-generation` guide for details.
+The `prebuild` step generates per-page OG images into `public/og/` via `scripts/generate-og-image.mts` before `astro build` runs. The build then runs @scripts/finalize-docs.mjs, @scripts/check-docs.mjs, and @scripts/check-first-load.mjs.
+The finalizer writes compatibility redirects, historical heading aliases, and the unified llms.txt index. The documentation check covers the registered page set and captured migration baseline.
 
 ## Examples
 
 ```bash
 npm run dev          # local development
 npm run og:generate  # regenerate OG card PNGs only
-npm run build        # prebuild (OG generation) + astro build + first-load JS budget check
+npm run build        # OG generation + Astro + finalizer + docs checks + JS budget
 ```
