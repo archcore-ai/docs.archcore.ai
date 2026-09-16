@@ -154,7 +154,7 @@ A single-word query behaves identically under `all` and `exact`.
 
   The score is `100 × (best path-ref specificity + Σ content-word specificities) + capped occurrence count`. Per word, a title hit scores 3, a hit on a markdown heading line scores 2, and any other body hit scores 1. The occurrence count is capped at 20, so a term-stuffed body cannot outrank a structural hit. A repeated path reference contributes its single best hit rather than a sum.
 
-  Type priority, from first to last, is `rule`, `adr`, `rfc`, `spec`, `cpat`, `guide`, `plan`, `idea`, `rnd`, `prd`, `brs`, `syrs`, `srs`, `strs`, `mrd`, `brd`, `urd`, `doc`, `task-type`; `research` and `evidence` sort after all of them.
+  Type priority, from first to last, is `rule`, `adr`, `rfc`, `spec`, `cpat`, `guide`, `plan`, `idea`, `rnd`, `prd`, `brs`, `syrs`, `srs`, `strs`, `mrd`, `brd`, `urd`, `doc`, `task-type`; `research`, `evidence`, `scenario`, and `journey` sort after all of them.
 
   A global document's effective modification time is treated as zero, because a vendored global's mtime is its clone date and not a relevance signal. On a tie across every other key, the local document therefore ranks first.
 - `mtime`: orders purely by modification time, newest first.
@@ -259,7 +259,7 @@ Create a new document. Generates from template if no content is provided. Reject
 
 | Name        | Type     | Required | Description                                       |
 | ----------- | -------- | -------- | ------------------------------------------------- |
-| `type`      | string   | Yes      | One of the 21 [document types](/concepts/document-types/), including `research` and `evidence` from CLI v0.8.3 |
+| `type`      | string   | Yes      | One of the 23 [document types](/concepts/document-types/), including `research` and `evidence` from CLI v0.8.3 and `scenario` and `journey` from CLI v0.8.4 |
 | `filename`  | string   | Yes      | Slug for the filename (lowercase, hyphens only)   |
 | `title`     | string   | No       | Human-readable title                              |
 | `status`    | string   | No       | Status: `draft` (default), `accepted`, `rejected` |

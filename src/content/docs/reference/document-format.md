@@ -163,7 +163,7 @@ Every document type carries one of two profiles. The profile decides which check
 | Profile | Meaning | Types |
 | ------- | ------- | ----- |
 | STE | Lines instruct or obligate | `spec`, `rule`, `guide`, `task-type`, `brs`, `strs`, `syrs`, `srs` |
-| ISO | Lines argue or describe | `adr`, `rfc`, `doc`, `evidence`, `prd`, `plan`, `idea`, `rnd`, `research`, `cpat`, `mrd`, `brd`, `urd` |
+| ISO | Lines argue or describe | `adr`, `rfc`, `doc`, `evidence`, `scenario`, `prd`, `plan`, `idea`, `rnd`, `research`, `journey`, `cpat`, `mrd`, `brd`, `urd` |
 
 Two further tables decide which numbered items a check may read at all.
 
@@ -171,8 +171,9 @@ Two further tables decide which numbered items a check may read at all.
 | ----- | ------------------ | ------------------ |
 | Graded clauses | `spec`: Normative Behavior, Failure Behavior. `rule`: Rule | Requirements graded with a BCP 14 modal |
 | Procedure steps | `guide`: Steps. `task-type`: Steps. `plan`: Tasks | Actions the reader takes |
+| Actor-subject steps | `scenario`: Flows, Examples. `journey`: Journeys | Actions an actor takes, or Given/When/Then observations |
 
-A numbered item outside these sections is prose. An `adr` enumerates its alternatives without owing them a modal, and the four ISO 29148 types carry their requirements as identified table rows rather than numbered clauses, so neither is graded as a clause.
+A numbered item outside these sections is prose. In an actor-subject section, a line that opens with `Given`, `When`, `Then`, `And`, or `But` is a step whether or not it carries a number. An `adr` enumerates its alternatives without owing them a modal, and the four ISO 29148 types carry their requirements as identified table rows rather than numbered clauses, so neither is graded as a clause.
 
 ### Checks that run on every type
 
@@ -184,7 +185,7 @@ A numbered item outside these sections is prose. An `adr` enumerates its alterna
 | Frontmatter | `title` is missing or empty, or `status` is missing or invalid |
 | Placeholder body | The body is under 200 characters, counted in characters so a short non-ASCII document is flagged the same way |
 | Cross-document links | The body links other `.archcore/` documents instead of using `add_relation`. Up to 3 are named |
-| Long code block | A code block of 5 or more lines in a type that argues rather than instructs: `adr`, `rfc`, `doc`, and every vision type except `rnd` and `research`. A `rule`, a `guide`, a `cpat`, and an `evidence` are exempt, because the literal text is the artifact |
+| Long code block | A code block of 5 or more lines in a type that argues rather than instructs: `adr`, `rfc`, `doc`, `prd`, `idea`, `plan`, `mrd`, `brd`, `urd`, `brs`, `strs`, `syrs`, and `srs`. Other types are exempt. A `rule`, a `guide`, a `cpat`, and an `evidence` need the literal text, because that text is the artifact |
 | Restatement | A statement survived a move from a linked document nearly word for word. See [Restatement](#restatement) |
 
 The vagueness lexicon covers English (`appropriate`, `robust`, `scalable`, `modern`, `various`, `optimal`, `efficient`, `flexible`, `convenient`, `seamless`, `streamlined`), Russian stems (`оптимальн`, `удобн`, `правильн`, `надёжн`, `надежн`, `гибк`, `современн`, `передов`, `эффективн`, `масштабируем`), and the phrases `best practices`, `as needed`, `world class`, and `cutting edge`.
@@ -196,12 +197,12 @@ These read the graded clauses and the procedure steps of the type, so a type out
 | Finding | Fires when |
 | ------- | ---------- |
 | Requirement over 25 words | A graded clause runs past the word cap |
-| Step over 20 words | A procedure step runs past the word cap |
+| Step over 20 words | A procedure step or an actor-subject step runs past the word cap |
 | Compound requirement | A graded clause carries two modals. `MUST NOT` counts once |
 | Condition after the obligation | A graded clause states its trigger after the response instead of opening with `WHEN`, `WHILE`, or `IF` |
 | Open-ended list | A clause or step ends with `etc.`, `and so on`, `и т.д.`, or `и т.п.` |
 | Ambiguous alternative | A clause or step uses `and/or` or `и/или` |
-| BCP 14 modal in a step | A procedure step carries `MUST`, `SHOULD`, `SHALL`, or `MAY` |
+| BCP 14 modal in a step | A procedure step or an actor-subject step carries `MUST`, `SHOULD`, `SHALL`, or `MAY` |
 | BCP 14 modal in a claim | A numbered item of an ISO-profile type carries a modal. The graded behavior belongs in a linked `spec` or `rule` |
 
 Modals are matched case-sensitively. A lowercase `must` in prose is not a graded obligation and is not reported.
@@ -211,7 +212,7 @@ Modals are matched case-sensitively. A lowercase `must` in prose is not a graded
 | Type | Finding | Fires when |
 | ---- | ------- | ---------- |
 | `spec` | SHALL notation | The body uses `SHALL` instead of `MUST`, `SHOULD`, or `MAY` |
-| `spec` | Oversized spec | The body exceeds 120 lines |
+| `spec`, `scenario`, `journey` | Oversized body | The body exceeds 120 lines. The finding names the line count and the cap |
 | `spec` | Subjectless passive | A graded clause states an obligation with no obligated component as its subject. Up to 3 are named |
 | `prd` | EARS clause in a requirement | A numbered requirement opens with `WHEN`, `WHILE`, or `IF`. A `prd` requirement states an outcome, and the trigger and response form belongs in a `spec` |
 | `rule` | No file target | No graded clause names a path or a glob, so the [code-alignment injection](/guides/connect-your-agent/#code-alignment-injection) can never match the rule to an edited file |
@@ -220,6 +221,8 @@ Modals are matched case-sensitively. A lowercase `must` in prose is not a graded
 | `adr` | One alternative recorded | Alternatives Considered holds a single item |
 | `adr` | Alternative with no stated reason | An alternative does not say what ruled it out. Up to 5 are named |
 | `cpat` | Before or After holds no code block | The section describes the form that changed instead of showing it |
+| `scenario` | Flow without an Anchors line | A `###` subsection under Flows has no line that opens with `Anchors:` |
+| `scenario`, `journey` | Step opens with no actor | A step under Flows or Journeys opens with neither an actor from the Actors table nor `Given`, `When`, `Then`, `And`, or `But`. Skipped when the Actors table is absent |
 
 ### Thresholds
 
@@ -229,7 +232,7 @@ Modals are matched case-sensitively. A lowercase `must` in prose is not a graded
 | Minimum body length | 200 characters |
 | Graded clause length | 25 words |
 | Procedure step length | 20 words |
-| `spec` body length | 120 lines |
+| `spec`, `scenario`, and `journey` body length | 120 lines each |
 | Code block length in an ISO-profile type | 5 lines |
 | Restatement overlap | 0.85 |
 | Documents read per restatement check | 5 |
@@ -263,6 +266,8 @@ A heading matches by prefix, followed by whitespace or the end of the line. `## 
 | `srs` | Purpose and Scope, Software Requirements, External Interfaces, Verification Matrix |
 | `task-type` | When to Use, Steps |
 | `cpat` | Why, Before, After, Scope |
+| `scenario` | Subject, Actors, Flows, Examples, Open Questions |
+| `journey` | Intent, Actors, Journeys, Open Questions |
 
 Several sections accept an older spelling so a rename does not turn existing documents into findings. `Alternatives` satisfies Alternatives Considered, `Procedure` satisfies Steps, `Contract Surface` satisfies Surface, `Rationale` satisfies a `cpat`'s Why, `ConOps` satisfies Operational Concept, and `Verification` satisfies both Verification Approach and Verification Matrix.
 
@@ -279,6 +284,9 @@ Each kind of content has one owning document type and one section inside it. A t
 | Error, edge, and degradation handling | `spec` | Failure Behavior |
 | Phases, tasks, milestones, delivery dates | `plan` | Tasks |
 | Rejected alternative and the reason it was rejected | `adr` | Alternatives Considered |
+| Intended user path before a spec exists | `journey` | Journeys |
+| User flow anchored to code | `scenario` | Flows |
+| Concrete example with data that illustrates a spec clause | `scenario` | Examples |
 
 The foreign-section check names a heading whose content another type owns, and names that type:
 
@@ -286,19 +294,23 @@ The foreign-section check names a heading whose content another type owns, and n
 section ## Normative Behavior in a prd — a spec owns that content; link the two documents instead
 ```
 
-Four types carry an ownership table:
+Seven types carry an ownership table:
 
 | Type | Headings it must not carry | Owner |
 | ---- | -------------------------- | ----- |
 | `prd` | Surface, Normative Behavior, Failure Behavior, Conformance, Solution Overview, Technical Considerations | `spec` |
 | `prd` | Tasks, Timeline, Milestones, Phases, Acceptance Criteria | `plan` |
 | `prd` | Alternatives Considered | `adr` |
+| `prd`, `spec` | Flows, Examples | `scenario` |
+| `prd`, `spec` | Journeys | `journey` |
+| `scenario`, `journey` | Surface, Normative Behavior, Failure Behavior | `spec` |
+| `scenario`, `journey` | Requirements | `prd` |
 | `mrd`, `brd`, `urd` | Mission, Goals and Objectives | `brs` |
 | `mrd`, `brd`, `urd` | Operational Concept, Stakeholder Requirements | `strs` |
 | `mrd`, `brd`, `urd` | System Requirements, Verification Approach | `syrs` |
 | `mrd`, `brd`, `urd` | Software Requirements, Verification Matrix | `srs` |
 
-Only unambiguous headings carry an owner. A `prd` names a business constraint inside its Problem Statement without owing the reader a Constraints section, so Constraints is deliberately absent and produces no finding.
+Only unambiguous headings carry an owner. A `prd` names a business constraint inside its Problem Statement without owing the reader a Constraints section, so Constraints is deliberately absent and produces no finding. A `rule` and a `doc` have their own Examples section, so the Examples row applies only to `prd` and `spec`.
 
 ### Restatement
 

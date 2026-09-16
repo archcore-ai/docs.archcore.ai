@@ -1,9 +1,9 @@
 ---
 title: Document Types
-description: Archcore has 21 document types, including ADR, RFC, rule, spec, evidence, PRD, plan, research, and ISO specifications.
+description: Archcore has 23 document types, including ADR, RFC, rule, spec, scenario, evidence, PRD, journey, plan, research, and ISO specifications.
 ---
 
-Archcore has 21 document types organized into 3 categories: 12 vision, 7 knowledge, and 2 experience. Each type has a template that the Archcore CLI generates. If you have not installed the CLI yet, get it from the [CLI page](https://archcore.ai/cli/).
+Archcore has 23 document types organized into 3 categories: 13 vision, 8 knowledge, and 2 experience. Each type has a template that the Archcore CLI generates. If you have not installed the CLI yet, get it from the [CLI page](https://archcore.ai/cli/).
 
 The template sections listed below are what the CLI writes into a new document. A narrower set is checked after every write, and [Precision checks](/reference/document-format/#precision-checks) lists it per type.
 
@@ -15,10 +15,12 @@ Need to propose a change for review?       → rfc
 Need to enforce a team standard?           → rule
 Need step-by-step instructions?            → guide
 Need a contract for a boundary or feature? → spec
+Need user flows and examples for a spec?   → scenario
 Need reference/lookup material?            → doc
 Need a record of one external material?    → evidence
 Need to define product requirements?       → prd
 Need to capture an early idea?             → idea
+Need a user path before any spec exists?   → journey
 Need to investigate before deciding?       → rnd
 Need to map a territory with no decision?  → research
 Need to plan implementation tasks?         → plan
@@ -45,7 +47,7 @@ Where the product and project are heading. Vision documents are organized into t
 
 ### Product track (simple)
 
-The starting point for most teams. Five types that cover the lifecycle from investigation through implementation.
+The starting point for most teams. Six types that cover the lifecycle from investigation through implementation.
 
 #### PRD (Product Requirements Document)
 
@@ -66,6 +68,25 @@ A product or technical concept that needs capturing before it is fully formed.
 | **File extension** | `.idea.md` |
 | **When to use** | A concept needs capturing for future evaluation |
 | **Template sections** | Idea, Value, Possible Implementation, Risks and Constraints, Next Steps |
+
+#### Journey
+
+The intended path of one user type through the system, written before a `spec` covering this interaction exists. Every step takes the actor as its subject and carries no data. Requires Archcore CLI 0.8.4 or later.
+
+| | |
+|---|---|
+| **File extension** | `.journey.md` |
+| **When to use** | You want to agree on how a user should move through the system, and no spec for this interaction exists yet |
+| **Template sections** | Intent, Actors, Journeys, Open Questions |
+
+Intent opens with the header `In order to [goal] / As a [actor] / I want [outcome]`. Actors is a table with the columns `Actor`, `Who they are`, and `What they want`. Journeys holds one `###` subsection per actor, with numbered steps and an `Extensions` list.
+
+The status of a `journey` records team agreement:
+
+- `accepted`: the team agreed this is the wanted interaction
+- `rejected`: the interaction was abandoned
+
+By convention, a `journey` is `related` to its `prd` or `idea`. When a spec for the interaction exists, record the flow as a [`scenario`](#scenario) that `implements` the journey.
 
 #### RnD
 
@@ -209,13 +230,13 @@ Per-function and per-endpoint specifications with a verification matrix.
 
 | Track | Documents | Best for |
 |---|---|---|
-| Product (`prd`) | `idea` -> `prd` -> `spec` -> `plan` | Individual features, small teams, rapid prototyping, internal tools |
+| Product (`prd`) | `idea` -> `prd` -> `spec` -> `plan`, with an optional `journey` and `scenario` | Individual features, small teams, rapid prototyping, internal tools |
 | Sources (discovery) | `mrd` -> `brd` -> `urd` | Product teams doing discovery, stakeholder alignment, business analysis |
 | ISO (decomposition) | `brs` -> `strs` -> `syrs` -> `srs` | Regulated systems, multi-team projects, complex distributed systems |
 
 Default to the Product track; move to Sources or ISO only when the project demands it.
 
-The Archcore plugin produces these documents through [`/archcore:plan`](/guides/commands/#archcoreplan), which computes which of them a request actually needs. Naming `sdd`, `sources`, `iso`, or `research` in the invocation runs that track's path directly. Without the plugin, create the same documents through the MCP tools in the same order.
+The Archcore plugin produces these documents through [`/archcore:plan`](/guides/commands/#archcoreplan), which computes which of them a request actually needs. Putting `sdd`, `sources`, `iso`, or `research` as the first word runs that track's path directly. Without the plugin, create the same documents through the MCP tools in the same order.
 
 All three tracks can coexist. For example, use the Product track for a small feature while the full ISO track covers a safety-critical subsystem.
 
@@ -238,13 +259,14 @@ The Sources and ISO tracks overlap in subject matter but differ in formality:
 - **BRS vs BRD**: BRS is an ISO specification (formalized structure). BRD is an informal source (business justification, ROI). BRS formalizes what BRD captures.
 - **StRS vs URD**: StRS is an ISO specification (per-class requirements with ConOps). URD is an informal source (personas, journeys). StRS formalizes what URD captures.
 - **SyRS vs SRS**: SyRS defines the whole system boundary. SRS specifies a single component's detailed behavior.
+- **Journey vs URD, scenario vs StRS**: `journey` and `scenario` belong to the Product track beside `prd` and `spec`. URD User Journeys and StRS Operational Scenarios belong to the Sources and ISO tracks. Use the Product-track pair unless your project runs those tracks.
 :::
 
 ---
 
 ## Knowledge
 
-Decisions, standards, reference material, and records of external materials.
+Decisions, standards, reference material, user flows, and records of external materials.
 
 ### ADR (Architecture Decision Record)
 
@@ -398,6 +420,63 @@ invariants, and all failure rules above.
 A **spec** defines a normative contract for a specific technical boundary: how a component *must* behave. A **doc** is non-behavioral reference material (registries, glossaries, lookup tables). A **rule** sets a cross-cutting team standard ("Always do X"). If you are documenting how one system works → `spec`. If you are describing what exists → `doc`. If you are prescribing how engineers must act → `rule`. If the document answers "what should we build and why" (user stories, priorities, success metrics) → `prd` or an ISO type, not a spec.
 :::
 
+### Scenario
+
+How a user or an external actor moves through the system, with concrete Given/When/Then examples that illustrate the clauses of one existing `spec`. Every step takes the actor as its subject and carries no BCP 14 modal. The rules stay in the spec. Requires Archcore CLI 0.8.4 or later.
+
+| | |
+|---|---|
+| **File extension** | `.scenario.md` |
+| **When to use** | A spec exists, and you need to show how an actor uses it, with concrete examples |
+| **Template sections** | Subject, Actors, Flows, Examples, Open Questions |
+
+Flows holds one `###` subsection per actor. Each subsection opens with an `Anchors:` line of `@path` references to the code and test files that the flow walks. Examples holds a `Background` block and titled examples, each with an `Illustrates:` line and unfenced Given/When/Then lines. Keep the body at or under 120 lines; past that, split the scenario by actor.
+
+```markdown
+---
+title: Refund Request
+status: draft
+tags:
+  - "actor:customer"
+---
+
+## Subject
+Order service refunds — the system this document illustrates.
+
+Illustrates: clauses 1 and 2 of the linked spec.
+
+## Actors
+| Actor | Who they are | What they want |
+|---|---|---|
+| Customer | A buyer with a paid order | Money back for a returned book |
+
+## Flows
+### Customer
+Anchors: @src/refunds/handler.go, @features/refund.feature
+
+1. Customer requests a refund; the service shows the refund as approved.
+
+## Examples
+### Refund within 14 days
+
+Illustrates: clause 1
+
+Given Anna bought a book on 1 Sep
+When she requests a refund on 10 Sep
+Then she sees the refund approved
+```
+
+Archcore does not run a scenario. Executable examples stay in your test tree, for example `features/*.feature`, and a document cites them with `@path`. The status of a `scenario` records a reader's check:
+
+- `accepted`: a reader confirmed the examples against the running system, by a test run or by hand
+- `rejected`: the examples no longer hold and no replacement was written
+
+By convention, a `scenario` `depends_on` the one `spec` it illustrates, so an edit to the spec reaches the scenario through the cascade notice. A scenario `implements` its `journey` when one exists. Tags such as `actor:<type>`, `component:<name>`, and `nfr:<concern>` are a convention, not a fixed list.
+
+:::note[Spec vs Scenario vs Journey]
+The subject of the line decides. A **spec** clause obligates the component with a modal: "WHEN the user requests a refund, the service MUST approve it". A **scenario** step takes the actor as its subject and has no modal: "Anna requests a refund on 10 Sep; she sees the refund approved". If a spec that the document illustrates exists, use `scenario`. If no spec exists yet, use `journey`.
+:::
+
 ### Doc
 
 Non-behavioral reference material: registries, glossaries, lookup tables, and component lists.
@@ -509,6 +588,9 @@ Each kind of content has one owning document type and one section inside it. A t
 | Error, edge, and degradation handling | `spec` | Failure Behavior |
 | Phases, tasks, milestones, delivery dates | `plan` | Tasks |
 | Rejected alternative and the reason it was rejected | `adr` | Alternatives Considered |
+| Intended user path before a spec exists | `journey` | Journeys |
+| User flow anchored to code | `scenario` | Flows |
+| Concrete example with data that illustrates a spec clause | `scenario` | Examples |
 
 Two documents holding one statement have no single owner. An edit to one leaves the other stating the opposite, and a reader cannot tell which of the two binds.
 

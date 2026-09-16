@@ -84,6 +84,9 @@ Ask the agent to add the connection through `add_relation`:
 | An investigation needs a territory survey | `rnd depends_on research` |
 | An external report backs a finding | `evidence supports research` |
 | A new decision replaces an old one | `adr supersedes adr` |
+| A scenario illustrates a spec | `scenario depends_on spec` |
+| A scenario realizes an intended user path | `scenario implements journey` |
+| A user path belongs to product requirements | `journey related prd` |
 | A formal specification expresses stakeholder needs | `strs implements urd` |
 
 The requirements sources `mrd`, `brd`, and `urd` are peers; connect them with `related`. A specification can `implement` its source. PRD and ISO requirements documents can be associated with `related` rather than treated as successive mandatory steps.

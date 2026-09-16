@@ -282,7 +282,7 @@ An agent about to edit a source file has no reason to know a rule constrains it.
 What it does and does not do:
 
 - **Source roots.** The file must sit under a source root. The defaults are `src`, `lib`, `app`, `pkg`, `cmd`, `internal`, `apps`, `packages`, `modules`, `components`. Setting `codeAlignment.sourceRoots` in `.archcore/settings.json` **replaces** that list. It does not extend it.
-- **Only five document types are injected**, ranked in this order: `rule`, `cpat`, `adr`, `spec`, `guide`. A plan or an idea is context for a discussion, not a constraint on a line of code.
+- **Only six document types are injected**, ranked in this order: `rule`, `cpat`, `adr`, `spec`, `scenario`, `guide`. A `scenario` is included from CLI v0.8.4; a `journey` is not. A plan, an idea, or a journey is context for a discussion, not a constraint on a line of code.
 - **Caps.** At most 3 documents and 2048 runes reach the host. The document found by the deepest matching directory wins.
 - **Globals are included** and marked `[global]`, so the reader does not try to update what they cannot write.
 - **`.archcore/` paths are skipped.** Editing a document is the write guard's business.

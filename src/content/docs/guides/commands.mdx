@@ -28,18 +28,22 @@ Use this in a repository with existing code. The agent examines its structure an
 
 This is separate from terminal `archcore init`, which creates `.archcore/` and configures your agent. See [installation](/start/install/).
 
-| Option | Effect |
+The first word selects the kind of run. Settings follow it.
+
+| Argument | Effect |
 |---|---|
+| `refresh` (first word) | Adds missing context in a previously seeded repository and refreshes host wiring |
+| `domain <slug>` (first word) | Focuses a run on one domain |
 | `--depth=light\|standard\|deep` | Sets the synthesis budget; the default is `standard` |
-| `--mode=small\|medium\|large` | Overrides detected repository scale |
-| `--domain=<slug>` | Focuses a run on one domain |
-| `--refresh` | Adds missing context in a previously seeded repository and refreshes host wiring |
+| `--scale=small\|medium\|large` | Overrides detected repository scale |
 
 ```text
 /archcore:init --depth=light
-/archcore:init --domain=payments
-/archcore:init --refresh
+/archcore:init domain payments
+/archcore:init refresh
 ```
+
+Plugin v0.9.0 replaced `--refresh`, `--domain=`, and `--mode` with `refresh`, `domain <slug>`, and `--scale`. A former flag such as `--refresh` now starts a plain init.
 
 Depth limits the proposed coverage; it is not a target number of documents. Review the count in the preview, especially for a large repository.
 
@@ -57,9 +61,9 @@ Questions concern information the agent could not establish from the available s
 
 <span id="expert-paths"></span>
 
-For a specific planning workflow, name an expert path:
+To run a specific planning workflow, put its mode first:
 
-| Path | Use it for |
+| Mode | Use it for |
 |---|---|
 | `sdd` | A full requirements, specification, and plan package |
 | `sources` | Market, business, and user requirements sources |
@@ -70,24 +74,28 @@ For a specific planning workflow, name an expert path:
 /archcore:plan research compare storage options for our pending database decision
 ```
 
-A pending decision or named candidates select `rnd`; a territory investigation selects `research`. `rnd` and `evidence` are not separate expert paths. To file one external material, use:
+A pending decision or named candidates select `rnd`; a territory investigation selects `research`. `rnd` and `evidence` are not modes. To file one external material, use [`/archcore:document research`](#archcoredocument). Research and evidence vocabulary requires Archcore CLI 0.8.3 or later. On an older CLI, research falls back to `rnd` and reports the required version.
 
-```text
-/archcore:document evidence https://example.com/report
-```
+Any other first word, including a route name or a document type name, is part of the topic. The agent computes the route itself and does not ask you to choose one. The [plugin source](https://github.com/archcore-ai/plugin/tree/main/plugins/archcore/skills/plan) owns the routing rules.
 
-The URL above is a placeholder: replace it with the material you want to record. Research and evidence vocabulary requires Archcore CLI 0.8.3 or later. On an older CLI, research falls back to `rnd` and reports the required version.
-
-You can also name a route: `null`, `decision`, `amendment`, `capability`, or `umbrella`. This fixes package composition while the agent still grounds the request. The [plugin source](https://github.com/archcore-ai/plugin/tree/main/plugins/archcore/skills/plan) owns the internal routing rules.
+When a planned capability has a user-facing surface, such as a UI or a conversational skill, or the repository has `features/*.feature` files or a BDD test runner, the package adds a `journey` beside the `prd` and a `scenario` after the capability's `spec`. See [document types](/concepts/document-types/#journey). Scenario and journey support requires Archcore CLI 0.8.4 or later; on an older CLI, the agent skips both and reports the required version.
 
 <span id="record-a-decision-or-existing-behavior"></span>
 
 ## /archcore:document
 
+You can put a mode first to skip classification. Without a mode, the agent classifies the request from its wording and the branch changes.
+
+| Mode | Use it for | Types it can produce |
+|---|---|---|
+| `decision` | A decision your project made, or an open proposal | `adr`, `rfc`, `rule` |
+| `code` | Existing code, reference material, a procedure, or a user flow over an existing spec | `spec`, `doc`, `guide`, `scenario` |
+| `research` | A finished report or one external material that you already have | `research`, `rnd`, `evidence` |
+
 Use a decision your project actually made:
 
 ```text
-/archcore:document record our decision to use PostgreSQL and the reasons we discussed
+/archcore:document decision record our decision to use PostgreSQL and the reasons we discussed
 ```
 
 A settled decision is an `adr`; an open proposal is an `rfc`. Review the result before marking it accepted. The agent can offer related rules, guides, or implementation documents when the decision calls for them.
@@ -95,10 +103,26 @@ A settled decision is an `adr`; an open proposal is an `rfc`. Review the result 
 To describe existing code, name the module and the information you need:
 
 ```text
-/archcore:document describe src/payments and its public boundaries
+/archcore:document code describe src/payments and its public boundaries
 ```
 
-Use [document types](/concepts/document-types/) to distinguish a behavioral contract (`spec`) from a reference description (`doc`). Record current behavior from source; do not turn an undocumented assumption into an accepted contract.
+Use [document types](/concepts/document-types/) to distinguish a behavioral contract (`spec`) from a reference description (`doc`). Record current behavior from source; do not turn an undocumented assumption into an accepted contract. When the repository has `features/*.feature` files, the agent reads them as evidence for specs and scenarios.
+
+To skip the type question, name the type in the request:
+
+```text
+/archcore:document code scenario for checkout
+```
+
+To file a ready report or one external material:
+
+```text
+/archcore:document research https://example.com/report
+```
+
+The URL above is a placeholder: replace it with the material you want to record. A report that ends in a recommendation becomes an `rnd`; a report that covers a scope becomes a `research`; one material becomes an `evidence`.
+
+Plugin v0.9.0 removed `document evidence` and `document journey`. Use `document research` for a material, and [`/archcore:plan`](#archcoreplan) for an intended user path.
 
 <span id="review-changes-and-context"></span>
 
@@ -106,13 +130,23 @@ Use [document types](/concepts/document-types/) to distinguish a behavioral cont
 
 ```text
 /archcore:review
-/archcore:review --drift
-/archcore:review --deep
+/archcore:review drift
+/archcore:review deep
+/archcore:review closeout
 ```
 
-On a branch with changes, review checks the work against recorded context. On the default branch, or without a branch diff, the default command reports project health. `--drift` checks for stale documents; `--deep` expands the audit to coverage and relations.
+On a branch with changes, review checks the work against recorded context. On the default branch, or without a branch diff, the default command reports project health. A mode as the first word selects a different run:
 
-Name a path or topic to narrow the review. Ask to close out completed work when you want the agent to reconcile the recorded plan with the implementation. Document acceptance and permanent removal remain explicit decisions.
+| Mode | Effect |
+|---|---|
+| `drift` | Checks for stale documents |
+| `deep` | Runs a full documentation audit, with coverage and relation findings |
+| `closeout` | Closes a finished feature: reconciles the recorded plan with the implementation |
+| `experience` | Records a repeated change as a `cpat` or a `task-type` |
+
+Plugin v0.9.0 replaced `--drift` and `--deep` with plain words. A former flag such as `--drift` is now read as topic text.
+
+Name a path or topic to narrow the review. When the scope includes scenarios, `closeout` reports whether each example was run, confirmed, or unconfirmed, and lists spec clauses that have no example. Document acceptance and permanent removal remain explicit decisions.
 
 ## Import existing instructions
 
