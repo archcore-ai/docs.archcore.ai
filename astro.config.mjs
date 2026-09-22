@@ -53,26 +53,26 @@ export default defineConfig({
 	},
 	redirects: {
 		...docsRedirects,
-		// Tags v0.0.1 to v0.2.2 belonged to the former standalone CLI repository
-		// (archived) and have no tag in archcore-ai/archcore, so those entries go
-		// to the releases listing.
 		'/changelog/': 'https://github.com/archcore-ai/archcore/releases',
-		'/changelog/001/': 'https://github.com/archcore-ai/archcore/releases',
-		'/changelog/010/': 'https://github.com/archcore-ai/archcore/releases',
-		'/changelog/012/': 'https://github.com/archcore-ai/archcore/releases',
-		'/changelog/014/': 'https://github.com/archcore-ai/archcore/releases',
-		'/changelog/022/': 'https://github.com/archcore-ai/archcore/releases',
+		// CLI entries point at the former archcore-ai/cli repository, which keeps the
+		// CLI's releases from before the unified release. Plugin entries point at
+		// archcore-ai/archcore, which carries the former plugin's tags.
+		'/changelog/001/': 'https://github.com/archcore-ai/cli/releases/tag/v0.0.1',
+		'/changelog/010/': 'https://github.com/archcore-ai/cli/releases/tag/v0.1.0',
+		'/changelog/012/': 'https://github.com/archcore-ai/cli/releases/tag/v0.1.2',
+		'/changelog/014/': 'https://github.com/archcore-ai/cli/releases/tag/v0.1.4',
+		'/changelog/022/': 'https://github.com/archcore-ai/cli/releases/tag/v0.2.2',
 		'/changelog/034/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.3.4',
 		'/changelog/037/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.3.7',
-		'/changelog/040/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.4.0',
+		'/changelog/040/': 'https://github.com/archcore-ai/cli/releases/tag/v0.4.0',
 		'/changelog/0410/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.4.10',
-		'/changelog/050/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.5.0',
-		'/changelog/070-cli/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.7.0',
+		'/changelog/050/': 'https://github.com/archcore-ai/cli/releases/tag/v0.5.0',
+		'/changelog/070-cli/': 'https://github.com/archcore-ai/cli/releases/tag/v0.7.0',
 		'/changelog/070-plugin/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.7.0',
-		'/changelog/073-cli/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.7.3',
+		'/changelog/073-cli/': 'https://github.com/archcore-ai/cli/releases/tag/v0.7.3',
 		'/changelog/074-plugin/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.7.4',
 		'/changelog/082-plugin/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.8.2',
-		'/changelog/083-cli/': 'https://github.com/archcore-ai/archcore/releases/tag/v0.8.3',
+		'/changelog/083-cli/': 'https://github.com/archcore-ai/cli/releases/tag/v0.8.3',
 	},
 	integrations: [
 		starlight({
