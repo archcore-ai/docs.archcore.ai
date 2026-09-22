@@ -37,7 +37,7 @@ Do not rewrite or translate:
 - document type names;
 - literal values and generated output;
 - Astro or Starlight component names, props, and frontmatter keys;
-- exact quotations from the CLI or plugin repositories.
+- exact quotations from the `archcore-ai/archcore` repository.
 
 ## Precedence
 
@@ -55,8 +55,9 @@ an awkward sentence that describes it correctly.
 ## Source of truth
 
 All content comes from three upstream sources, split by subject: the `archcore` global source for
-concepts, vocabulary, positioning, and architectural roles; the CLI repository for engine behavior;
-the plugin repository for runtime behavior. Do not invent features, flags, defaults, or behavior, and
+concepts, vocabulary, positioning, and architectural roles; the `cli/` tree of the
+`archcore-ai/archcore` repository for engine behavior; the `plugin/` tree of the same repository for
+runtime behavior. Do not invent features, flags, defaults, or behavior, and
 do not define a concept here that no upstream document defines. When a claim cannot be verified
 upstream, omit it rather than hedge it.
 
@@ -282,7 +283,7 @@ Before finalizing a page, verify:
 - No paragraph carries more than one em dash, and no list item or table cell carries one.
 - Headings are sentence case, and no heading level is skipped.
 - No promotional adjective, filler phrase, signposting sentence, or `-ing` tail survives.
-- Every claim traces to the CLI or plugin repository.
+- Every claim traces to the `archcore-ai/archcore` repository.
 - The page links out to at least one related page, and the "Next steps" links resolve.
 - `npm run build` succeeds.
 

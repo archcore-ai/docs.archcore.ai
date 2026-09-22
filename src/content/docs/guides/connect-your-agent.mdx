@@ -98,9 +98,9 @@ The pre-write event accepts a permission decision but cannot receive context. Th
 
 ### Cursor
 
-Cursor manages plugins through its UI. Add `https://github.com/archcore-ai/plugin` in the Plugins panel, then confirm MCP is registered for your project. Project setup with `archcore init --agent cursor` can write the MCP entry; a plugin-only installation does not supply it.
+Cursor manages plugins through its UI. Add `https://github.com/archcore-ai/archcore` in the Plugins panel, then confirm MCP is registered for your project. Project setup with `archcore init --agent cursor` can write the MCP entry; a plugin-only installation does not supply it.
 
-For a user-scoped entry, use the [Cursor MCP template](https://github.com/archcore-ai/plugin/blob/main/docs/cursor.mcp.example.json) and retain `--project` with `${workspaceFolder}`. This prevents different windows from sharing the wrong project root.
+For a user-scoped entry, use the [Cursor MCP template](https://github.com/archcore-ai/archcore/blob/main/docs/cursor.mcp.example.json) and retain `--project` with `${workspaceFolder}`. This prevents different windows from sharing the wrong project root.
 
 ### Other hosts
 
@@ -134,10 +134,10 @@ If you install from your agent's interface, [install the Archcore executable](/s
 
 | Host | Plugin installation |
 |---|---|
-| Claude Code | `/plugin marketplace add archcore-ai/plugin`, then `/plugin install archcore@archcore-plugins` |
+| Claude Code | `/plugin marketplace add archcore-ai/archcore`, then `/plugin install archcore@archcore-plugins` |
 | Cursor | Add the repository URL through the Plugins panel |
-| Codex CLI | `codex plugin marketplace add archcore-ai/plugin`, then install Archcore through `/plugins` |
-| GitHub Copilot CLI | `copilot plugin install archcore-ai/plugin:plugins/archcore`, then `archcore init --agent copilot` in the project |
+| Codex CLI | `codex plugin marketplace add archcore-ai/archcore`, then install Archcore through `/plugins` |
+| GitHub Copilot CLI | `copilot plugin install archcore-ai/archcore:plugins/archcore`, then `archcore init --agent copilot` in the project |
 
 Codex CLI and Copilot CLI plugin installations are machine-level. Restart the agent after changes. Use `archcore plugin status` to inspect installation state and the [CLI reference](/cli/commands/#archcore-plugin) for updates and removal.
 

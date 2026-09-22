@@ -589,7 +589,7 @@ The plugin ships `.codex.mcp.json`, referenced from the manifest's `mcpServers` 
 Checks, in order:
 
 1. **Manifest references `.codex.mcp.json`.** Open `.codex-plugin/plugin.json` and verify `"mcpServers": "./.codex.mcp.json"` is present.
-2. **`.codex.mcp.json` exists at plugin root.** It should ship with the marketplace install. If missing, reinstall: `codex plugin uninstall archcore`, then `codex plugin marketplace add archcore-ai/plugin` and re-install Archcore from `/plugins`.
+2. **`.codex.mcp.json` exists at plugin root.** It should ship with the marketplace install. If missing, reinstall: `codex plugin uninstall archcore`, then `codex plugin marketplace add archcore-ai/archcore` and re-install Archcore from `/plugins`.
 3. **`archcore` is on `PATH` in the shell that launched Codex.** Run `archcore --version` from that shell; if it fails, install via https://docs.archcore.ai/start/install/ and re-launch Codex.
 
 

@@ -105,7 +105,7 @@ Reference implementation through `@path/to/file` instead of copying function bod
 
 The sentence-focused profile uses clauses of at most 25 words and procedure steps of at most 20 words. The argument-focused profile preserves reasoning and evidence rather than forcing every statement into a short requirement. The [profile table](#prose-profiles) lists the assignment for every type.
 
-These are internal profiles inspired by ASD-STE100 and ISO plain-language principles, not a claim of standards certification. The [plugin writing rules](https://github.com/archcore-ai/plugin/blob/main/plugins/archcore/skills/_shared/precision-rules.md) describe the authoring conventions.
+These are internal profiles inspired by ASD-STE100 and ISO plain-language principles, not a claim of standards certification. The [plugin writing rules](https://github.com/archcore-ai/archcore/blob/main/plugins/archcore/skills/_shared/precision-rules.md) describe the authoring conventions.
 
 ### Separate authoring rules from enforcement
 

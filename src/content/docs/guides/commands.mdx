@@ -76,7 +76,7 @@ To run a specific planning workflow, put its mode first:
 
 A pending decision or named candidates select `rnd`; a territory investigation selects `research`. `rnd` and `evidence` are not modes. To file one external material, use [`/archcore:document research`](#archcoredocument). Research and evidence vocabulary requires Archcore CLI 0.8.3 or later. On an older CLI, research falls back to `rnd` and reports the required version.
 
-Any other first word, including a route name or a document type name, is part of the topic. The agent computes the route itself and does not ask you to choose one. The [plugin source](https://github.com/archcore-ai/plugin/tree/main/plugins/archcore/skills/plan) owns the routing rules.
+Any other first word, including a route name or a document type name, is part of the topic. The agent computes the route itself and does not ask you to choose one. The [plugin source](https://github.com/archcore-ai/archcore/tree/main/plugins/archcore/skills/plan) owns the routing rules.
 
 When a planned capability has a user-facing surface, such as a UI or a conversational skill, or the repository has `features/*.feature` files or a BDD test runner, the package adds a `journey` beside the `prd` and a `scenario` after the capability's `spec`. See [document types](/concepts/document-types/#journey). Scenario and journey support requires Archcore CLI 0.8.4 or later; on an older CLI, the agent skips both and reports the required version.
 

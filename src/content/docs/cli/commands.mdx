@@ -312,7 +312,7 @@ archcore plugin status  [--agent <id>]
 
 Typing the verb is the consent for every host it targets, so each verb runs the same way with or without a terminal. This is the difference from [`archcore init`](#archcore-init), where consent comes from a checked host or an `--agent` flag.
 
-Three frozen identifiers address the plugin everywhere: repository `archcore-ai/plugin`, marketplace `archcore-plugins`, plugin id `archcore@archcore-plugins`.
+Three frozen identifiers address the plugin everywhere: repository `archcore-ai/archcore`, marketplace `archcore-plugins`, plugin id `archcore@archcore-plugins`.
 
 **Flags:**
 
@@ -328,10 +328,10 @@ Three frozen identifiers address the plugin everywhere: repository `archcore-ai/
 
 | Host           | Commands                                                                                                                                                                                                        |
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Claude Code    | `claude plugin marketplace add archcore-ai/plugin`, then `claude plugin install archcore@archcore-plugins` (user scope by default), then merges an `extraKnownMarketplaces["archcore-plugins"]` entry with `"autoUpdate": true` into `~/.claude/settings.json`, preserving unknown fields |
+| Claude Code    | `claude plugin marketplace add archcore-ai/archcore`, then `claude plugin install archcore@archcore-plugins` (user scope by default), then merges an `extraKnownMarketplaces["archcore-plugins"]` entry with `"autoUpdate": true` into `~/.claude/settings.json`, preserving unknown fields |
 | Cursor         | No CLI mechanism. The command prints the instruction to add the plugin from the Cursor UI (Marketplace or `/add-plugin`) and runs no host command                                                                |
-| Codex CLI      | `codex plugin marketplace add archcore-ai/plugin`, then `codex plugin add archcore@archcore-plugins` (machine-level)                                                                                             |
-| GitHub Copilot | `copilot plugin install archcore-ai/plugin:plugins/archcore` (machine-level)                                                                                                                                     |
+| Codex CLI      | `codex plugin marketplace add archcore-ai/archcore`, then `codex plugin add archcore@archcore-plugins` (machine-level)                                                                                           |
+| GitHub Copilot | `copilot plugin install archcore-ai/archcore:plugins/archcore` (machine-level)                                                                                                                                   |
 
 **What `update` runs per host:**
 
@@ -373,7 +373,7 @@ Check for and install the latest version.
 archcore update
 ```
 
-Reads the latest release tag from the `https://github.com/archcore-ai/cli/releases/latest` redirect (not the GitHub API), compares versions, downloads the binary for your OS/architecture, verifies the checksum, and updates in place.
+Reads the latest release tag from the `https://github.com/archcore-ai/archcore/releases/latest` redirect (not the GitHub API), compares versions, downloads the binary for your OS/architecture, verifies the checksum, and updates in place.
 
 **Flags:**
 

@@ -13,12 +13,17 @@ Do not claim formal ASD-STE100 or ISO 24495-1 compliance.
 
 ## Source of truth
 
-This site documents the Archcore CLI and plugin. Content comes from those repositories and their
-`.archcore/` context, never from assumption. Verify a claim against the source repository before
-writing it, and omit what you cannot verify.
+This site documents the Archcore CLI and plugin. Both live in the `archcore-ai/archcore` monorepo:
+the CLI under `cli/`, the plugin under `plugin/`, and their shared `.archcore/` context at the
+repository root. Content comes from that repository and its `.archcore/` context, never from
+assumption. Verify a claim against the source repository before writing it, and omit what you
+cannot verify.
 
-- CLI: `https://github.com/archcore-ai/cli`
-- Plugin: `https://github.com/archcore-ai/plugin`
+- Monorepo: `https://github.com/archcore-ai/archcore` (development on branch `dev`)
+- CLI source: `https://github.com/archcore-ai/archcore/tree/dev/cli`
+- Plugin source: `https://github.com/archcore-ai/archcore/tree/dev/plugin`
+- Published plugin marketplace tree: branch `main`, layout `plugins/archcore/`
+- Releases: `https://github.com/archcore-ai/archcore/releases`
 
 ## Search priority
 

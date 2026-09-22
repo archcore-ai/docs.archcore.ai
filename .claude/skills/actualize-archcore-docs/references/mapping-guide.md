@@ -1,10 +1,10 @@
-# CLI Archcore to Docs Site Mapping Guide
+# Monorepo Archcore to Docs Site Mapping Guide
 
-This reference maps CLI `.archcore/` document types and topics to their corresponding documentation pages.
+This reference maps monorepo `.archcore/` document types and topics to their corresponding documentation pages.
 
 ## Document Type Mapping
 
-| CLI `.archcore/` Topic | Docs Page | Section |
+| Monorepo `.archcore/` Topic | Docs Page | Section |
 |---|---|---|
 | Document types (all 11 types: adr, rfc, rule, guide, spec, doc, prd, idea, plan, task-type, cpat) | `concepts/document-types.md` | Core Concepts |
 | Context layers / categories (vision, knowledge, experience) | `concepts/context-layers.md` | Core Concepts |
@@ -23,14 +23,14 @@ This reference maps CLI `.archcore/` document types and topics to their correspo
 
 ## How to Use This Mapping
 
-1. For each CLI `.archcore/` document, identify the **topic** it covers
+1. For each monorepo `.archcore/` document, identify the **topic** it covers
 2. Find the matching row above to locate the target docs page
-3. If a CLI document covers multiple topics, it may map to multiple docs pages
+3. If a monorepo document covers multiple topics, it may map to multiple docs pages
 4. If no mapping exists, a new page may be needed — classify as "missing"
 
 ## Comparison Approach
 
-When comparing CLI context to docs:
+When comparing monorepo context to docs:
 
 - **Feature lists**: Check that every feature/capability in CLI is documented
 - **Command flags/options**: Verify all flags match between CLI and docs
