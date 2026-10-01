@@ -130,14 +130,14 @@ Use `archcore instructions remove` to remove managed hints. The [CLI reference](
 
 ## Install per host
 
-If you install from your agent's interface, [install the Archcore executable](/start/install/) first. The plugin invokes `archcore` from `PATH`; it does not download the executable.
+The [platform installer](/start/install/) adds the plugin automatically when the Claude Code, Codex CLI, or GitHub Copilot CLI command is already on `PATH`. Use the steps below if you install a host later or need to retry. The plugin invokes `archcore` from `PATH`; it does not download the executable.
 
 | Host | Plugin installation |
 |---|---|
-| Claude Code | `/plugin marketplace add archcore-ai/archcore`, then `/plugin install archcore@archcore-plugins` |
+| Claude Code | `archcore plugin install --agent claude-code` |
 | Cursor | Add the repository URL through the Plugins panel |
-| Codex CLI | `codex plugin marketplace add archcore-ai/archcore`, then install Archcore through `/plugins` |
-| GitHub Copilot CLI | `copilot plugin install archcore-ai/archcore:plugins/archcore`, then `archcore init --agent copilot` in the project |
+| Codex CLI | `archcore plugin install --agent codex-cli` |
+| GitHub Copilot CLI | `archcore plugin install --agent copilot`, then `archcore init --agent copilot` in the project |
 
 Codex CLI and Copilot CLI plugin installations are machine-level. Restart the agent after changes. Use `archcore plugin status` to inspect installation state and the [CLI reference](/cli/commands/#archcore-plugin) for updates and removal.
 

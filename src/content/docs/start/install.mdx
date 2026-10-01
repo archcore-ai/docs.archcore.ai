@@ -5,14 +5,14 @@ description: Install Archcore on your platform, connect your coding agent, and c
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-Install Archcore, then initialize it in your project and connect the agent you use. Complete any host-specific steps printed by the installer before starting the quick start.
+The install script adds the CLI and the Archcore plugin for Claude Code, Codex CLI, and GitHub Copilot CLI when those host commands are already on `PATH`. Run `archcore init` later in each project where you want MCP tools and hooks.
 
 <details>
 <summary>Prefer to install from your AI agent?</summary>
 
-You can also add Archcore through **Claude Code**, **Codex CLI**, **Cursor**, or **GitHub Copilot CLI**. Follow the [installation instructions for your agent](/guides/connect-your-agent/#install-per-host) to add the Archcore plugin.
+You can also add the plugin through **Claude Code**, **Codex CLI**, **Cursor**, or **GitHub Copilot CLI**. Follow the [installation instructions for your agent](/guides/connect-your-agent/#install-per-host).
 
-This is another entry point to the same Archcore setup. The plugin needs the Archcore executable on `PATH`; it does not download it. If the executable is missing, complete step 1 below. Then connect your project and check the connection in steps 2 and 3.
+The plugin needs the Archcore executable on `PATH`; it does not download it. If the executable is missing, complete step 1 below. Then connect your project and check the connection in steps 2 and 3.
 
 </details>
 
@@ -42,6 +42,8 @@ archcore --version
 
 The command prints the installed version. If it is not found, follow [PATH troubleshooting](/guides/troubleshooting/#archcore-not-in-path).
 
+The installer uses the host's own plugin command for each supported host CLI it finds. It reports a retry command if a host install fails. If you install a host after Archcore, run `archcore plugin install --agent <id>`. Plugin setup is skipped in CI and when `ARCHCORE_SKIP_PLUGIN_INSTALL` is set to a nonzero value. Cursor still needs installation through its Plugins panel.
+
 ## 2. Connect your project
 
 In your project's root directory, run:
@@ -50,7 +52,7 @@ In your project's root directory, run:
 archcore init
 ```
 
-Archcore creates `.archcore/` and configures supported agents. If it asks you to select agents, select the ones you use. Selecting a host also authorizes installation of the Archcore plugin where that host supports it.
+Archcore creates `.archcore/` and configures supported agents. If it asks you to select agents, select the ones you use. It also installs a plugin that is still missing for a selected host.
 
 If Archcore detects an existing agent configuration, it can configure that agent without installing the plugin. Follow the printed installation hint, or name the host explicitly:
 
@@ -68,7 +70,7 @@ Replace `claude-code` with your [agent ID](/guides/connect-your-agent/#supported
 | GitHub Copilot CLI | Run setup in the project so its MCP entry exists; restart the session |
 | Other agents | Follow the [connection instructions](/guides/connect-your-agent/) for the available capabilities |
 
-[Host setup details](/guides/connect-your-agent/#supported-hosts) cover the additional steps. In CI, plugin installation commands are printed rather than executed. `--yes` without `--agent` also leaves that step for you.
+[Host setup details](/guides/connect-your-agent/#supported-hosts) cover the additional steps. In CI, `init` prints plugin installation commands rather than executing them. `--yes` without `--agent` also leaves that step for you.
 
 ## 3. Check the connection
 
