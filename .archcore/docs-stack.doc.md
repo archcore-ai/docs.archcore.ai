@@ -21,7 +21,7 @@ Tech stack for the Archcore documentation site.
 | First-load JS check | node | 22.x | Runs `scripts/check-first-load.mjs`, budget 25 KB raw |
 | UI fonts | @fontsource-variable/inter, @fontsource-variable/jetbrains-mono | 5.x | Self-hosted variable WOFF2 |
 
-Content is stored as `.md` / `.mdx` files in `src/content/docs/` (and a separate `src/content/changelog/` collection for release notes).
+Content is stored as `.md` / `.mdx` files in `src/content/docs/`. The site has no changelog collection.
 
 ## Build pipeline
 

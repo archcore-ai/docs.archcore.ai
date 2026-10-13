@@ -32,24 +32,34 @@ Configuration retains a short future-use note for sync. Document format explains
 |---|---|
 | Static site | Astro 6 and Starlight, configured in @astro.config.mjs |
 | Documentation | @src/content/docs/ |
+| Content collection | @src/content.config.ts, the `docs` collection only |
 | Navigation and destinations | @src/data/docs-navigation.mjs |
 | Theme | @src/styles/custom.css and @DESIGN.md |
 | Writing policy | @AGENTS.md |
-| Release records | @src/content/changelog/ and @src/content.config.ts |
-| Changelog routes | @src/pages/changelog/ |
 | Header navigation | @src/components/HeaderLinks.astro |
 | Metadata | @src/components/Head.astro |
+| Markdown page copies | @src/pages/[...slug].md.ts |
 | OG generation | @scripts/generate-og-image.mts |
 | Deployment | @.github/workflows/deploy.yml |
 
-Changelog entries remain outside the primary sidebar. CLI and plugin retain independent release identifiers.
-Release versions come from the collection rather than a manually maintained latest-version statement here.
-The root page uses the standard documentation layout. Components under @src/components/landing/ remain outside the current root-page implementation.
+The site has no changelog. Release notes live on GitHub Releases of the `archcore-ai/archcore` repository.
+@astro.config.mjs redirects `/changelog/` to those releases. It redirects each former changelog entry to its release tag in `archcore-ai/cli` or `archcore-ai/archcore`.
+The root page uses the standard documentation layout.
+
+## Markdown copies for agents
+
+@src/pages/[...slug].md.ts builds one Markdown copy of each page. The page `/start/install/` has the copy `/start/install.md`. The root page has the copy `/index.md`.
+The copy uses the same HTML-to-Markdown conversion as `llms-full.txt`. The endpoint imports `entryToSimpleMarkdown` from the internal files of `starlight-llms-txt`, because the package does not export it. A plugin upgrade that moves this module fails the build.
+@src/components/Head.astro adds `<link rel="alternate" type="text/markdown">` to each page except 404.
+@scripts/finalize-docs.mjs writes `llms.txt` links to the Markdown copies.
+@public/robots.txt disallows `/*.md$` for Googlebot and Bingbot, so that search results show only the HTML pages. Other agents can read the copies.
+GitHub Pages cannot select a response by the `Accept` header. A request for an HTML URL always gets HTML.
 
 ## Build and compatibility
 
 @package.json runs OG generation through prebuild, then Astro, the documentation finalizer, documentation checks, and the first-load JavaScript check.
 @scripts/finalize-docs.mjs preserves compatibility routes and heading aliases and writes the unified llms.txt index.
+@scripts/check-docs.mjs verifies a Markdown copy and an alternate link for each primary page.
 The migration baseline in @scripts/fixtures/docs-migration-baseline.json records 33 historical pages and 452 headings.
 The current build maintains 56 redirects and six historical machine-bundle URLs.
 The first-load budget is 25 KB raw. The latest local build measured 16.9 KB.
@@ -65,4 +75,3 @@ These checks do not establish successful first use through a separate coding-age
 
 Two known implementation gaps remain: some historical aliases resolve to a general page instead of the moved topic, and the article-link checker skips unregistered internal routes.
 The install-per-host exception is fixed in the fragment redirect map; it does not resolve every historical fragment.
-@CLAUDE.md still carries obsolete five-group navigation instructions and needs a separate source-file correction.

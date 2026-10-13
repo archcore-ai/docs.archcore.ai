@@ -36,7 +36,8 @@ for (const [route, href] of Object.entries(docsRedirects)) {
 let index = '# Archcore\n\n> Archcore is a git-native context layer for AI coding agents.\n\nInstall Archcore, record project context, and retrieve it as your agent works. Specs are one part of that context.\n';
 for (const group of docsSidebar) {
   index += `\n## ${group.label}\n\n`;
-  for (const item of group.items) index += `- [${item.label}](https://docs.archcore.ai/${item.slug ? item.slug + '/' : ''})\n`;
+  // Links point at the Markdown copy of each page, as the llms.txt convention suggests.
+  for (const item of group.items) index += `- [${item.label}](https://docs.archcore.ai/${item.slug || 'index'}.md)\n`;
 }
 index += '\n## Text bundles\n\n- [Full documentation](https://docs.archcore.ai/llms-full.txt)\n- [Condensed documentation](https://docs.archcore.ai/llms-small.txt)\n\n## Integrations\n\n- [Integration catalog](https://archcore.ai/integrations/)\n';
 writeFileSync('dist/llms.txt', index);

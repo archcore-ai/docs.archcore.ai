@@ -1,12 +1,12 @@
 # CLAUDE.md
 
-Read and follow `AGENTS.md` before creating or editing any page, changelog entry, Archcore document, or
-component copy in this repository.
+Read and follow `AGENTS.md` before creating or editing any page, Archcore document, or component copy
+in this repository.
 
 The writing policy in `AGENTS.md` uses:
 
-- ISO 24495-1-inspired plain-language principles for everything under `src/content/docs/` and
-  `src/content/changelog/`, which is the default style for the site;
+- ISO 24495-1-inspired plain-language principles for everything under `src/content/docs/`, which is
+  the default style for the site;
 - an ASD-STE100-inspired controlled style only for `.archcore/**/*.md`, which exists for machine readers.
 
 Do not claim formal ASD-STE100 or ISO 24495-1 compliance.
@@ -33,10 +33,9 @@ When researching this site's structure, conventions, or history, search `.archco
 Start with these documents:
 
 - `archcore-docs-site` — site architecture, sections, component overrides, key files
-- `content-structure` — the five sidebar groups and which directory each maps to
+- `content-structure` — page ownership and the four sidebar groups
 - `documentation-sources` — the three upstream sources and the accuracy obligation
 - `adding-docs-page` — the procedure for a new page
-- `adding-changelog-entry` and `changelog-content-structure` — changelog conventions
 
 ## Archcore operations
 
@@ -68,10 +67,11 @@ deliberate build without analytics.
 
 ## Stack
 
-Astro 6 and Starlight. Content is `.md` and `.mdx` under `src/content/docs/`. The changelog is a
-separate collection under `src/content/changelog/`.
+Astro 6 and Starlight. Content is `.md` and `.mdx` under `src/content/docs/`. The site has no
+changelog; release notes live on GitHub Releases, and `/changelog/` redirects there.
 
-Sidebar, redirects, `head[]` entries, and Starlight component overrides live in `astro.config.mjs`.
+The sidebar and page redirects live in `src/data/docs-navigation.mjs`. `head[]` entries, Starlight
+component overrides, and the changelog redirects live in `astro.config.mjs`.
 Theme tokens and layout live in `src/styles/custom.css`. `DESIGN.md` is the visual and copy-tone source
 of truth.
 
@@ -80,11 +80,45 @@ of truth.
 1. Pick the sidebar group per the `content-structure` rule.
 2. Create the file in the matching directory under `src/content/docs/`.
 3. Add `title` and `description` frontmatter that satisfy the SEO rules in `AGENTS.md`.
-4. Register the page in the `sidebar` array in `astro.config.mjs`. Starlight does not surface an
-   unregistered page.
-5. When a page moves or is removed, add an entry to the `redirects` table rather than breaking the URL.
+4. Register the page in `docsSidebar` in `src/data/docs-navigation.mjs`. Starlight does not surface
+   an unregistered page.
+5. When a page moves or is removed, add an entry to `migrationTargets` in the same file rather than
+   breaking the URL.
 
 ## Managed blocks
 
-Archcore delimits a managed block with `<!-- archcore:start -->` and `<!-- archcore:end -->` HTML
-comments. Do not edit content inside one. Keep repository-specific instructions outside it.
+Archcore delimits a managed block with the HTML comment markers
+`archcore:start` and `archcore:end`. Do not edit content inside one. Keep repository-specific instructions outside it.
+
+<!-- archcore:start --> managed by `archcore init`, block v2 — edit outside these markers
+## Archcore — project context for this repo
+
+`.archcore/` holds this project's recorded context as typed Markdown files,
+`<slug>.<type>.md`, in three categories: knowledge (decisions, rules, contracts,
+reference), vision (requirements, plans, research), and experience (lessons from
+past work). `list_documents` filters by `category` and `types`.
+
+Before you change, test, or explain code here, call `search_documents` with `for_path` set to the file, and read the rules, decisions, and specs it returns with `get_document`. Accepted rules and decisions bind the change. Without the Archcore MCP tools, read `.archcore/` as Markdown: the `*.rule.md` files first, then grep `.archcore/` for the file name.
+
+1. Once per session, before the first code edit, call `list_documents` with
+   `types: ["rule", "cpat"]` and `status: "accepted"`, and read every rule that
+   applies to the code you will write. A rule that names no path reaches you this way.
+2. Before you state how this system behaves, search the topic. Cite the document,
+   or say that none exists.
+3. If an accepted document conflicts with the task, tell the user before you edit.
+4. If a search is empty, read `near_misses` and retry with fewer words before you
+   conclude that no document exists.
+5. When a decision is made ("we'll use X", "from now on Y"), record it.
+6. When a module, API, or system you touched has no document, offer to capture it.
+
+If the Archcore MCP tools are missing or fail to connect, tell the user once, then
+take the file route above. Do not write `.archcore/` files by hand.
+
+A `.archcore/` may also mount read-only **global sources** — shared, org-wide
+context. `list_documents` / `search_documents` surface them alongside local docs,
+tagged `source_kind: "global"`. When present, treat them as defaults a local doc
+can override — never edit or relate to one.
+
+Skip these steps only for turns this repo would have no opinion on: syntax
+trivia, throwaway snippets, pure mechanics.
+<!-- archcore:end -->

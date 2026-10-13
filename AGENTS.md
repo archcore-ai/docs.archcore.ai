@@ -10,8 +10,8 @@ evaluating Archcore, engineers using it, and AI agents reading the generated `ll
 
 Use:
 
-- **ISO 24495-1-inspired plain-language principles** for every page under `src/content/docs/` and every
-  changelog entry. This is the default style for the site.
+- **ISO 24495-1-inspired plain-language principles** for every page under `src/content/docs/`. This is the
+  default style for the site.
 - **An ASD-STE100-inspired controlled style** only for text that exists solely for machine readers. In
   this repository that means `.archcore/**/*.md` documents, which agents read through the Archcore MCP
   tools. Do not apply the controlled style to reader-facing pages.
@@ -24,7 +24,6 @@ by ASD, ISO, or any standards organization.
 Apply this policy when creating or updating:
 
 - `src/content/docs/**/*.{md,mdx}`;
-- `src/content/changelog/**/*.md`;
 - `README.md` and `DESIGN.md`;
 - copy inside `src/components/**/*.astro`;
 - `.archcore/**/*.md` (controlled style, see the section on Archcore documents).
@@ -201,9 +200,7 @@ named, consistently termed structure.
    double quotes. YAML reads an unquoted `: ` as the start of a new key, and the build fails with a
    frontmatter parse error rather than a warning. This is easy to introduce when replacing an em dash
    with a colon.
-7. Two indexable URLs must not share a `<title>`. Changelog entries and pages live in different
-   collections but rank against each other, so a release note about a feature needs a title distinct
-   from the page documenting that feature.
+7. Two indexable URLs must not share a `<title>`.
 
 ### On-page
 
@@ -216,7 +213,8 @@ named, consistently termed structure.
 9. Link with descriptive anchor text. "See the global sources reference" beats "click here" and beats a
    bare URL.
 10. Keep the existing "Next steps" sections and keep their links accurate.
-11. When a page moves or is deleted, add a redirect in `astro.config.mjs` rather than breaking the URL.
+11. When a page moves or is deleted, add a redirect to `migrationTargets` in
+    `src/data/docs-navigation.mjs` rather than breaking the URL.
 
 ### Do not
 
@@ -265,8 +263,8 @@ type names.
 
 ## Managed blocks
 
-Archcore delimits a managed block with `<!-- archcore:start -->` and `<!-- archcore:end -->` HTML
-comments. `archcore init` and `archcore instructions install` own that span.
+Archcore delimits a managed block with the HTML comment markers
+`archcore:start` and `archcore:end`. `archcore init` and `archcore instructions install` own that span.
 
 Do not edit content inside a managed block. Keep repository-specific instructions outside it.
 
@@ -289,3 +287,36 @@ Before finalizing a page, verify:
 
 Revise known violations before returning the text. Do not include the checklist or a writing-quality
 score in the page itself.
+
+<!-- archcore:start --> managed by `archcore init`, block v2 — edit outside these markers
+## Archcore — project context for this repo
+
+`.archcore/` holds this project's recorded context as typed Markdown files,
+`<slug>.<type>.md`, in three categories: knowledge (decisions, rules, contracts,
+reference), vision (requirements, plans, research), and experience (lessons from
+past work). `list_documents` filters by `category` and `types`.
+
+Before you change, test, or explain code here, call `search_documents` with `for_path` set to the file, and read the rules, decisions, and specs it returns with `get_document`. Accepted rules and decisions bind the change. Without the Archcore MCP tools, read `.archcore/` as Markdown: the `*.rule.md` files first, then grep `.archcore/` for the file name.
+
+1. Once per session, before the first code edit, call `list_documents` with
+   `types: ["rule", "cpat"]` and `status: "accepted"`, and read every rule that
+   applies to the code you will write. A rule that names no path reaches you this way.
+2. Before you state how this system behaves, search the topic. Cite the document,
+   or say that none exists.
+3. If an accepted document conflicts with the task, tell the user before you edit.
+4. If a search is empty, read `near_misses` and retry with fewer words before you
+   conclude that no document exists.
+5. When a decision is made ("we'll use X", "from now on Y"), record it.
+6. When a module, API, or system you touched has no document, offer to capture it.
+
+If the Archcore MCP tools are missing or fail to connect, tell the user once, then
+take the file route above. Do not write `.archcore/` files by hand.
+
+A `.archcore/` may also mount read-only **global sources** — shared, org-wide
+context. `list_documents` / `search_documents` surface them alongside local docs,
+tagged `source_kind: "global"`. When present, treat them as defaults a local doc
+can override — never edit or relate to one.
+
+Skip these steps only for turns this repo would have no opinion on: syntax
+trivia, throwaway snippets, pure mechanics.
+<!-- archcore:end -->

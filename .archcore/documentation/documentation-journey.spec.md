@@ -34,7 +34,7 @@ The following route table defines the implemented primary sidebar in order.
 | Reference | MCP tools | /reference/mcp-tools/ | Tool inputs, outputs, and failures |
 | Reference | Document format | /reference/document-format/ | File schema, plugin prose conventions, precision-check lookup |
 
-The existing changelog remains a header destination, outside the fifteen-page documentation sidebar.
+The site has no changelog. `/changelog/` and each former changelog entry redirect to GitHub Releases.
 The external integration catalog remains https://archcore.ai/integrations/.
 
 ## Normative Behavior
@@ -71,7 +71,7 @@ The external integration catalog remains https://archcore.ai/integrations/.
 31. The site MUST preserve access to previously published machine-bundle URLs during bundle reorganization.
 32. The site MUST give each indexable page a unique title and description.
 33. Each documentation page MUST link to a related page and receive a contextual inbound link.
-34. The site MUST preserve independent CLI and plugin version identifiers in release information.
+34. Each former changelog entry URL MUST redirect to the release tag of its CLI or plugin version.
 
 35. The quick start MUST show context reading, planning, implementation, knowledge capture, review, and the next task.
 36. The command page MUST order skills as init, plan, document, review.
@@ -94,7 +94,7 @@ The external integration catalog remains https://archcore.ai/integrations/.
 6. The author MUST revise this contract before adding a primary sidebar page beyond the Surface set.
 7. The author MUST preserve existing managed instruction blocks during repository-guidance updates.
 The fixed page set controls navigation growth; it does not authorize dropping operational coverage to meet a page count.
-Standalone changelog entries and legacy redirect pages do not count toward the primary sidebar set.
+Legacy redirect pages do not count toward the primary sidebar set.
 Released behavior and development-branch behavior remain distinct factual states.
 
 ## Failure Behavior

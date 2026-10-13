@@ -5,7 +5,7 @@ status: accepted
 
 ## What
 
-Maintain reader-facing documentation from its owning upstream sources. Current procedure for @src/content/docs/ and @src/content/changelog/.
+Maintain reader-facing documentation from its owning upstream sources. Current procedure for @src/content/docs/. Release notes live on GitHub Releases of the `archcore-ai/archcore` repository, not on this site.
 
 ## When to Use
 

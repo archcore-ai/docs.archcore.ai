@@ -12,7 +12,7 @@ The build-time OG technique (Satori → SVG → resvg → PNG, fonts, Satori CSS
 
 ## How docs OG works
 
-Each docs page gets a unique OG image (1200×630). The prebuild script walks `src/content/docs/**/*.{md,mdx}` and `src/content/changelog/*.md`, extracts `title`/`description` from frontmatter, and emits per-page images to `public/og/<slug>.png` plus `public/og-image.png` as a root fallback. A custom `src/components/Head.astro` injects per-page `og:image` from the route ID, so no per-page frontmatter is needed and new pages are auto-discovered. Palette is the warm-cream `DESIGN.md` set (`#f8f1e8` bg, `#11100e` text) over a 70px grid.
+Each docs page gets a unique OG image (1200×630). The prebuild script walks `src/content/docs/**/*.{md,mdx}`, extracts `title`/`description` from frontmatter, and emits per-page images to `public/og/<slug>.png` plus `public/og-image.png` as a root fallback. A custom `src/components/Head.astro` injects per-page `og:image` from the route ID, so no per-page frontmatter is needed and new pages are auto-discovered. Palette is the warm-cream `DESIGN.md` set (`#f8f1e8` bg, `#11100e` text) over a 70px grid.
 
 ## Description length
 

@@ -58,77 +58,12 @@
       "type": "depends_on"
     },
     {
-      "source": "adding-changelog-entry.guide.md",
-      "target": "adding-docs-page.guide.md",
-      "type": "related"
-    },
-    {
-      "source": "adding-changelog-entry.guide.md",
-      "target": "archcore-docs-site.doc.md",
-      "type": "related"
-    },
-    {
-      "source": "adding-changelog-entry.guide.md",
-      "target": "content-structure.rule.md",
-      "type": "related"
-    },
-    {
-      "source": "adding-changelog-entry.guide.md",
-      "target": "docs-stack.doc.md",
-      "type": "related"
-    },
-    {
-      "source": "adding-changelog-entry.guide.md",
-      "target": "update-docs-from-cli.task-type.md",
-      "type": "related"
-    },
-    {
-      "source": "changelog-content-structure.rule.md",
-      "target": "adding-changelog-entry.guide.md",
-      "type": "related"
-    },
-    {
-      "source": "changelog-content-structure.rule.md",
-      "target": "adding-docs-page.guide.md",
-      "type": "related"
-    },
-    {
-      "source": "changelog-content-structure.rule.md",
-      "target": "archcore-docs-site.doc.md",
-      "type": "related"
-    },
-    {
-      "source": "changelog-content-structure.rule.md",
-      "target": "content-structure.rule.md",
-      "type": "related"
-    },
-    {
-      "source": "changelog-content-structure.rule.md",
-      "target": "docs-stack.doc.md",
-      "type": "related"
-    },
-    {
-      "source": "changelog-content-structure.rule.md",
-      "target": "update-docs-from-cli.task-type.md",
-      "type": "related"
-    },
-    {
-      "source": "adding-changelog-entry.guide.md",
-      "target": "changelog-content-structure.rule.md",
-      "type": "depends_on"
-    },
-    {
       "source": "plain-language-and-seo.rule.md",
       "target": "content-structure.rule.md",
       "type": "related"
     },
     {
       "source": "adding-docs-page.guide.md",
-      "target": "plain-language-and-seo.rule.md",
-      "type": "depends_on"
-    },
-    {
-      "source": "adding-changelog-entry.guide.md",
       "target": "plain-language-and-seo.rule.md",
       "type": "depends_on"
     },
@@ -178,63 +113,8 @@
       "type": "depends_on"
     },
     {
-      "source": "adding-changelog-entry.guide.md",
-      "target": "documentation-sources.rule.md",
-      "type": "related"
-    },
-    {
-      "source": "changelog-content-structure.rule.md",
-      "target": "documentation-sources.rule.md",
-      "type": "related"
-    },
-    {
       "source": "plain-language-and-seo.rule.md",
       "target": "documentation-sources.rule.md",
-      "type": "related"
-    },
-    {
-      "source": "research-and-evidence-docs.plan.md",
-      "target": "documentation-sources.rule.md",
-      "type": "depends_on"
-    },
-    {
-      "source": "research-and-evidence-docs.plan.md",
-      "target": "changelog-content-structure.rule.md",
-      "type": "depends_on"
-    },
-    {
-      "source": "research-and-evidence-docs.plan.md",
-      "target": "adding-changelog-entry.guide.md",
-      "type": "depends_on"
-    },
-    {
-      "source": "research-and-evidence-docs.plan.md",
-      "target": "plain-language-and-seo.rule.md",
-      "type": "depends_on"
-    },
-    {
-      "source": "research-and-evidence-docs.plan.md",
-      "target": "update-docs-from-cli.task-type.md",
-      "type": "depends_on"
-    },
-    {
-      "source": "documentation/documentation-journey.spec.md",
-      "target": "documentation/unified-product-documentation.prd.md",
-      "type": "implements"
-    },
-    {
-      "source": "documentation/unified-documentation-migration.plan.md",
-      "target": "documentation/documentation-journey.spec.md",
-      "type": "implements"
-    },
-    {
-      "source": "documentation/unified-documentation-migration.plan.md",
-      "target": "documentation/documentation-migration-inventory.doc.md",
-      "type": "depends_on"
-    },
-    {
-      "source": "documentation/documentation-migration-inventory.doc.md",
-      "target": "documentation/documentation-journey.spec.md",
       "type": "related"
     },
     {
@@ -254,31 +134,6 @@
     },
     {
       "source": "documentation/documentation-journey.spec.md",
-      "target": "content-structure.rule.md",
-      "type": "related"
-    },
-    {
-      "source": "documentation/unified-documentation-migration.plan.md",
-      "target": "docs-seo-fixes.plan.md",
-      "type": "related"
-    },
-    {
-      "source": "documentation/unified-documentation-migration.plan.md",
-      "target": "adding-docs-page.guide.md",
-      "type": "related"
-    },
-    {
-      "source": "documentation/unified-documentation-migration.plan.md",
-      "target": "update-docs-from-cli.task-type.md",
-      "type": "related"
-    },
-    {
-      "source": "documentation/unified-documentation-migration.plan.md",
-      "target": "archcore-docs-site.doc.md",
-      "type": "related"
-    },
-    {
-      "source": "documentation/unified-documentation-migration.plan.md",
       "target": "content-structure.rule.md",
       "type": "related"
     }

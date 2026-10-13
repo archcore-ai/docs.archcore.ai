@@ -21,6 +21,8 @@ const finalHead = [
 	{ tag: 'meta', attrs: { property: 'og:image:height', content: '630' } },
 	{ tag: 'meta', attrs: { property: 'og:image:type', content: 'image/png' } },
 	{ tag: 'meta', attrs: { name: 'twitter:image', content: ogImageUrl } },
+	// Markdown copy of the page for AI agents, built by src/pages/[...slug].md.ts.
+	...(slug === '404' ? [] : [{ tag: 'link', attrs: { rel: 'alternate', type: 'text/markdown', href: `https://docs.archcore.ai/${slug}.md` } }]),
 ];
 ---
 

@@ -9,6 +9,7 @@ const fileFor = route => `dist${route.endsWith('/') ? route + 'index.html' : rou
 const htmlFor = route => readFileSync(fileFor(route), 'utf8');
 const idsFor = html => new Set([...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]));
 const decode = value => value.replaceAll('&amp;', '&').replaceAll('&#38;', '&');
+const markdownFor = route => route === '/' ? '/index.md' : route.slice(0, -1) + '.md';
 const mainContent = html => html.match(/<div\b[^>]*class="[^"]*sl-markdown-content[^\"]*"[^>]*>([\s\S]*?)<footer\b/)?.[1] ?? html.split('sl-markdown-content')[1] ?? '';
 
 check(canonicalRoutes.length === 15, 'Expected exactly fifteen primary pages.');
@@ -27,6 +28,8 @@ for (const route of canonicalRoutes) {
   check([...html.matchAll(/<h1\b/g)].length === 1, `Expected one H1: ${route}`);
   const canonical = html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/)?.[1];
   check(canonical === origin + route, `Incorrect canonical: ${route} -> ${canonical}`);
+  check(html.includes(`<link rel="alternate" type="text/markdown" href="${origin}${markdownFor(route)}"`), `Missing Markdown alternate link: ${route}`);
+  check(existsSync('dist' + markdownFor(route)) && readFileSync('dist' + markdownFor(route), 'utf8').startsWith('# '), `Missing Markdown copy: ${markdownFor(route)}`);
   check(!/<(?:PathBadge|PathChooser|CrossLinkCallout)\b/.test(html), `Unrendered component: ${route}`);
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
   check(ids.length === new Set(ids).size, `Duplicate HTML IDs: ${route}`);
@@ -99,7 +102,7 @@ for (const bundle of baseline.bundles) {
 const index = readFileSync('dist/llms.txt', 'utf8');
 let previous = -1;
 for (const route of canonicalRoutes) {
-  const position = index.indexOf(`](${origin}${route})`);
+  const position = index.indexOf(`](${origin}${markdownFor(route)})`);
   check(position > previous, `Machine navigation order differs: ${route}`);
   previous = position;
 }

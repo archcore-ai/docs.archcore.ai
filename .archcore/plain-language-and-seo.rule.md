@@ -11,8 +11,8 @@ tags:
 `@AGENTS.md` is the canonical writing policy for this repository. This rule states the obligations it
 creates and points to that file. It does not restate the policy.
 
-1. WHEN an author creates or updates a page under `src/content/docs/` or an entry under
-   `src/content/changelog/`, the author MUST apply the plain-language profile in `@AGENTS.md`.
+1. WHEN an author creates or updates a page under `src/content/docs/`, the author MUST apply the
+   plain-language profile in `@AGENTS.md`.
 2. The author MUST apply the ASD-STE100-inspired controlled style only to `.archcore/**/*.md`
    documents, which exist for machine readers.
 3. The author MUST NOT apply the controlled style to reader-facing pages.
@@ -30,8 +30,8 @@ creates and points to that file. It does not restate the policy.
     statement, and the whole string MUST stay under 155 characters.
 11. Each page MUST carry a `title` and a `description` that no other page uses.
 12. Each page MUST carry at least one outbound link to a related page.
-13. IF a page moves or is removed, THEN the author MUST add an entry to the `redirects` table in
-    `@astro.config.mjs`.
+13. IF a page moves or is removed, THEN the author MUST add an entry to `migrationTargets` in
+    `@src/data/docs-navigation.mjs`.
 14. IF a claim cannot be verified against its owning source under the documentation-sources rule, THEN the author MUST omit it.
 15. WHEN an author writes a positioning sentence, a page `title`, or a `description` that states what
     Archcore is, the author MUST take the wording from the shared `product/canonical-narrative` and

@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
+# Markdown copies of pages are for AI agents; keep them out of search results.
+User-agent: Googlebot
+User-agent: Bingbot
+Disallow: /*.md$
+Allow: /
+
 Sitemap: https://docs.archcore.ai/sitemap-index.xml
