@@ -43,8 +43,6 @@ The first word selects the kind of run. Settings follow it.
 /archcore:init refresh
 ```
 
-Plugin v0.9.0 replaced `--refresh`, `--domain=`, and `--mode` with `refresh`, `domain <slug>`, and `--scale`. A former flag such as `--refresh` now starts a plain init.
-
 Depth limits the proposed coverage; it is not a target number of documents. Review the count in the preview, especially for a large repository.
 
 <span id="plan-a-change"></span>
@@ -55,28 +53,24 @@ Depth limits the proposed coverage; it is not a target number of documents. Revi
 /archcore:plan add CSV export to the reporting API
 ```
 
-The agent reads project context and code, identifies missing information, and announces the proposed document package. A small fix can need no new documents. One capability can need a spec and a plan; a larger initiative can need requirements and several specs.
+Describe the work in free text. The agent reads the request, open drafts, accepted documents, the branch, and the code, then creates only the documents a later reader needs. A small fix needs no documents. A sequenced migration needs a plan. One capability needs a spec and a plan. Several capabilities need a PRD, one spec per capability, and a plan. A traceability obligation adds only the requirement levels it names.
 
-Questions concern information the agent could not establish from the available sources. Review the resulting plan before choosing whether to implement it. An interrupted package can resume from its draft documents.
-
-<span id="expert-paths"></span>
-
-To run a specific planning workflow, put its mode first:
-
-| Mode | Use it for |
+| You write | The agent produces |
 |---|---|
-| `sdd` | A full requirements, specification, and plan package |
-| `sources` | Market, business, and user requirements sources |
-| `iso` | The formal BRS, StRS, SyRS, and SRS requirements chain |
-| `research` | An investigation, closed by scope coverage or a recommendation |
+| `plan a new feature for CSV export` | A `spec` and a `plan` |
+| `upgrade the HTTP client across three services with a coordinated rollout` | A `plan` |
+| `plan the notifications platform` | A `prd`, one `spec` per capability, and a `plan` |
+| `fix the typo in the onboarding copy` | No document |
+| `I need market research before we plan` | Market, business, and user requirements sources |
+| `we must trace these requirements for the auditor` | The requirement levels the obligation names, from the BRS, StRS, SyRS, and SRS chain |
+| `investigate X before we plan` | A `research` |
+| `compare the alternatives for Y` | An `rnd` |
 
-```text
-/archcore:plan research compare storage options for our pending database decision
-```
+A first word that is a document type name requests that type; a leading `research` requests the type `research`. Any other first word is part of the topic. The [plugin source](https://github.com/archcore-ai/archcore/tree/main/plugins/archcore/skills/plan) owns the selection rules.
 
-A pending decision or named candidates select `rnd`; a territory investigation selects `research`. `rnd` and `evidence` are not modes. To file one external material, use [`/archcore:document research`](#archcoredocument). Research and evidence vocabulary requires Archcore CLI 0.8.3 or later. On an older CLI, research falls back to `rnd` and reports the required version.
+The agent asks at most five questions per run, and only about information it could not find in the available sources. Remaining questions wait for the next run. Without arguments, the command resumes an open planning draft or offers what to plan next. Review the resulting plan before choosing whether to implement it.
 
-Any other first word, including a route name or a document type name, is part of the topic. The agent computes the route itself and does not ask you to choose one. The [plugin source](https://github.com/archcore-ai/archcore/tree/main/plugins/archcore/skills/plan) owns the routing rules.
+Research and evidence vocabulary requires Archcore CLI 0.8.3 or later. On an older CLI, research falls back to `rnd` and reports the required version.
 
 When a planned capability has a user-facing surface, such as a UI or a conversational skill, or the repository has `features/*.feature` files or a BDD test runner, the package adds a `journey` beside the `prd` and a `scenario` after the capability's `spec`. See [document types](/concepts/document-types/#journey). Scenario and journey support requires Archcore CLI 0.8.4 or later; on an older CLI, the agent skips both and reports the required version.
 
@@ -84,45 +78,46 @@ When a planned capability has a user-facing surface, such as a UI or a conversat
 
 ## /archcore:document
 
-You can put a mode first to skip classification. Without a mode, the agent classifies the request from its wording and the branch changes.
+Describe the present fact in free text. The agent classifies the request from its wording, the branch changes, and the existing documents, then picks the document type.
 
-| Mode | Use it for | Types it can produce |
+| You write | What it records | Types it can produce |
 |---|---|---|
-| `decision` | A decision your project made, or an open proposal | `adr`, `rfc`, `rule` |
-| `code` | Existing code, reference material, a procedure, or a user flow over an existing spec | `spec`, `doc`, `guide`, `scenario` |
-| `research` | A finished report or one external material that you already have | `research`, `rnd`, `evidence` |
+| `we decided …`, `document why we chose X`, `make this our standard` | A decision your project made | `adr`, `rule` |
+| `draft an RFC for …`, `should we switch to Y?` | An open proposal | `rfc` |
+| `document the auth module`, `write a guide for the release process` | Existing code, reference material, or a procedure | `spec`, `doc`, `guide`, `task-type`, `scenario` |
+| `file this benchmark report`, `file this vendor PDF as evidence` | A finished report or one external material you already have | `research`, `rnd`, `evidence` |
 
 Use a decision your project actually made:
 
 ```text
-/archcore:document decision record our decision to use PostgreSQL and the reasons we discussed
+/archcore:document record our decision to use PostgreSQL and the reasons we discussed
 ```
 
-A settled decision is an `adr`; an open proposal is an `rfc`. Review the result before marking it accepted. The agent can offer related rules, guides, or implementation documents when the decision calls for them.
+A settled decision is an `adr`. For an open choice such as `should we switch to Kubernetes?`, the agent asks one question with three exits: record an `adr` now, draft an `rfc` first, or investigate first through [`/archcore:plan`](#archcoreplan). A later `we accepted the proposal` resolves the `rfc` into an `adr`. Review the result before marking it accepted. The agent can offer related rules, guides, or implementation documents when the decision calls for them.
 
 To describe existing code, name the module and the information you need:
 
 ```text
-/archcore:document code describe src/payments and its public boundaries
+/archcore:document how src/payments works and its public boundaries
 ```
 
 Use [document types](/concepts/document-types/) to distinguish a behavioral contract (`spec`) from a reference description (`doc`). Record current behavior from source; do not turn an undocumented assumption into an accepted contract. When the repository has `features/*.feature` files, the agent reads them as evidence for specs and scenarios.
 
-To skip the type question, name the type in the request:
+To skip the type question, put the type name first. Any type works here, including `rule`, `journey`, `prd`, `idea`, and `cpat`:
 
 ```text
-/archcore:document code scenario for checkout
+/archcore:document scenario for checkout
 ```
 
 To file a ready report or one external material:
 
 ```text
-/archcore:document research https://example.com/report
+/archcore:document file https://example.com/report as evidence
 ```
 
-The URL above is a placeholder: replace it with the material you want to record. A report that ends in a recommendation becomes an `rnd`; a report that covers a scope becomes a `research`; one material becomes an `evidence`.
+The URL above is a placeholder: replace it with the material you want to record. A report that ends in a recommendation becomes an `rnd`; a report that covers a scope becomes a `research`; one material becomes an `evidence`. A leading `research` requests the type `research`.
 
-Plugin v0.9.0 removed `document evidence` and `document journey`. Use `document research` for a material, and [`/archcore:plan`](#archcoreplan) for an intended user path.
+The agent asks at most five questions per run. Without arguments, it resumes an open draft, offers a short menu of facts the branch changes suggest, or asks what to record. Planning future work and intended user journeys belong to [`/archcore:plan`](#archcoreplan).
 
 <span id="review-changes-and-context"></span>
 
@@ -130,23 +125,24 @@ Plugin v0.9.0 removed `document evidence` and `document journey`. Use `document 
 
 ```text
 /archcore:review
-/archcore:review drift
-/archcore:review deep
-/archcore:review closeout
+/archcore:review are docs out of date
+/archcore:review audit the knowledge base
+/archcore:review close out the export feature
+/archcore:review capture this repeated change as a pattern
 ```
 
-On a branch with changes, review checks the work against recorded context. On the default branch, or without a branch diff, the default command reports project health. A mode as the first word selects a different run:
+On a branch with changes, the plain command checks the work against recorded context in both directions: whether the changed code still matches the documents that claim it, and whether the changed documents still match the code. Each conflict gets one verdict: `spec-wrong`, `code-wrong`, or `ok`. A matching `plan` is checked for completion. On the default branch, or without a branch diff, the plain command reports project health.
 
-| Mode | Effect |
+The wording of the request selects a different run:
+
+| You write | Effect |
 |---|---|
-| `drift` | Checks for stale documents |
-| `deep` | Runs a full documentation audit, with coverage and relation findings |
-| `closeout` | Closes a finished feature: reconciles the recorded plan with the implementation |
-| `experience` | Records a repeated change as a `cpat` or a `task-type` |
+| `are docs out of date`, `check if documentation matches the code` | A staleness check |
+| `audit the knowledge base`, `documentation gaps` | A full audit, with coverage and relation findings |
+| `close out <feature>`, `ship the feature and close it out` | Closes a finished feature: reconciles the recorded plan with the implementation |
+| `capture this repeated change as a pattern` | Records a repeated change as a `cpat` or a `task-type` |
 
-Plugin v0.9.0 replaced `--drift` and `--deep` with plain words. A former flag such as `--drift` is now read as topic text.
-
-Name a path or topic to narrow the review. When the scope includes scenarios, `closeout` reports whether each example was run, confirmed, or unconfirmed, and lists spec clauses that have no example. Document acceptance and permanent removal remain explicit decisions.
+Name a path, tag, topic, or ref to narrow the review. When the scope includes scenarios, closeout reports whether each example was run, confirmed, or unconfirmed, and lists spec clauses that have no example. Document acceptance and permanent removal remain explicit decisions. Review is the only command that removes a document: a completed `plan` at closeout, or a long-stale draft, each after your confirmation.
 
 ## Import existing instructions
 

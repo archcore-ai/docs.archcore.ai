@@ -236,7 +236,7 @@ Per-function and per-endpoint specifications with a verification matrix.
 
 Default to the Product track; move to Sources or ISO only when the project demands it.
 
-The Archcore plugin produces these documents through [`/archcore:plan`](/guides/commands/#archcoreplan), which computes which of them a request actually needs. Putting `sdd`, `sources`, `iso`, or `research` as the first word runs that track's path directly. Without the plugin, create the same documents through the MCP tools in the same order.
+The Archcore plugin produces these documents through [`/archcore:plan`](/guides/commands/#archcoreplan), which creates only the ones a request actually needs. Describe the work in free text; a market-research request selects the Sources track, and a traceability obligation selects the ISO levels it names. Without the plugin, create the same documents through the MCP tools in the same order.
 
 All three tracks can coexist. For example, use the Product track for a small feature while the full ISO track covers a safety-critical subsystem.
 
