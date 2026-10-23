@@ -72,7 +72,7 @@ archcore status [--project <path>]
 - Tag hygiene: an invalid tag format is a failure, and a tag used only once is a warning (possible typo)
 - Sync manifest JSON structure
 - Orphaned relations (documents referenced but not on disk)
-- Global source health: any [fatal state](/cli/configuration/#every-declared-global-is-mandatory) (missing, not a directory, unreadable, self-overlap, duplicate path) is a failure, an empty source is a warning, and a healthy source prints `global source "<id>" (<N> document(s))`
+- Global source health: any [fatal state](/cli/configuration/#a-missing-global-is-a-warning-a-broken-one-is-fatal) (not a directory, unreadable, self-overlap, duplicate path) is a failure, a missing or empty source is a warning, and a healthy source prints `global source "<id>" (<N> document(s))`
 
 When `status` finds orphaned relations, it hints: "Run 'archcore doctor --fix' to remove orphaned relations"
 

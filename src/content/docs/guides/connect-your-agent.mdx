@@ -206,7 +206,7 @@ When `.archcore/settings.json` declares at least one [global source](/cli/config
 ```text
 GLOBALS (read-only, query via MCP read tools):
   - archcore — 42 docs (knowledge 40, vision 1, experience 1) · product/ 14, concepts/ 14, architecture/ 7, market/ 4, web/ 3
-  ⚠ global source "company" not found at "../company/.archcore" — clone it or fix .archcore/settings.json
+  ⚠ global source "company" not found at "../company/.archcore" — skipped until it is cloned; local documents are unaffected
   Local documents take precedence over same-topic globals.
 ```
 
@@ -237,7 +237,7 @@ Output length follows that budget, not corpus size. A 300-document project and a
 No global document line appears in the recap. The `GLOBALS` block reports per-source counts only, and global documents themselves are surfaced through the MCP read tools and the code-alignment injection.
 
 :::note
-The recap degrades rather than fails. A global source in any fatal state falls back to a local-only scan and renders its warning inside the `GLOBALS` block, so your local documents are never dropped; an empty source warns there too. An invalid `settings.json` warns with `invalid .archcore/settings.json: … — global sources not loaded` and continues without the block. Outside a git tree, or on a detached `HEAD`, the `BRANCH` line is omitted rather than filled with a placeholder.
+The recap degrades rather than fails. A global source that is missing, empty, or in a fatal state renders its warning inside the `GLOBALS` block, and the scan continues over the sources that are usable, so your local documents are never dropped. An invalid `settings.json` warns with `invalid .archcore/settings.json: … — global sources not loaded` and continues without the block. Outside a git tree, or on a detached `HEAD`, the `BRANCH` line is omitted rather than filled with a placeholder.
 :::
 
 #### Staleness advisory
@@ -274,16 +274,20 @@ On most hosts the deny goes to stderr with exit code 2. On GitHub Copilot it is 
 An agent about to edit a source file has no reason to know a rule constrains it. This advisory finds the documents that mention the file's directory and puts the most specific ones in front of the edit:
 
 ```text
-[Archcore Context] Before editing src/api/handlers/users.ts:
-- rule: API Error Envelope [api/error-envelope.rule.md]
-- adr: Handler Layering [api/handler-layering.adr.md]
+[Archcore Context] Read these before editing src/api/handlers/users.ts:
+- rule: API Error Envelope [.archcore/api/error-envelope.rule.md]
+- adr: Handler Layering [.archcore/api/handler-layering.adr.md]
+Rules that name no path apply to every file:
+- rule: Commit Message Format [.archcore/commit-format.rule.md]
 ```
 
 What it does and does not do:
 
 - **Source roots.** The file must sit under a source root. The defaults are `src`, `lib`, `app`, `pkg`, `cmd`, `internal`, `apps`, `packages`, `modules`, `components`. Setting `codeAlignment.sourceRoots` in `.archcore/settings.json` **replaces** that list. It does not extend it.
-- **Only six document types are injected**, ranked in this order: `rule`, `cpat`, `adr`, `spec`, `scenario`, `guide`. A `scenario` is included from CLI v0.8.4; a `journey` is not. A plan, an idea, or a journey is context for a discussion, not a constraint on a line of code.
-- **Caps.** At most 3 documents and 2048 runes reach the host. The document found by the deepest matching directory wins.
+- **Only seven document types are injected**, ranked in this order: `rule`, `cpat`, `adr`, `spec`, `scenario`, `guide`, `doc`. A `scenario` is included from CLI v0.8.4; a `journey` is not. A plan, an idea, or a journey is context for a discussion, not a constraint on a line of code.
+- **Two lists.** The first list holds documents that name the file, its file kind, or one of its directories. A document that names the file itself ranks above one that names a directory, and a deeper directory ranks above a shallower one. The second list holds accepted rules and `cpat` documents that name no path in the project; they apply to every file.
+- **Caps.** At most 5 matched documents, 10 general rules, and 2048 runes reach the host. When a cap drops rows, the message says how many more exist and names the MCP call that lists them. The rune budget drops general rows first.
+- **Drafts are marked `[draft]`**, so the reader knows the document is not yet accepted.
 - **Globals are included** and marked `[global]`, so the reader does not try to update what they cannot write.
 - **`.archcore/` paths are skipped.** Editing a document is the write guard's business.
 - **`ARCHCORE_DISABLE_INJECTION=1`** turns the injection off entirely.

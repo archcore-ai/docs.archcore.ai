@@ -131,7 +131,7 @@ The agent asks at most five questions per run. Without arguments, it resumes an 
 /archcore:review capture this repeated change as a pattern
 ```
 
-On a branch with changes, the plain command checks the work against recorded context in both directions: whether the changed code still matches the documents that claim it, and whether the changed documents still match the code. Each conflict gets one verdict: `spec-wrong`, `code-wrong`, or `ok`. A matching `plan` is checked for completion. On the default branch, or without a branch diff, the plain command reports project health.
+On a branch with changes, the plain command checks the work against recorded context in both directions: whether the changed code still matches the documents that claim it, and whether the changed documents still match the code. Each conflict gets one verdict: `spec-wrong`, `code-wrong`, or `ok`. A matching `plan` is checked for completion. On the default branch, the scope is the work not pushed to the upstream plus the uncommitted changes. Without any change to review, the command asks for a path, topic, or ref; it has no project-health dashboard.
 
 The wording of the request selects a different run:
 

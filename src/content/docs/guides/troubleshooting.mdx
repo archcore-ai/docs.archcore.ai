@@ -113,7 +113,7 @@ If the agent launches `archcore mcp` from a fixed directory you can't change (e.
 
 See [Pointing the server at a project root](/guides/connect-your-agent/#pointing-the-server-at-a-project-root) for the full config example.
 
-When the root is not pinned with `--project` or `ARCHCORE_PROJECT_ROOT`, the server follows the working directory the client reports (see [Following the session's working directory](/guides/connect-your-agent/#following-the-sessions-working-directory)). When the server refuses a reported directory, it keeps the current root and writes one line to stderr per distinct reason: the directory holds no `.archcore/`, it sits inside a plugin install cache, or a global source declared there does not resolve. The tool call itself still succeeds.
+When the root is not pinned with `--project` or `ARCHCORE_PROJECT_ROOT`, the server follows the working directory the client reports (see [Following the session's working directory](/guides/connect-your-agent/#following-the-sessions-working-directory)). When the server refuses a reported directory, it keeps the current root and writes one line to stderr per distinct reason: the directory holds no `.archcore/`, it sits inside a plugin install cache, or a global source declared there is misconfigured. A declared global that is only missing from disk does not block the switch. The tool call itself still succeeds.
 
 If you haven't initialized the project yet:
 
@@ -254,15 +254,15 @@ archcore mcp install
 
 ### Missing or invalid global source
 
-If your `settings.json` declares a [global source](/cli/configuration/#global-sources) whose directory isn't on disk, the server refuses to start. Every declared global is mandatory.
+If your `settings.json` declares a [global source](/cli/configuration/#global-sources) whose directory isn't on disk, the server still starts (CLI v0.10.7 and later) and serves the local documents. The missing source mounts no documents, so an empty search result says nothing about it.
 
-**What you see:**
+**What you see** on the server's stderr, and as a warning in `archcore status` and the SessionStart `GLOBALS` block:
 
 ```text
-global source "company-standards" not found at "../company-standards/.archcore" — clone it before starting the MCP server
+global source "company-standards" not found at "../company-standards/.archcore" — starting without it
 ```
 
-**Fix:** Clone or vendor the source so the `path` resolves, or remove the entry from `globals` if you no longer need it. For a source that ships with the repo, [vendor it in-tree](/cli/configuration/#vendoring-a-global-in-tree) under `.archcore/global/`.
+**Fix:** Clone or vendor the source so the `path` resolves, or remove the entry from `globals` if you no longer need it. For a source that ships with the repo, [vendor it in-tree](/cli/configuration/#vendoring-a-global-in-tree) under `.archcore/global/`. A source that exists but is unreadable, not a directory, a duplicate path, or the project's own `.archcore/` still aborts startup with `— fix .archcore/settings.json before starting the MCP server`.
 
 The message `invalid .archcore/settings.json: …` means the file itself is malformed. The server aborts rather than start with globals silently dropped. Run `archcore doctor` to see the exact parse or validation error.
 

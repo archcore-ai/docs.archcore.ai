@@ -59,7 +59,7 @@ The `globals` array mounts other `.archcore/` knowledge bases into your project 
 | `id` | Yes | Stable identifier; becomes the document `source_id`. Lowercase alphanumeric with hyphens (`^[a-z0-9][a-z0-9-]*$`), not the reserved value `local`, unique within the array |
 | `path` | Yes | Points at the global's `.archcore` directory. Relative (including `../`), absolute, or in-tree under `.archcore/global/` |
 
-Every declared global is mandatory. If its directory is absent, the MCP server fails fast at startup. Globals are read-only everywhere outside the MCP read tools, and local documents take precedence over a same-topic global. An older `settings.json` that still carries a per-entry `"required"` key keeps working; the key is accepted and ignored.
+A declared global whose directory is absent is skipped with a warning; the MCP server starts and serves the local documents. A global that is unreadable, not a directory, or misconfigured aborts startup. Globals are read-only everywhere outside the MCP read tools, and local documents take precedence over a same-topic global. An older `settings.json` that still carries a per-entry `"required"` key keeps working; the key is accepted and ignored.
 
 See [Global sources](/cli/configuration/#global-sources) for the full model, vendoring, and the monorepo-root pattern.
 
@@ -199,25 +199,26 @@ The same resolution applies to the MCP scan, the startup check, and `archcore st
 }
 ```
 
-### Every declared global is mandatory
+### A missing global is a warning, a broken one is fatal
 
-There is no optional or "skip if missing" global. If a declared source is unusable, the MCP server **fails fast at startup**:
+There is no per-entry optional flag. Since CLI v0.10.7, a declared source whose directory is not on disk does not stop the server. `archcore mcp` starts, prints a warning to stderr, mounts no documents from that source, and serves the local documents as usual:
 
 ```text
-global source "company-standards" not found at "../company-standards/.archcore" — clone it before starting the MCP server
+global source "company-standards" not found at "../company-standards/.archcore" — starting without it
 ```
 
-Five states are fatal. Each one aborts startup and the document scan with a message built from the declared `id` and `path`, never from an absolute filesystem path:
+The server's `initialize` instructions then list the source under `NOT CLONED`, so the agent knows an empty result says nothing about that source. The SessionStart `GLOBALS` block, `archcore status`, and `archcore doctor` report the same source as a warning and exit zero.
+
+Four states are fatal. Each one aborts startup and the document scan with a message built from the declared `id` and `path`, never from an absolute filesystem path:
 
 | Fatal state | Message |
 | ----------- | ------- |
-| Missing | `global source "<id>" not found at "<path>"` |
 | Not a directory | `global source "<id>" at "<path>" is not a directory` |
 | Unreadable | `global source "<id>" at "<path>" is not readable` |
 | Self-overlap | `global source "<id>" at "<path>" resolves to the project's own .archcore` |
 | Duplicate path | `global source "<id>" at "<path>" duplicates an earlier source's path` |
 
-At startup the missing message ends with `— clone it before starting the MCP server`, and the other four end with `— fix .archcore/settings.json before starting the MCP server`. Unreadable covers a subdirectory the document walk cannot enter, not only the top level.
+At startup each fatal message ends with `— fix .archcore/settings.json before starting the MCP server`. Unreadable covers a subdirectory the document walk cannot enter, not only the top level. A typo in `path` therefore reads as a missing source and produces a warning, not a startup failure; check the `GLOBALS` block or `archcore status` when a global you expect is absent.
 
 The duplicate-path message in the table is the form at MCP startup, in `archcore status`, in `archcore doctor`, and in the SessionStart `GLOBALS` block. Inside a tool-call scan the same state reads `global sources "<a>" and "<b>" resolve to the same path "<path>"`.
 
