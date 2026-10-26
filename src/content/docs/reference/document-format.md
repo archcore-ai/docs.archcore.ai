@@ -212,7 +212,7 @@ Modals are matched case-sensitively. A lowercase `must` in prose is not a graded
 | Type | Finding | Fires when |
 | ---- | ------- | ---------- |
 | `spec` | SHALL notation | The body uses `SHALL` instead of `MUST`, `SHOULD`, or `MAY` |
-| `spec`, `scenario`, `journey` | Oversized body | The body exceeds 120 lines. The finding names the line count and the cap |
+| `spec`, `scenario`, `journey` | Oversized body | The body exceeds 120 lines. The finding names the line count and the cap. For a `spec`, the plugin counts only the five contract sections and ignores the finding when they fit |
 | `spec` | Subjectless passive | A graded clause states an obligation with no obligated component as its subject. Up to 3 are named |
 | `prd` | EARS clause in a requirement | A numbered requirement opens with `WHEN`, `WHILE`, or `IF`. A `prd` requirement states an outcome, and the trigger and response form belongs in a `spec` |
 | `rule` | No file target | No graded clause names a path or a glob, so the [code-alignment injection](/guides/connect-your-agent/#code-alignment-injection) can never match the rule to an edited file |

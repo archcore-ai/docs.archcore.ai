@@ -14,7 +14,7 @@ Archcore connects to your agent through MCP tools, lifecycle hooks, and an instr
 | Codex CLI | `codex-cli` | Automatic | Feature flag; trusted project; no Windows hooks | Plugin |
 | GitHub Copilot CLI | `copilot` | Project setup required | Write guard; no pre-edit context injection | Plugin |
 | Gemini CLI | `gemini-cli` | Automatic | Wiring provided; runtime verification remains unconfirmed | No plugin |
-| OpenCode | `opencode` | Automatic | Requires a separate host adapter; no declarative hook install | No shipped Archcore plugin |
+| OpenCode | `opencode` | Automatic | Supported through the plugin | Plugin, with `/archcore-` names |
 | Roo Code | `roo-code` | Automatic | No lifecycle hooks | No plugin |
 | Cline | `cline` | Manual through its MCP UI | No lifecycle hooks | No plugin |
 
@@ -102,9 +102,39 @@ Cursor manages plugins through its UI. Add `https://github.com/archcore-ai/archc
 
 For a user-scoped entry, use the [Cursor MCP template](https://github.com/archcore-ai/archcore/blob/main/docs/cursor.mcp.example.json) and retain `--project` with `${workspaceFolder}`. This prevents different windows from sharing the wrong project root.
 
+### OpenCode
+
+OpenCode loads Archcore as the npm package `@archcore/opencode-plugin`. The plugin is global: you install it once, and it works in every project that has `.archcore/`. It needs OpenCode 1.18.34 or later (1.x or 2.x) and the Archcore CLI 0.10.0 or later on `PATH`.
+
+To install it from a project, run this in the project root:
+
+```bash
+archcore init --agent opencode
+```
+
+To install it without a project, use the OpenCode command for your version:
+
+```bash
+opencode plugin add @archcore/opencode-plugin   # OpenCode 2.x
+opencode plugin -g @archcore/opencode-plugin    # OpenCode 1.x
+```
+
+Both ways add the package to `~/.config/opencode/opencode.json`. OpenCode 2.x writes it under the `plugins` key, and OpenCode 1.x under `plugin`. OpenCode 2.x reads both keys, so you do not need to rename an older entry. Restart OpenCode after the install.
+
+To check the install, type `/archcore-` in a project that has `.archcore/`. The list shows `/archcore-init`, `/archcore-plan`, `/archcore-document`, and `/archcore-review`. The commands carry the `archcore-` prefix because OpenCode has its own `/init` and `/review`. The subagents are `@archcore-assistant` and `@archcore-auditor`.
+
+The plugin registers the `archcore` MCP server as `archcore mcp`, but only when the config has no `mcp.archcore` entry. If an existing `mcp.archcore` entry points at another command, the plugin keeps it, and document tools go to that command. Remove the old entry, or run `archcore init --agent opencode` in the project to write the standard one.
+
+In OpenCode, the plugin runs the three lifecycle hooks. The write guard covers the `write`, `edit`, `apply_patch`, and `patch` tools. Code-alignment context arrives with the result of the edit, not before it.
+
+| Task | OpenCode 2.x | OpenCode 1.x |
+|---|---|---|
+| Update | `opencode plugin update @archcore/opencode-plugin` | Delete `~/.cache/opencode/node_modules/@archcore/opencode-plugin`, then restart OpenCode |
+| Remove | `opencode plugin remove @archcore/opencode-plugin` | Delete the package from the `plugin` array of `~/.config/opencode/opencode.json` |
+
 ### Other hosts
 
-Gemini CLI has hook wiring, but an executed host session has not confirmed the integration's tool-event behavior. OpenCode exposes hooks through host plugin code; the CLI does not write a declarative hook configuration there. Roo Code and Cline use document tools without Archcore lifecycle hooks.
+Gemini CLI has hook wiring, but an executed host session has not confirmed the integration's tool-event behavior. Roo Code and Cline use document tools without Archcore lifecycle hooks.
 
 ## Instruction hint
 
@@ -138,8 +168,9 @@ The [platform installer](/start/install/) adds the plugin automatically when the
 | Cursor | Add the repository URL through the Plugins panel |
 | Codex CLI | `archcore plugin install --agent codex-cli` |
 | GitHub Copilot CLI | `archcore plugin install --agent copilot`, then `archcore init --agent copilot` in the project |
+| OpenCode | `archcore init --agent opencode` in the project, or [the OpenCode command](#opencode) |
 
-Codex CLI and Copilot CLI plugin installations are machine-level. Restart the agent after changes. Use `archcore plugin status` to inspect installation state and the [CLI reference](/cli/commands/#archcore-plugin) for updates and removal.
+Codex CLI, Copilot CLI, and OpenCode plugin installations are machine-level. The platform installer does not install the OpenCode plugin. Restart the agent after changes. Use `archcore plugin status` to inspect installation state and the [CLI reference](/cli/commands/#archcore-plugin) for updates and removal.
 
 ## Hook output and limits
 
@@ -380,7 +411,7 @@ The MCP document-tool matcher covers `create_document`, `update_document`, `remo
 
 Archcore writes a 1-second timeout on the pre-write event and a 3-second timeout on the session and post-write events. GitHub Copilot takes those values in seconds (`timeoutSec`) and Gemini CLI takes them in milliseconds (`timeout`); Claude Code, Codex CLI, and Cursor entries carry no timeout field.
 
-**OpenCode** is not wired. Its hooks are JavaScript plugins and cannot be declared in a config file, so Archcore ships the `archcore hooks opencode <event>` leaves for a plugin to delegate to but writes nothing. **Roo Code** and **Cline** get no hooks at all. Roo Code supports `onSave` only, which is not a lifecycle event. All three still work through [MCP](/guides/connect-your-agent/#mcp).
+**OpenCode** gets no hook config file. Its hooks are JavaScript plugins, so the [Archcore plugin for OpenCode](#opencode) runs them, and `archcore hooks install` writes nothing for OpenCode. **Roo Code** and **Cline** get no hooks at all. Roo Code supports `onSave` only, which is not a lifecycle event. Both still work through [MCP](/guides/connect-your-agent/#mcp).
 
 Example Claude Code entry, written by `archcore hooks install`:
 

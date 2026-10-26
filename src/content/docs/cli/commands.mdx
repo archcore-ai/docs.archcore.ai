@@ -301,7 +301,7 @@ See [Hooks](/guides/connect-your-agent/#lifecycle-hooks) for the full guard and 
 
 ## archcore plugin
 
-Manage the Archcore plugin on the four hosts that ship one: Claude Code, Cursor, Codex CLI, and GitHub Copilot.
+Manage the Archcore plugin on the five hosts that ship one: Claude Code, Cursor, Codex CLI, GitHub Copilot, and OpenCode.
 
 ```bash
 archcore plugin install [--agent <id>] [--project <path>] [--scope user|project]
@@ -312,14 +312,14 @@ archcore plugin status  [--agent <id>]
 
 Typing the verb is the consent for every host it targets, so each verb runs the same way with or without a terminal. This is the difference from [`archcore init`](#archcore-init), where consent comes from a checked host or an `--agent` flag.
 
-Three frozen identifiers address the plugin everywhere: repository `archcore-ai/archcore`, marketplace `archcore-plugins`, plugin id `archcore@archcore-plugins`.
+Three frozen identifiers address the plugin on the first four hosts: repository `archcore-ai/archcore`, marketplace `archcore-plugins`, plugin id `archcore@archcore-plugins`. OpenCode loads the npm package `@archcore/opencode-plugin` instead.
 
 **Flags:**
 
 | Flag               | Description                                                                                                                            |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `--agent <id>`     | Act on one host: `claude-code`, `cursor`, `codex-cli`, `copilot`. An agent with no shipping plugin fails with an error naming only those four ids. Defaults to every host that ships a plugin. |
-| `--project <path>` | Project root containing `.archcore/`. Read by `install --scope project` only.                                                          |
+| `--agent <id>`     | Act on one host: `claude-code`, `cursor`, `codex-cli`, `copilot`, `opencode`. An agent with no shipping plugin fails with an error naming only those five ids. Defaults to every host that ships a plugin. |
+| `--project <path>` | Project root containing `.archcore/`. Read by `install --scope project` and by OpenCode.                                              |
 | `--scope`          | Which Claude Code settings file gains the marketplace entry: `user` or `project`. Accepted by `install` only; default `user`.           |
 
 `--scope project` writes into the repository's `.claude/settings.json`, and the CLI prints that the committed file delivers the declaration to every teammate who checks it out.
@@ -330,8 +330,9 @@ Three frozen identifiers address the plugin everywhere: repository `archcore-ai/
 | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Claude Code    | `claude plugin marketplace add archcore-ai/archcore`, then `claude plugin install archcore@archcore-plugins` (user scope by default), then merges an `extraKnownMarketplaces["archcore-plugins"]` entry with `"autoUpdate": true` into `~/.claude/settings.json`, preserving unknown fields |
 | Cursor         | No CLI mechanism. The command prints the instruction to add the plugin from the Cursor UI (Marketplace or `/add-plugin`) and runs no host command                                                                |
-| Codex CLI      | `codex plugin marketplace add archcore-ai/archcore`, then `codex plugin add archcore@archcore-plugins` (machine-level)                                                                                           |
+| Codex CLI      | `codex plugin marketplace add archcore-ai/archcore --sparse .agents/plugins --sparse plugins/archcore`, then `codex plugin add archcore@archcore-plugins` (machine-level). The two `--sparse` paths make Codex check out only the marketplace catalog and the plugin |
 | GitHub Copilot | `copilot plugin install archcore-ai/archcore:plugins/archcore` (machine-level)                                                                                                                                   |
+| OpenCode       | `opencode plugin add @archcore/opencode-plugin` on OpenCode 2.x, `opencode plugin -g @archcore/opencode-plugin` on 1.x. Both write the global OpenCode config (machine-level). Run the command in a project with `.archcore/`, or pass `--project`: without a project root the CLI skips OpenCode and prints a warning |
 
 **What `update` runs per host:**
 
@@ -339,14 +340,15 @@ Three frozen identifiers address the plugin everywhere: repository `archcore-ai/
 | -------------- | ------------------------------------------------------------------------------------------------------------------- |
 | Claude Code    | `claude plugin marketplace update archcore-plugins`, then `claude plugin update archcore@archcore-plugins`         |
 | Cursor         | Prints the Cursor UI instruction and runs no host command                                                         |
-| Codex CLI      | `codex plugin marketplace upgrade archcore-plugins`. Codex has no per-plugin update, so refreshing the marketplace snapshot is the update |
+| Codex CLI      | `codex plugin marketplace upgrade archcore-plugins`. Codex has no per-plugin update, so refreshing the marketplace snapshot is the update. Before the upgrade, the CLI adds `sparse_paths` to the `archcore-plugins` marketplace entry in the Codex config when the entry has none |
 | GitHub Copilot | `copilot plugin update archcore@archcore-plugins`                                                                 |
+| OpenCode       | No command. On OpenCode 2.x, run `opencode plugin update @archcore/opencode-plugin` yourself                      |
 
 **How it decides what to do:**
 
 The CLI reads evidence in this order and stops at the first tier that answers:
 
-1. The host CLI is on `PATH`. The CLI reads that host's own read-only listing: `claude plugin list --json`, `copilot plugin list`, or `codex plugin list --json`. A mutating command runs only after that listing confirms the plugin.
+1. The host CLI is on `PATH`. The CLI reads that host's own read-only listing: `claude plugin list --json`, `copilot plugin list`, or `codex plugin list --json`. For OpenCode, the CLI reads the `plugin` and `plugins` arrays of the project and global `opencode.json` files. A mutating command runs only after that listing confirms the plugin.
 2. The host CLI is absent. The CLI reads the host's on-disk plugin registry.
 3. Neither answers. The host is skipped silently.
 
@@ -359,7 +361,7 @@ Each host command is bounded at 30 seconds, and the whole step at 120 seconds. A
 - `remove` runs the host's own uninstall and removes the `autoUpdate` entry the CLI wrote. When `~/.claude/settings.json` is invalid JSON, `remove` reports it and stops without writing a backup, because rewriting the file fresh would discard content Archcore never wrote.
 - The plugin surface sends no telemetry and never attempts privilege elevation.
 
-OpenCode, Gemini CLI, Roo Code, and Cline ship no Archcore plugin, so `archcore plugin` never addresses them.
+Gemini CLI, Roo Code, and Cline ship no Archcore plugin, so `archcore plugin` never addresses them.
 
 For installing the plugin from a host's own UI or CLI, see [Install the plugin](/start/install/).
 

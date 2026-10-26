@@ -359,7 +359,7 @@ Step-by-step instructions for completing a specific task.
 
 A normative behavior contract for something others rely on: a boundary (API/interface/schema/protocol) or a feature/subsystem. You can capture a spec after the code exists or specify it ahead of the code. If the implementation diverges from the spec, the spec takes precedence.
 
-A spec covers one subject and is not a general reference dump. Keep the body at or under 120 lines.
+A spec covers one subject and is not a general reference dump. Keep the five contract sections (Purpose & Scope, Surface, Normative Behavior, Constraints & Invariants, Failure Behavior) at or under 120 lines, headings and blank lines included. Conformance and any section after it do not count toward that cap.
 
 | | |
 |---|---|
