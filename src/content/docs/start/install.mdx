@@ -5,7 +5,7 @@ description: Install Archcore on your platform, connect your coding agent, and c
 
 import { Tabs, TabItem } from '@astrojs/starlight/components';
 
-The install script adds the CLI and the Archcore plugin for Claude Code, Codex CLI, and GitHub Copilot CLI when those host commands are already on `PATH`. Run `archcore init` later in each project where you want MCP tools and hooks.
+The install script adds the CLI and the Archcore plugin for Claude Code, Codex CLI, GitHub Copilot CLI, and OpenCode when those host commands are already on `PATH`. Run `archcore init` later in each project where you want MCP tools and hooks.
 
 <details>
 <summary>Prefer to install from your AI agent?</summary>
@@ -42,7 +42,7 @@ archcore --version
 
 The command prints the installed version. If it is not found, follow [PATH troubleshooting](/guides/troubleshooting/#archcore-not-in-path).
 
-The installer uses the host's own plugin command for each supported host CLI it finds. It reports a retry command if a host install fails. If you install a host after Archcore, run `archcore plugin install --agent <id>`. Plugin setup is skipped in CI and when `ARCHCORE_SKIP_PLUGIN_INSTALL` is set to a nonzero value. Cursor still needs installation through its Plugins panel. OpenCode gets its plugin when you run `archcore init --agent opencode` in a project.
+The installer uses the host's own plugin command for each supported host CLI it finds. It reports a retry command if a host install fails. If you install a host after Archcore, run `archcore plugin install --agent <id>`. Plugin setup is skipped in CI and when `ARCHCORE_SKIP_PLUGIN_INSTALL` is set to a nonzero value. Cursor still needs installation through its Plugins panel. The OpenCode plugin goes into the global OpenCode config and needs no project. If you pin `ARCHCORE_VERSION` to v0.14.3 or older, the installer skips OpenCode with a notice; run `archcore init --agent opencode` in a project instead.
 
 ## 2. Connect your project
 
@@ -68,7 +68,7 @@ Replace `claude-code` with your [agent ID](/guides/connect-your-agent/#supported
 | Cursor | Add the plugin in Cursor's UI; confirm MCP points at your project |
 | Codex CLI | Restart the session; enable its hooks feature for automatic context and write guards |
 | GitHub Copilot CLI | Run setup in the project so its MCP entry exists; restart the session |
-| OpenCode | Restart OpenCode; `archcore init --agent opencode` adds the plugin to the global OpenCode config |
+| OpenCode | Restart OpenCode. The installer or `archcore init --agent opencode` adds the plugin to the global OpenCode config |
 | Other agents | Follow the [connection instructions](/guides/connect-your-agent/) for the available capabilities |
 
 [Host setup details](/guides/connect-your-agent/#supported-hosts) cover the additional steps. In CI, `init` prints plugin installation commands rather than executing them. `--yes` without `--agent` also leaves that step for you.

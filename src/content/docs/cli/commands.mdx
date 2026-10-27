@@ -39,7 +39,7 @@ In non-interactive contexts (no TTY), `init` skips the instruction hint. Add it 
 
 `init` also delivers the [Archcore plugin](/guides/commands/), and an explicit host selection is the only thing that authorizes it.
 
-- The interactive picker marks every plugin-capable host with "also installs the Archcore plugin". Codex CLI and GitHub Copilot are marked "machine-level, outside this project", because their plugin stores have no repository scope. The screen states that a checked host is also the consent to install the plugin on it, and that nothing is installed for a host you leave unchecked.
+- The interactive picker marks every plugin-capable host with "also installs the Archcore plugin". Codex CLI, GitHub Copilot, and OpenCode are marked "machine-level, outside this project", because their plugin stores have no repository scope. The screen states that a checked host is also the consent to install the plugin on it, and that nothing is installed for a host you leave unchecked.
 - Checking a host in that picker installs its plugin after wiring, with no second prompt.
 - `--agent <id>` carries the same consent for the hosts it names, interactive or not.
 - Detection is not consent. When the project already carries a host's config (`.claude/`, `.codex/`, and so on), `init` wires that host, installs no plugin, and prints one hint naming `archcore plugin install`.
@@ -332,7 +332,7 @@ Three frozen identifiers address the plugin on the first four hosts: repository 
 | Cursor         | No CLI mechanism. The command prints the instruction to add the plugin from the Cursor UI (Marketplace or `/add-plugin`) and runs no host command                                                                |
 | Codex CLI      | `codex plugin marketplace add archcore-ai/archcore --sparse .agents/plugins --sparse plugins/archcore`, then `codex plugin add archcore@archcore-plugins` (machine-level). The two `--sparse` paths make Codex check out only the marketplace catalog and the plugin |
 | GitHub Copilot | `copilot plugin install archcore-ai/archcore:plugins/archcore` (machine-level)                                                                                                                                   |
-| OpenCode       | `opencode plugin add @archcore/opencode-plugin` on OpenCode 2.x, `opencode plugin -g @archcore/opencode-plugin` on 1.x. Both write the global OpenCode config (machine-level). Run the command in a project with `.archcore/`, or pass `--project`: without a project root the CLI skips OpenCode and prints a warning |
+| OpenCode       | `opencode plugin add @archcore/opencode-plugin` on OpenCode 2.x, `opencode plugin -g @archcore/opencode-plugin` on 1.x. Both write the global OpenCode config (machine-level). No project is needed |
 
 **What `update` runs per host:**
 
@@ -342,7 +342,7 @@ Three frozen identifiers address the plugin on the first four hosts: repository 
 | Cursor         | Prints the Cursor UI instruction and runs no host command                                                         |
 | Codex CLI      | `codex plugin marketplace upgrade archcore-plugins`. Codex has no per-plugin update, so refreshing the marketplace snapshot is the update. Before the upgrade, the CLI adds `sparse_paths` to the `archcore-plugins` marketplace entry in the Codex config when the entry has none |
 | GitHub Copilot | `copilot plugin update archcore@archcore-plugins`                                                                 |
-| OpenCode       | No command. On OpenCode 2.x, run `opencode plugin update @archcore/opencode-plugin` yourself                      |
+| OpenCode       | `opencode plugin update @archcore/opencode-plugin` on OpenCode 2.x. No command on 1.x or an unknown version       |
 
 **How it decides what to do:**
 
@@ -358,7 +358,7 @@ Each host command is bounded at 30 seconds, and the whole step at 120 seconds. A
 
 - `archcore plugin status` reports, per host, the evidence found, whether the plugin is present, and its version when the host reports one. It always exits 0.
 - A direct `archcore plugin` invocation exits non-zero when a host action it attempted failed. A host skipped for missing evidence does not fail it.
-- `remove` runs the host's own uninstall and removes the `autoUpdate` entry the CLI wrote. When `~/.claude/settings.json` is invalid JSON, `remove` reports it and stops without writing a backup, because rewriting the file fresh would discard content Archcore never wrote.
+- `remove` runs the host's own uninstall and removes the `autoUpdate` entry the CLI wrote. On OpenCode 2.x it runs `opencode plugin remove @archcore/opencode-plugin`. OpenCode 1.x has no uninstall command, so the CLI prints a note to delete the package from the `plugin` array instead. When `~/.claude/settings.json` is invalid JSON, `remove` reports it and stops without writing a backup, because rewriting the file fresh would discard content Archcore never wrote.
 - The plugin surface sends no telemetry and never attempts privilege elevation.
 
 Gemini CLI, Roo Code, and Cline ship no Archcore plugin, so `archcore plugin` never addresses them.

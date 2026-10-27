@@ -106,20 +106,20 @@ For a user-scoped entry, use the [Cursor MCP template](https://github.com/archco
 
 OpenCode loads Archcore as the npm package `@archcore/opencode-plugin`. The plugin is global: you install it once, and it works in every project that has `.archcore/`. It needs OpenCode 1.18.34 or later (1.x or 2.x) and the Archcore CLI 0.10.0 or later on `PATH`.
 
-To install it from a project, run this in the project root:
+The [platform installer](/start/install/) adds the plugin when the `opencode` command is already on `PATH`. To add it later, run this from any directory:
 
 ```bash
-archcore init --agent opencode
+archcore plugin install --agent opencode
 ```
 
-To install it without a project, use the OpenCode command for your version:
+`archcore init --agent opencode` in a project also installs it. You can also use the OpenCode command for your version:
 
 ```bash
 opencode plugin add @archcore/opencode-plugin   # OpenCode 2.x
 opencode plugin -g @archcore/opencode-plugin    # OpenCode 1.x
 ```
 
-Both ways add the package to `~/.config/opencode/opencode.json`. OpenCode 2.x writes it under the `plugins` key, and OpenCode 1.x under `plugin`. OpenCode 2.x reads both keys, so you do not need to rename an older entry. Restart OpenCode after the install.
+All these ways add the package to `~/.config/opencode/opencode.json`. OpenCode 2.x writes it under the `plugins` key, and OpenCode 1.x under `plugin`. OpenCode 2.x reads both keys, so you do not need to rename an older entry. Restart OpenCode after the install.
 
 To check the install, type `/archcore-` in a project that has `.archcore/`. The list shows `/archcore-init`, `/archcore-plan`, `/archcore-document`, and `/archcore-review`. The commands carry the `archcore-` prefix because OpenCode has its own `/init` and `/review`. The subagents are `@archcore-assistant` and `@archcore-auditor`.
 
@@ -160,7 +160,7 @@ Use `archcore instructions remove` to remove managed hints. The [CLI reference](
 
 ## Install per host
 
-The [platform installer](/start/install/) adds the plugin automatically when the Claude Code, Codex CLI, or GitHub Copilot CLI command is already on `PATH`. Use the steps below if you install a host later or need to retry. The plugin invokes `archcore` from `PATH`; it does not download the executable.
+The [platform installer](/start/install/) adds the plugin automatically when the Claude Code, Codex CLI, GitHub Copilot CLI, or OpenCode command is already on `PATH`. Use the steps below if you install a host later or need to retry. The plugin invokes `archcore` from `PATH`; it does not download the executable.
 
 | Host | Plugin installation |
 |---|---|
@@ -168,9 +168,9 @@ The [platform installer](/start/install/) adds the plugin automatically when the
 | Cursor | Add the repository URL through the Plugins panel |
 | Codex CLI | `archcore plugin install --agent codex-cli` |
 | GitHub Copilot CLI | `archcore plugin install --agent copilot`, then `archcore init --agent copilot` in the project |
-| OpenCode | `archcore init --agent opencode` in the project, or [the OpenCode command](#opencode) |
+| OpenCode | `archcore plugin install --agent opencode`, or [the OpenCode command](#opencode) |
 
-Codex CLI, Copilot CLI, and OpenCode plugin installations are machine-level. The platform installer does not install the OpenCode plugin. Restart the agent after changes. Use `archcore plugin status` to inspect installation state and the [CLI reference](/cli/commands/#archcore-plugin) for updates and removal.
+Codex CLI, Copilot CLI, and OpenCode plugin installations are machine-level. Restart the agent after changes. Use `archcore plugin status` to inspect installation state and the [CLI reference](/cli/commands/#archcore-plugin) for updates and removal.
 
 ## Hook output and limits
 
