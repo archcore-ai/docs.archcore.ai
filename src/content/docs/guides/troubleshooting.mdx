@@ -313,6 +313,8 @@ Errors from the install scripts and `archcore update`:
 | `unexpected redirect resolving latest release` | The redirect landed somewhere that is not a `/releases/tag/` page. Two causes occur in practice: a proxy or captive portal intercepting the request, or a repository with no published release, which GitHub answers with a redirect to the bare `/releases` page. |
 | `no Location header` / `parsing redirect location` | A redirect arrived without a usable `Location`. This indicates an intercepting proxy rather than GitHub. |
 | `Checksum verification failed` / `Checksum mismatch` | The download was corrupted. Run the install or `archcore update` again. |
+| `archcore v<version> does not run on this system, so nothing was installed.` | The install script ran the downloaded binary with `--version`, and the run failed. The release was built for a newer system than this one. The existing install stays in place. Pin an older release with `ARCHCORE_VERSION`. |
+| `needs macOS <version> or later; this Mac runs macOS <version>` | `archcore update` read the minimum macOS from the downloaded binary and stopped before replacing anything. The installed binary keeps working. Update macOS, or stay on the installed version. |
 | `Unsupported operating system/architecture` | Prebuilt binaries cover `darwin`, `linux`, and `windows` on `amd64` and `arm64` only. |
 | `this installer requires bash` | The script was piped into `sh` or another POSIX shell. Pipe into `bash` instead. |
 | `Update failed` with a permission error | The binary sits in a directory without write access. Reinstall it to a writable location, or run `archcore update` with `sudo`. |
@@ -325,7 +327,7 @@ While `archcore --version` reports `dev`, `archcore update` downloads the latest
 
 ### The background update never runs
 
-`archcore mcp` starts one unattended attempt 60 seconds after it begins serving, and the attempt stops at the first condition that does not hold. Walk the conditions in order under [Unattended update](/start/install/#unattended-update). A binary built with `go build` carries no official-build marker, so it stops at condition 1, which is the intended behavior for a local build.
+`archcore mcp` starts one unattended attempt 60 seconds after it begins serving, and the attempt stops at the first condition that does not hold. Walk the conditions in order under [Unattended update](/cli/configuration/#unattended-update). A binary built with `go build` carries no official-build marker, so it stops at condition 1, which is the intended behavior for a local build.
 
 ## Validation errors
 
@@ -569,6 +571,8 @@ Codex hooks are gated by Codex's `hooks` feature. Enable it with `codex --enable
 [features]
 hooks = true
 ```
+
+When `CODEX_HOME` is set, the file is `$CODEX_HOME/config.toml`. `archcore doctor` and `archcore hooks install` read the same file when they report whether the feature is on.
 
 Before Codex 0.129.0 the key is spelled `codex_hooks = true`. After you enable the feature, restart the Codex session so it picks up the new hook configuration. If hooks still don't fire, verify your Codex version is `0.117.0` or later (`codex --version`).
 

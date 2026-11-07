@@ -20,7 +20,13 @@ When a project declares [global sources](/cli/configuration/#global-sources), th
 
 Global documents are **read-only**: the write tools (`create_document`, `update_document`, `remove_document`) reject any global path, and `add_relation` refuses an edge that touches a global on either endpoint. When a local document and a global cover the same topic, the agent treats the local one as authoritative when reading them. Search ranking carries no source weight. A global document's effective modification time is treated as zero, so when a local document and a global tie on score and type priority, the local one ranks first at the modification-time key.
 
-No MCP tool includes an absolute filesystem path in an error or a result. Every returned path is relative to the project root or to `.archcore/`.
+## Target project
+
+Every tool takes an optional `project` parameter: the absolute path of a project root, the directory that holds `.archcore/`. Omit it to use the session's project.
+
+A successful response that is one JSON object ends with a `project` field that names the root the call used. When the session's project reaches that root as itself or as a declared global source, a `source` field follows with `local` or the source id. To address the same project again, pass the `project` value back.
+
+The `project` field is the only absolute path a result carries. No error carries an absolute filesystem path, and every other returned path is relative to the project root or to `.archcore/`.
 
 ## list_documents
 
@@ -127,6 +133,7 @@ Search documents by path reference, content words, or metadata. Unlike `list_doc
 
 | Name          | Type     | Required    | Description                                                                                                                  |
 | ------------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `for_path`    | string   | conditional | One repository file, relative to the project or absolute. Returns the documents that constrain an edit to that file, ranked, then the accepted rules that name no path. An absolute path in another project searches that project. Combines with `types`, `status`, and `source` only. |
 | `path_ref`    | string   | conditional | Path reference to match in document bodies. Matches both `@path` notation and qualified bare paths. Leading `@` is optional. |
 | `content`     | string   | conditional | Case-insensitive word search against title + body. The value is split on whitespace, and `match` decides how many of the words must occur. No stemming, no fuzzy matching. |
 | `match`       | string   | No          | How the words in `content` must match: `all` (default), `any`, or `exact`. Any other value maps to `all`. |
@@ -136,9 +143,9 @@ Search documents by path reference, content words, or metadata. Unlike `list_doc
 | `mtime_after` | string   | No          | Only include documents modified after this time. Accepts RFC3339 timestamps or a positive relative duration in hours or days: `<N>h` or `<N>d`, e.g. `24h`, `30d`, `90d`. Any other unit is rejected. |
 | `sort`        | string   | No          | Result ordering: `relevance` (default) or `mtime`.                                                                           |
 | `mode`        | string   | No          | Output detail: `snippets` (default) returns only matching excerpts; `full` additionally returns each result's complete document `body` (frontmatter stripped), so you can read the matched docs without a follow-up `get_document`. |
-| `limit`       | number   | No          | Maximum number of results. Defaults and caps are mode-dependent: `snippets` → default 50, max 200; `full` → default 3, max 20. Values above the cap are clamped; `0` or omitted maps to the mode default.       |
+| `limit`       | number   | No          | Maximum number of results. Defaults and caps are mode-dependent: `snippets` → default 50, max 200; `full` → default 3, max 20. Values above the cap are clamped; `0` or omitted maps to the mode default. Ignored under `for_path`, which has its own caps. |
 
-At least one of `path_ref`, `content`, `types`, or `status` must be provided. Filters combine with AND semantics.
+At least one of `for_path`, `path_ref`, `content`, `types`, or `status` must be provided. Filters combine with AND semantics.
 
 **Match modes:**
 
@@ -183,8 +190,11 @@ Each result has:
 
 **Errors:**
 
-- All filters empty: `specify at least one filter (path_ref, content, types, or status)`.
-- Negative `limit`: `limit must be non-negative`.
+- All filters empty: `specify at least one filter (path_ref, content, types, status, or for_path)`.
+- `for_path` together with `path_ref` or `content`: `for_path cannot be combined with path_ref or content`.
+- Unknown `types` entry: `invalid type "<value>" (valid: ...)`.
+- Unknown `status`: `invalid status "<value>" (valid: draft, accepted, rejected)`. An unchecked typo would otherwise return an empty page that reads as a verified absence.
+- Negative `limit`: `limit must be non-negative`. This also applies under `for_path`, where `limit` is otherwise ignored.
 - Invalid `mtime_after`: `invalid mtime_after: <reason>`.
 - Unknown `source`: `invalid source "<value>" (valid: "local", "global", or a declared global source id)`.
 - A `content` value that holds no word under `match: "all"` or `"any"`: `content must contain at least one word`. `exact` accepts any non-empty value.
@@ -389,15 +399,25 @@ Since CLI v0.8.3 the tool applies the same endpoint checks as `add_relation`. It
 
 ## list_relations
 
-List all relations, optionally filtered by document.
+List the relations stored in the manifest, optionally filtered by document.
 
 **Parameters:**
 
 | Name   | Type   | Required | Description                              |
 | ------ | ------ | -------- | ---------------------------------------- |
-| `path` | string | No       | Filter relations involving this document |
+| `path` | string | No       | Filter relations involving this document, with or without the `.archcore/` prefix |
 
-**Returns:** A JSON envelope `{"relations": [...]}` with all relations, or the relations involving the specified document. Each entry carries `source`, `target`, and `type`. Relation `source` and `target` are stored without the `.archcore/` prefix, unlike the `path` fields on documents.
+**Returns:** a JSON envelope:
+
+```json
+{ "total": 503, "truncated": true, "relations": [ /* ... */ ] }
+```
+
+- `total`: the number of relations that match the call.
+- `truncated`: `true` when the listing stops before `total`.
+- `relations`: each entry carries `source`, `target`, and `type`. Relation `source` and `target` are stored without the `.archcore/` prefix, unlike the `path` fields on documents.
+
+Without `path`, the listing keeps manifest order and stops at 300 relations. With `path`, the listing is complete: the document's outgoing relations first, then its incoming ones. To read every edge of a large graph, call the tool with `path` for each document you need.
 
 ---
 
